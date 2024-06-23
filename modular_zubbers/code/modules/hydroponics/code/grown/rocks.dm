@@ -31,6 +31,7 @@
 						/datum/reagent/consumable/nutriment = 0.01,
 						)
 
+	graft_gene = /datum/plant_gene/trait/stable_stats // BUG EDIT
 
 /obj/item/grown/rockfruit
 	seed = /obj/item/seeds/rockfruit

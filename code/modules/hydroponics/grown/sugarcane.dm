@@ -16,6 +16,7 @@
 	growthstages = 2
 	reagents_add = list(/datum/reagent/consumable/nutriment = 0.04, /datum/reagent/consumable/sugar = 0.25)
 	mutatelist = list(/obj/item/seeds/bamboo, /obj/item/seeds/sugarcane/saltcane)
+	graft_gene = /datum/plant_gene/trait/repeated_harvest // BUG EDIT
 
 /obj/item/food/grown/sugarcane
 	seed = /obj/item/seeds/sugarcane
@@ -45,6 +46,7 @@
 	icon_dead = "bamboo-dead"
 	genes = list(/datum/plant_gene/trait/repeated_harvest)
 	mutatelist = null
+	graft_gene = /datum/plant_gene/trait/repeated_harvest // BUG EDIT
 
 /obj/item/grown/log/bamboo
 	seed = /obj/item/seeds/bamboo

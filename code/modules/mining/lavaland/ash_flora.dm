@@ -371,6 +371,7 @@
 	genes = list(/datum/plant_gene/trait/plant_type/fungal_metabolism, /datum/plant_gene/trait/fire_resistance)
 	growing_icon = 'icons/obj/service/hydroponics/growing_mushrooms.dmi'
 	reagents_add = list(/datum/reagent/toxin/mushroom_powder = 0.1, /datum/reagent/medicine/coagulant/seraka_extract = 0.02)
+	graft_gene = /datum/plant_gene/trait/fire_resistance // BUG EDIT
 
 /obj/item/seeds/lavaland/fireblossom
 	name = "pack of fire blossom seeds"

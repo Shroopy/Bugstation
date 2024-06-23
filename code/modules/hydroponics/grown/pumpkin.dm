@@ -16,6 +16,7 @@
 	genes = list(/datum/plant_gene/trait/repeated_harvest)
 	mutatelist = list(/obj/item/seeds/pumpkin/blumpkin)
 	reagents_add = list(/datum/reagent/consumable/nutriment/vitamin = 0.04, /datum/reagent/consumable/nutriment = 0.2)
+	graft_gene = /datum/plant_gene/trait/repeated_harvest // BUG EDIT
 
 /obj/item/food/grown/pumpkin
 	seed = /obj/item/seeds/pumpkin

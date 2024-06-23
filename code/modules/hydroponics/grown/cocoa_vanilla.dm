@@ -18,6 +18,7 @@
 	genes = list(/datum/plant_gene/trait/repeated_harvest)
 	mutatelist = list(/obj/item/seeds/cocoapod/vanillapod, /obj/item/seeds/cocoapod/bungotree)
 	reagents_add = list(/datum/reagent/consumable/coco = 0.25, /datum/reagent/consumable/nutriment = 0.1)
+	graft_gene = /datum/plant_gene/trait/repeated_harvest // BUG EDIT
 
 /obj/item/food/grown/cocoapod
 	seed = /obj/item/seeds/cocoapod
