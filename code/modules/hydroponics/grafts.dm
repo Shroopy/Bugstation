@@ -33,7 +33,8 @@
 /obj/item/graft/Initialize(mapload, datum/plant_gene/trait/trait_path)
 	. = ..()
 	// BUG EDIT START
-	stored_trait = new trait_path
+	if(trait_path)
+		stored_trait = new trait_path
 	// BUG EDIT END
 	icon_state = pick(
 		10 ; "graft_plant" , \
