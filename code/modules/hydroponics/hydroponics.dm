@@ -941,6 +941,7 @@
 		// BUG EDIT START
 		else if(!myseed.graft_gene)
 			to_chat(user, span_notice("This plant has no trait to graft."))
+			return
 		// BUG EDIT END
 		else
 			user.visible_message(span_notice("[user] grafts off a limb from [src]."), span_notice("You carefully graft off a portion of [src]."))
