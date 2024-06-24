@@ -12,6 +12,16 @@ import {
 } from '../components';
 import { Window } from '../layouts';
 
+// BUG EDIT START
+function getColor(character, erp_disabled) {
+  if (!erp_disabled) {
+    return erpTagColor[character.erp];
+  } else {
+    return 'transparent';
+  }
+}
+// BUG EDIT END
+
 const erpTagColor = {
   Unset: '#000000',
   'Top - Dom': '#410308',
@@ -46,37 +56,53 @@ export const ZubbersCharacterDirectory = (props) => {
     personalVoreTag,
     personalHypnoTag,
     personalNonconTag,
+    erp_disabled, // BUG EDIT
   } = data;
+
+  // BUG EDIT START
+  let list_items = [];
+  list_items.push(
+    <LabeledList.Item label="Visibility">
+      <Button fluid>{personalVisibility ? 'Shown' : 'Not Shown'}</Button>
+    </LabeledList.Item>,
+  );
+  if (!erp_disabled) {
+    list_items.push(
+      <LabeledList.Item label="Attraction">
+        <Button fluid>{personalAttraction}</Button>
+      </LabeledList.Item>,
+    );
+  }
+  list_items.push(
+    <LabeledList.Item label="Gender">
+      <Button fluid>{personalGender}</Button>
+    </LabeledList.Item>,
+  );
+  if (!erp_disabled) {
+    list_items.push(
+      <>
+        <LabeledList.Item label="ERP">
+          <Button fluid>{personalErpTag}</Button>
+        </LabeledList.Item>
+        <LabeledList.Item label="Vore">
+          <Button fluid>{personalVoreTag}</Button>
+        </LabeledList.Item>
+        <LabeledList.Item label="Hypno">
+          <Button fluid>{personalHypnoTag}</Button>
+        </LabeledList.Item>
+        <LabeledList.Item label="Noncon">
+          <Button fluid>{personalNonconTag}</Button>
+        </LabeledList.Item>
+      </>,
+    );
+  }
+  // BUG EDIT END
 
   return (
     <Window width={900} height={640} resizeable>
       <Window.Content scrollable>
         <Section title="Controls">
-          <LabeledList>
-            <LabeledList.Item label="Visibility">
-              <Button fluid>
-                {personalVisibility ? 'Shown' : 'Not Shown'}
-              </Button>
-            </LabeledList.Item>
-            <LabeledList.Item label="Attraction">
-              <Button fluid>{personalAttraction}</Button>
-            </LabeledList.Item>
-            <LabeledList.Item label="Gender">
-              <Button fluid>{personalGender}</Button>
-            </LabeledList.Item>
-            <LabeledList.Item label="ERP">
-              <Button fluid>{personalErpTag}</Button>
-            </LabeledList.Item>
-            <LabeledList.Item label="Vore">
-              <Button fluid>{personalVoreTag}</Button>
-            </LabeledList.Item>
-            <LabeledList.Item label="Hypno">
-              <Button fluid>{personalHypnoTag}</Button>
-            </LabeledList.Item>
-            <LabeledList.Item label="Noncon">
-              <Button fluid>{personalNonconTag}</Button>
-            </LabeledList.Item>
-          </LabeledList>
+          <LabeledList>{list_items /* BUG EDIT */}</LabeledList>
         </Section>
         <CharacterDirectoryList />
       </Window.Content>
@@ -123,6 +149,143 @@ const CharacterDirectoryList = (props) => {
     return sortOrderValue * a[sortId].localeCompare(b[sortId]);
   });
 
+  // BUG EDIT START
+  const { erp_disabled } = data;
+
+  let sortbuttons = [];
+  sortbuttons.push(
+    <>
+      <SortButton
+        id="name"
+        sortId={sortId}
+        sortOrder={sortOrder}
+        onClick={handleSort}
+      >
+        Name
+      </SortButton>
+      <SortButton
+        id="species"
+        sortId={sortId}
+        sortOrder={sortOrder}
+        onClick={handleSort}
+      >
+        Species
+      </SortButton>
+    </>,
+  );
+  if (!erp_disabled) {
+    sortbuttons.push(
+      <SortButton
+        id="attraction"
+        sortId={sortId}
+        sortOrder={sortOrder}
+        onClick={handleSort}
+      >
+        Attraction
+      </SortButton>,
+    );
+  }
+  sortbuttons.push(
+    <SortButton
+      id="gender"
+      sortId={sortId}
+      sortOrder={sortOrder}
+      onClick={handleSort}
+    >
+      Gender
+    </SortButton>,
+  );
+  if (!erp_disabled) {
+    sortbuttons.push(
+      <>
+        <SortButton
+          id="erp"
+          sortId={sortId}
+          sortOrder={sortOrder}
+          onClick={handleSort}
+        >
+          ERP
+        </SortButton>
+        <SortButton
+          id="vore"
+          sortId={sortId}
+          sortOrder={sortOrder}
+          onClick={handleSort}
+        >
+          Vore
+        </SortButton>
+        <SortButton
+          id="hypno"
+          sortId={sortId}
+          sortOrder={sortOrder}
+          onClick={handleSort}
+        >
+          Hypno
+        </SortButton>
+        <SortButton
+          id="noncon"
+          sortId={sortId}
+          sortOrder={sortOrder}
+          onClick={handleSort}
+        >
+          Noncon
+        </SortButton>
+        <Table.Cell collapsing textAlign="right">
+          Advert
+        </Table.Cell>
+      </>,
+    );
+  }
+
+  function table_cells(character) {
+    let table_cells = [];
+    table_cells.push(
+      <>
+        <Table.Cell p={1}>
+          {canOrbit ? (
+            <Button
+              color={getColor(character, erp_disabled)} /* BUG EDIT */
+              icon="ghost"
+              tooltip="Orbit"
+              onClick={() => act('orbit', { ref: character.ref })}
+            >
+              {character.name}
+            </Button>
+          ) : (
+            character.name
+          )}
+        </Table.Cell>
+        <Table.Cell>{character.species}</Table.Cell>
+      </>,
+    );
+    if (!erp_disabled) {
+      table_cells.push(
+        <>
+          <Table.Cell>{character.attraction}</Table.Cell>
+          <Table.Cell>{character.gender}</Table.Cell>
+          <Table.Cell>{character.erp}</Table.Cell>
+          <Table.Cell>{character.vore}</Table.Cell>
+          <Table.Cell>{character.hypno}</Table.Cell>
+          <Table.Cell>{character.noncon}</Table.Cell>
+        </>,
+      );
+    }
+    table_cells.push(
+      <Table.Cell collapsing textAlign="right">
+        <Button
+          onClick={() => act('view', { ref: character.ref })}
+          color="transparent"
+          icon="sticky-note"
+          mr={1}
+        >
+          {'View'}
+        </Button>
+      </Table.Cell>,
+    );
+    return table_cells;
+  }
+  // BUG EDIT END
+
   return (
     <Section
       title="Directory"
@@ -146,108 +309,13 @@ const CharacterDirectoryList = (props) => {
         mb={2}
       />
       <Table>
-        <Table.Row bold>
-          <SortButton
-            id="name"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Name
-          </SortButton>
-          <SortButton
-            id="species"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Species
-          </SortButton>
-          <SortButton
-            id="attraction"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Attraction
-          </SortButton>
-          <SortButton
-            id="gender"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Gender
-          </SortButton>
-          <SortButton
-            id="erp"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            ERP
-          </SortButton>
-          <SortButton
-            id="vore"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Vore
-          </SortButton>
-          <SortButton
-            id="hypno"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Hypno
-          </SortButton>
-          <SortButton
-            id="noncon"
-            sortId={sortId}
-            sortOrder={sortOrder}
-            onClick={handleSort}
-          >
-            Noncon
-          </SortButton>
-          <Table.Cell collapsing textAlign="right">
-            Advert
-          </Table.Cell>
-        </Table.Row>
+        <Table.Row bold>{sortbuttons /* BUG EDIT */}</Table.Row>
         {sortedDirectory.map((character, i) => (
-          <Table.Row key={i} backgroundColor={erpTagColor[character.erp]}>
-            <Table.Cell p={1}>
-              {canOrbit ? (
-                <Button
-                  color={erpTagColor[character.erp]}
-                  icon="ghost"
-                  tooltip="Orbit"
-                  onClick={() => act('orbit', { ref: character.ref })}
-                >
-                  {character.name}
-                </Button>
-              ) : (
-                character.name
-              )}
-            </Table.Cell>
-            <Table.Cell>{character.species}</Table.Cell>
-            <Table.Cell>{character.attraction}</Table.Cell>
-            <Table.Cell>{character.gender}</Table.Cell>
-            <Table.Cell>{character.erp}</Table.Cell>
-            <Table.Cell>{character.vore}</Table.Cell>
-            <Table.Cell>{character.hypno}</Table.Cell>
-            <Table.Cell>{character.noncon}</Table.Cell>
-            <Table.Cell collapsing textAlign="right">
-              <Button
-                onClick={() => act('view', { ref: character.ref })}
-                color="transparent"
-                icon="sticky-note"
-                mr={1}
-              >
-                {'View'}
-              </Button>
-            </Table.Cell>
+          <Table.Row
+            key={i}
+            backgroundColor={getColor(character, erp_disabled)} // BUG EDIT
+          >
+            {table_cells(character) /* BUG EDIT */}
           </Table.Row>
         ))}
       </Table>

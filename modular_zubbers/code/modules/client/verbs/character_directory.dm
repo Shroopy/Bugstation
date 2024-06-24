@@ -294,6 +294,8 @@ GLOBAL_DATUM(character_directory, /datum/character_directory)
 
 	data["directory"] = directory_mobs
 
+	data["erp_disabled"] = CONFIG_GET(flag/disable_erp_preferences) // BUG EDIT
+
 	return data
 
 /datum/character_directory/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
