@@ -259,10 +259,12 @@ const CharacterDirectoryList = (props) => {
       </>,
     );
     if (!erp_disabled) {
+      table_cells.push(<Table.Cell>{character.attraction}</Table.Cell>);
+    }
+    table_cells.push(<Table.Cell>{character.gender}</Table.Cell>);
+    if (!erp_disabled) {
       table_cells.push(
         <>
-          <Table.Cell>{character.attraction}</Table.Cell>
-          <Table.Cell>{character.gender}</Table.Cell>
           <Table.Cell>{character.erp}</Table.Cell>
           <Table.Cell>{character.vore}</Table.Cell>
           <Table.Cell>{character.hypno}</Table.Cell>
