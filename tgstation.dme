@@ -6356,6 +6356,8 @@
 #include "interface\fonts\tiny_unicode.dm"
 #include "interface\fonts\vcr_osd_mono.dm"
 #include "modular_bug\code\game\objects\items\plushes.dm"
+#include "modular_bug\code\modules\client\examine_tgui.dm"
+#include "modular_bug\code\modules\client\preferences\preferences.dm"
 #include "modular_skyrat\master_files\code\_globalvars\configuration.dm"
 #include "modular_skyrat\master_files\code\_globalvars\regexes.dm"
 #include "modular_skyrat\master_files\code\_globalvars\religion.dm"
