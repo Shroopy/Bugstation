@@ -33,6 +33,7 @@
 /obj/item/gun/energy/give_gun_safeties()
 	AddComponent(/datum/component/gun_safety)
 
+/* BUG EDIT START
 /obj/item/gun/energy/plasmacutter/give_gun_safeties()
 	return
 
@@ -43,3 +44,4 @@
 
 /obj/item/gun/syringe/blowgun/give_gun_safeties()
 	return
+BUG EDIT END */
