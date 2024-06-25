@@ -8979,6 +8979,6 @@
 #include "modular_zubbers\master_files\skyrat\modules\opposing_force\code\opposing_force_subsystem.dm"
 #include "modular_zubbers\master_files\skyrat\modules\verbs\code\subtle.dm"
 #include "modular_zzbug\code\game\objects\items\plushes.dm"
-#include "modular_zzbug\code\modules\client\examine_tgui.dm"
 #include "modular_zzbug\code\modules\client\preferences\preferences.dm"
+#include "modular_zzbug\master_files\code\modules\client\examine_tgui.dm"
 // END_INCLUDE

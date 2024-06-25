@@ -1,4 +1,3 @@
-// BUG OVERRIDDEN
 /datum/examine_panel/ui_data(mob/user)
 	var/list/data = ..()
 	var/datum/preferences/preferences = holder.client?.prefs
