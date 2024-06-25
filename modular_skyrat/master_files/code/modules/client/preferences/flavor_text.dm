@@ -42,6 +42,7 @@
 			return FALSE
 	return ..()
 
+/* BUG EDIT START
 /datum/preference/text/taste
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
 	savefile_identifier = PREFERENCE_CHARACTER
@@ -61,6 +62,7 @@
 /datum/preference/text/smell/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	target.dna.features["smell"] = value
 	return FALSE
+BUG EDIT END */
 
 /datum/preference/text/custom_species_lore
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
