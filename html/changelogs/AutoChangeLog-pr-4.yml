@@ -1,0 +1,6 @@
+author: "Shroopy"
+delete-after: True
+changes:
+  - rscadd: "Readded gun safeties"
+  - rscadd: "Added safeties to plasma cutters, KAs, and syringe guns"
+  - qol: "Deathmatch guns have safeties off by default"
