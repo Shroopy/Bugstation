@@ -43,7 +43,7 @@ GLOBAL_DATUM(character_directory, /datum/character_directory)
 	savefile_identifier = PREFERENCE_CHARACTER
 
 /datum/preference/choiced/display_gender/init_possible_values()
-	return list("Male", "Female", "Null", "Plural", "Nonbinary", "Omni", "Trans", "Transmasc", "Transfem", "Andro", "Gyno", "Fluid", "Unset", "Check OOC")
+	return list("Male", "Female", "Agender", "Plural", "Nonbinary", "Omni", "Trans", "Transmasc", "Transfem", "Fluid", "Unset", "Check OOC") // BUG EDIT
 
 /datum/preference/choiced/display_gender/create_default_value()
 	return "Unset"
@@ -293,6 +293,8 @@ GLOBAL_DATUM(character_directory, /datum/character_directory)
 		)))
 
 	data["directory"] = directory_mobs
+
+	data["erp_disabled"] = CONFIG_GET(flag/disable_erp_preferences) // BUG EDIT
 
 	return data
 
