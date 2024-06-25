@@ -43,7 +43,7 @@ GLOBAL_DATUM(character_directory, /datum/character_directory)
 	savefile_identifier = PREFERENCE_CHARACTER
 
 /datum/preference/choiced/display_gender/init_possible_values()
-	return list("Male", "Female", "Agender", "Plural", "Nonbinary", "Omni", "Trans", "Transmasc", "Transfem", "Fluid", "Unset") // BUG EDIT
+	return list("Male", "Female", "Agender", "Plural", "Nonbinary", "Omni", "Trans", "Transmasc", "Transfem", "Fluid", "Unset", "Check OOC") // BUG EDIT
 
 /datum/preference/choiced/display_gender/create_default_value()
 	return "Unset"
