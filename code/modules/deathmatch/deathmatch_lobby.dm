@@ -77,6 +77,16 @@
 		if(istype(thing, /obj/effect/landmark/deathmatch_player_spawn))
 			player_spawns += thing
 
+	// BUG EDIT START
+	for(var/thing in atoms)
+		if(istype(thing, /obj/item/gun))
+			var/obj/item/gun/gun = thing
+			var/datum/component/gun_safety/safety = gun.GetExactComponent(/datum/component/gun_safety)
+			if(safety)
+				safety.safety_currently_on = FALSE
+				safety.update_action_button_state()
+	// BUG EDIT END
+
 	UnregisterSignal(source, COMSIG_LAZY_TEMPLATE_LOADED)
 	map.template_in_use = FALSE
 	addtimer(CALLBACK(src, PROC_REF(start_game_after_delay)), 8 SECONDS)
