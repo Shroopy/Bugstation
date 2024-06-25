@@ -725,3 +725,12 @@
 		/obj/item/knife/butcher,
 		/obj/item/sharpener,
 	)
+
+// BUG EDIT START
+/datum/outfit/deathmatch_loadout/post_equip(mob/living/carbon/human/user, visualsOnly = FALSE)
+	for(var/obj/item/gun/gun in user.get_all_contents())
+		var/datum/component/gun_safety/safety = gun.GetExactComponent(/datum/component/gun_safety)
+		if(safety)
+			safety.safety_currently_on = FALSE
+			safety.update_action_button_state()
+// BUG EDIT END

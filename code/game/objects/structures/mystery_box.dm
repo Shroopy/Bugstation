@@ -215,6 +215,12 @@ GLOBAL_LIST_INIT(mystery_magic, list(
 			if(!instantiated_ballistic.internal_magazine)
 				var/obj/item/ammo_box/magazine/extra_mag = new instantiated_ballistic.spawn_magazine_type(loc)
 				user.put_in_hands(extra_mag)
+		// BUG EDIT START
+		var/datum/component/gun_safety/safety = instantiated_gun.GetExactComponent(/datum/component/gun_safety)
+		if(safety)
+			safety.safety_currently_on = FALSE
+			safety.update_action_button_state()
+		// BUG EDIT END
 
 	user.visible_message(span_notice("[user] takes [presented_item] from [src]."), span_notice("You take [presented_item] from [src]."), vision_distance = COMBAT_MESSAGE_RANGE)
 	playsound(src, grant_sound, 70, FALSE, channel = current_sound_channel, falloff_exponent = 10)
