@@ -129,7 +129,7 @@
 /datum/design/shotgun_dart
 	name = "Shotgun Dart (Lethal)"
 	id = "shotgun_dart"
-	build_type = AUTOLATHE
+	//build_type = AUTOLATHE
 	materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT*2)
 	build_path = /obj/item/ammo_casing/shotgun/dart
 	category = list(
@@ -141,7 +141,7 @@
 /datum/design/incendiary_slug
 	name = "Incendiary Slug (Lethal)"
 	id = "incendiary_slug"
-	build_type = AUTOLATHE
+	//build_type = AUTOLATHE
 	materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT*2)
 	build_path = /obj/item/ammo_casing/shotgun/incendiary
 	category = list(
