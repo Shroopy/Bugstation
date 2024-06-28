@@ -109,9 +109,12 @@ SUBSYSTEM_DEF(ticker)
 					continue
 				music += S
 
-	var/old_login_music = trim(file2text("data/last_round_lobby_music.txt"))
+	// BUG EDIT START
 	if(music.len > 1)
+		var/oldmusics = file2text("data/last_round_lobby_music.txt")
+		var/old_login_music = trim(copytext(oldmusics, findlasttext(oldmusics, "/")+1))
 		music -= old_login_music
+	// BUG EDIT END
 
 	for(var/S in music)
 		var/list/L = splittext(S,".")
