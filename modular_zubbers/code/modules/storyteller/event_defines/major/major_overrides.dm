@@ -27,9 +27,11 @@
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL)
 
+/** BUG EDIT START
 /datum/round_event_control/wormholes
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL)
+BUG EDIT END */
 
 /datum/round_event_control/immovable_rod
 	track = EVENT_TRACK_MAJOR

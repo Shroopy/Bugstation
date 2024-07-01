@@ -53,3 +53,10 @@
 /datum/round_event_control/portal_storm_syndicate
 	track = EVENT_TRACK_MODERATE
 	tags = list(TAG_COMBAT)
+
+// BUG EDIT START
+/datum/round_event_control/wormholes
+	track = EVENT_TRACK_MODERATE
+	tags = list(TAG_COMMUNAL)
+	max_occurrences = 2 // BUG: more than two wormholes would be pretty annoying, like the radstorm
+// BUG EDIT END
