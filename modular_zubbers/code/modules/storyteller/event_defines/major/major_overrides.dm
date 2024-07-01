@@ -52,5 +52,5 @@ BUG EDIT END */
 	tags = list(TAG_DESTRUCTIVE)
 
 /datum/round_event_control/spider_infestation
-	track = EVENT_TRACK_ROLESET
+	track = EVENT_TRACK_MAJOR // BUG EDIT
 	tags = list(TAG_COMBAT)
