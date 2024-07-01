@@ -23,9 +23,9 @@
 	var/list/seeds = list()
 	if(t_max == -1)
 		if(extractor)
-			t_max = rand(1,4) * extractor.seed_multiplier
+			t_max = rand(1,extractor.seed_multiplier) // BUG EDIT
 		else
-			t_max = rand(1,4)
+			t_max = 1 // BUG EDIT
 	//drop location for the newly generated seeds
 	var/seedloc = object.loc
 	if(extractor)
