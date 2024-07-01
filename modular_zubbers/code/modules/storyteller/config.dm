@@ -147,3 +147,55 @@
 	config_entry_value = OBJECTIVES_POP_SCALE_PENALTY
 	integer = TRUE
 	min_val = 0
+
+// BUG EDIT START
+/datum/config_entry/number/roundstart_mundane_base
+	config_entry_value = ROUNDSTART_MUNDANE_BASE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_mundane_gain
+	config_entry_value = ROUNDSTART_MUNDANE_GAIN
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_moderate_base
+	config_entry_value = ROUNDSTART_MODERATE_BASE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_moderate_gain
+	config_entry_value = ROUNDSTART_MODERATE_GAIN
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_major_base
+	config_entry_value = ROUNDSTART_MAJOR_BASE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_major_gain
+	config_entry_value = ROUNDSTART_MAJOR_GAIN
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_roleset_base
+	config_entry_value = ROUNDSTART_ROLESET_BASE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_roleset_gain
+	config_entry_value = ROUNDSTART_ROLESET_GAIN
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_objectives_base
+	config_entry_value = ROUNDSTART_OBJECTIVES_BASE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_objectives_gain
+	config_entry_value = ROUNDSTART_OBJECTIVES_GAIN
+	integer = TRUE
+	min_val = 0
+// BUG EDIT END
