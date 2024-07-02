@@ -2,6 +2,11 @@
 	name = "The Guide"
 	desc = "The Guide is the default Storyteller, and the comparison point for every other Storyteller. Best for an average, varied experience."
 	antag_divisor = 8
+	tag_cost_multipliers = list(
+		TAG_TARGETED = 0.5, // targeted events cause little chaos
+		TAG_VERY_TARGETED = 0.5, // very targeted events cause even less chaos, multiplier compounded with targeted
+	)
+	population_min = 8
 
 /datum/storyteller/sleeper
 	name = "The Sleeper"

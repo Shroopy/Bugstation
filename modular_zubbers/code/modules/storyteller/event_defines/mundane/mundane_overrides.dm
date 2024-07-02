@@ -4,7 +4,7 @@
 
 /datum/round_event_control/brain_trauma
 	track = EVENT_TRACK_MUNDANE
-	tags = list(TAG_TARGETED)
+	tags = list(TAG_TARGETED, TAG_VERY_TARGETED)
 
 /datum/round_event_control/camera_failure
 	track = EVENT_TRACK_MUNDANE

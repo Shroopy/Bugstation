@@ -25,7 +25,9 @@
 		EVENT_TRACK_OBJECTIVES = 1
 		)
 	/// Multipliers of weight to apply for each tag of an event.
-	var/list/tag_multipliers
+	var/list/tag_weight_multipliers
+
+	var/list/tag_cost_multipliers
 
 	/// Variance in cost of the purchased events. Effectively affects frequency of events
 	var/cost_variance = 15
@@ -116,6 +118,10 @@
 	var/datum/controller/subsystem/gamemode/mode = SSgamemode
 	// Perhaps use some bell curve instead of a flat variance?
 	var/total_cost = bought_event.cost * mode.point_thresholds[track]
+	if(tag_cost_multipliers)
+		for(var/tag in tag_cost_multipliers)
+			if(tag in event.tags)
+				total_cost *= tag_cost_multipliers[tag]
 	if(!bought_event.roundstart)
 		total_cost *= (1 + (rand(-cost_variance, cost_variance)/100)) //Apply cost variance if not roundstart event
 	mode.event_track_points[track] -= total_cost
@@ -132,10 +138,10 @@
 	for(var/datum/round_event_control/event as anything in mode.event_pools[track])
 		var/weight_total = event.weight
 		/// Apply tag multipliers if able
-		if(tag_multipliers)
-			for(var/tag in tag_multipliers)
+		if(tag_weight_multipliers)
+			for(var/tag in tag_weight_multipliers)
 				if(tag in event.tags)
-					weight_total *= tag_multipliers[tag]
+					weight_total *= tag_weight_multipliers[tag]
 		/// Apply occurence multipliers if able
 		var/occurences = event.get_occurences()
 		if(occurences)

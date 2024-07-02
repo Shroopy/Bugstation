@@ -62,9 +62,9 @@
 
 /datum/round_event_control/heart_attack
 	track = EVENT_TRACK_MODERATE
-	tags = list(TAG_TARGETED)
+	tags = list(TAG_TARGETED, TAG_VERY_TARGETED)
 
 /datum/round_event_control/appendicitis
 	track = EVENT_TRACK_MODERATE
-	tags = list(TAG_TARGETED)
+	tags = list(TAG_TARGETED, TAG_VERY_TARGETED)
 // BUG EDIT END
