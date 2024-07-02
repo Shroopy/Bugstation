@@ -59,4 +59,12 @@
 	track = EVENT_TRACK_MODERATE
 	tags = list(TAG_COMMUNAL)
 	max_occurrences = 2 // BUG: more than two wormholes would be pretty annoying, like the radstorm
+
+/datum/round_event_control/heart_attack
+	track = EVENT_TRACK_MODERATE
+	tags = list(TAG_TARGETED)
+
+/datum/round_event_control/appendicitis
+	track = EVENT_TRACK_MODERATE
+	tags = list(TAG_TARGETED)
 // BUG EDIT END
