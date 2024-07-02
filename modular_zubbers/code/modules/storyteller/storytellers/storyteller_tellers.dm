@@ -8,6 +8,7 @@
 	)
 	population_min = 8
 
+/* BUG EDIT START
 /datum/storyteller/sleeper
 	name = "The Sleeper"
 	desc = "The Sleeper will be light on events compared to the Guide, especially so on ones involving combat or destruction. Best for more chill rounds."
@@ -64,6 +65,7 @@
 	tag_multipliers = list(TAG_DESTRUCTIVE = 2.5) // You asked and I delivered. Destructiveness increased
 	population_min = 25
 	antag_divisor = 10
+BUG EDIT END*/
 
 /datum/storyteller/ghost
 	name = "The Ghost"

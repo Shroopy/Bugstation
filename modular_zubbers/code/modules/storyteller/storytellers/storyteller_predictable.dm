@@ -1,3 +1,4 @@
+/* BUG EDIT START
 /datum/storyteller/predictable
 	name = "The Predictable Chaos"
 	desc = "The Predictable Chaos will attempt to spawn a lot of antagonists relative to the crew population, while also ensuring events roll every set amount of time. Expect minor events every 10 minutes, moderate events every 30 minutes, and major events every hour and a half."
@@ -47,7 +48,7 @@
 	COOLDOWN_DECLARE(mundane_event_cooldown)
 	COOLDOWN_DECLARE(moderate_event_cooldown)
 	COOLDOWN_DECLARE(major_event_cooldown)
-
+BUG EDIT END */
 
 /datum/storyteller/predictable/New(...)
 	reset_cooldowns()

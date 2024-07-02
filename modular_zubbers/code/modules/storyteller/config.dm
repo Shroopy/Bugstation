@@ -149,6 +149,31 @@
 	min_val = 0
 
 // BUG EDIT START
+/datum/config_entry/number/roundstart_mundane_variance
+	config_entry_value = ROUNDSTART_MUNDANE_VARIANCE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_moderate_variance
+	config_entry_value = ROUNDSTART_MODERATE_VARIANCE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_major_variance
+	config_entry_value = ROUNDSTART_MAJOR_VARIANCE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_roleset_variance
+	config_entry_value = ROUNDSTART_ROLESET_VARIANCE
+	integer = TRUE
+	min_val = 0
+
+/datum/config_entry/number/roundstart_objectives_variance
+	config_entry_value = ROUNDSTART_OBJECTIVES_VARIANCE
+	integer = TRUE
+	min_val = 0
+
 /datum/config_entry/number/roundstart_mundane_base
 	config_entry_value = ROUNDSTART_MUNDANE_BASE
 	integer = TRUE

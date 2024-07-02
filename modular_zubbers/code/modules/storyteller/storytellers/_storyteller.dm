@@ -9,12 +9,12 @@
 	/// This is the multiplier for repetition penalty in event weight. The lower the harsher it is
 	var/event_repetition_multiplier = 0.6
 	/// Multipliers for starting points.
-	var/list/starting_point_multipliers = list(
-		EVENT_TRACK_MUNDANE = 1,
-		EVENT_TRACK_MODERATE = 1,
-		EVENT_TRACK_MAJOR = 1,
-		EVENT_TRACK_ROLESET = 1,
-		EVENT_TRACK_OBJECTIVES = 1
+	var/list/starting_points = list(
+		EVENT_TRACK_MUNDANE = 0,
+		EVENT_TRACK_MODERATE = 0,
+		EVENT_TRACK_MAJOR = 0,
+		EVENT_TRACK_ROLESET = 0,
+		EVENT_TRACK_OBJECTIVES = 0
 		)
 	/// Multipliers for point gains.
 	var/list/point_gains_multipliers = list(
@@ -24,6 +24,13 @@
 		EVENT_TRACK_ROLESET = 1,
 		EVENT_TRACK_OBJECTIVES = 1
 		)
+	var/list/starting_point_variance_multiplier = list(
+		EVENT_TRACK_MUNDANE = 1,
+		EVENT_TRACK_MODERATE = 1,
+		EVENT_TRACK_MAJOR = 1,
+		EVENT_TRACK_ROLESET = 1,
+		EVENT_TRACK_OBJECTIVES = 1
+	)
 	/// Multipliers of weight to apply for each tag of an event.
 	var/list/tag_weight_multipliers
 
