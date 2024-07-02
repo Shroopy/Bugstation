@@ -33,22 +33,22 @@ SUBSYSTEM_DEF(gamemode)
 		EVENT_TRACK_ROLESET = 0,
 		EVENT_TRACK_OBJECTIVES = 0
 		)
-	/// Point thresholds at which the events are supposed to be rolled, it is also the base cost for events. Loads from config.
+	/// Point thresholds at which the events are supposed to be rolled, it is also the base cost for events. Loads from config. No default values make sense so let's hopefully throw an error from negative numbers :3
 	var/list/point_thresholds = list(
-		EVENT_TRACK_MUNDANE = MUNDANE_POINT_THRESHOLD,
-		EVENT_TRACK_MODERATE = MODERATE_POINT_THRESHOLD,
-		EVENT_TRACK_MAJOR = MAJOR_POINT_THRESHOLD,
-		EVENT_TRACK_ROLESET = ROLESET_POINT_THRESHOLD,
-		EVENT_TRACK_OBJECTIVES = OBJECTIVES_POINT_THRESHOLD
+		EVENT_TRACK_MUNDANE = -1,
+		EVENT_TRACK_MODERATE = -1,
+		EVENT_TRACK_MAJOR = -1,
+		EVENT_TRACK_ROLESET = -1,
+		EVENT_TRACK_OBJECTIVES = -1
 		)
 
 	/// Minimum population thresholds for the tracks to fire off events. Loads from config.
 	var/list/min_pop_thresholds = list(
-		EVENT_TRACK_MUNDANE = MUNDANE_MIN_POP,
-		EVENT_TRACK_MODERATE = MODERATE_MIN_POP,
-		EVENT_TRACK_MAJOR = MAJOR_MIN_POP,
-		EVENT_TRACK_ROLESET = ROLESET_MIN_POP,
-		EVENT_TRACK_OBJECTIVES = OBJECTIVES_MIN_POP
+		EVENT_TRACK_MUNDANE = 1,
+		EVENT_TRACK_MODERATE = 1,
+		EVENT_TRACK_MAJOR = 1,
+		EVENT_TRACK_ROLESET = 1,
+		EVENT_TRACK_OBJECTIVES = 1
 		)
 
 	/// Configurable multipliers for point gain over time. Loads from config.
@@ -334,8 +334,8 @@ SUBSYSTEM_DEF(gamemode)
 	for(var/track in event_track_points)
 		// BUG EDIT START
 		var/calc_value = roundstart_base_points[track]
-		calc_value += storyteller.starting_points[track]
-		total_variance = roundstart_variance[track] * storyteller.starting_point_variance_multiplier[track]
+		calc_value *= storyteller.starting_point_multipliers[track]
+		var/total_variance = roundstart_variance[track] * storyteller.starting_point_variance_multiplier[track]
 		calc_value += rand(-total_variance, total_variance)
 		event_track_points[track] = round(calc_value, EVENT_POINT_GAINED_PER_SECOND)
 		// BUG EDIT END
@@ -892,10 +892,10 @@ SUBSYSTEM_DEF(gamemode)
 		dat += "Storyteller: [storyteller.name]"
 		dat += "<BR>Repetition penalty multiplier: [storyteller.event_repetition_multiplier]"
 		dat += "<BR>Cost variance: [storyteller.cost_variance]"
-		if(storyteller.tag_multipliers)
-			dat += "<BR>Tag multipliers:"
-			for(var/tag in storyteller.tag_multipliers)
-				dat += "[tag]:[storyteller.tag_multipliers[tag]] | "
+		if(storyteller.tag_weight_multipliers)
+			dat += "<BR>Tag weight multipliers:"
+			for(var/tag in storyteller.tag_weight_multipliers)
+				dat += "[tag]:[storyteller.tag_weight_multipliers[tag]] | "
 		storyteller.calculate_weights(statistics_track_page)
 	else
 		dat += "Storyteller: None<BR>Weight and chance statistics will be inaccurate due to the present lack of a storyteller."

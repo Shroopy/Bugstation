@@ -29,7 +29,10 @@
 /datum/round_event_control/appendicitis/proc/generate_candidates()
 	appendicitis_candidates.Cut()
 	for(var/mob/living/carbon/human/candidate in shuffle(GLOB.player_list))
-		if(candidate.stat == DEAD || HAS_TRAIT(candidate, TRAIT_CRITICAL_CONDITION) || !candidate.get_organ_slot(ORGAN_SLOT_APPENDIX) || candidate.get_organ_slot(ORGAN_SLOT_APPENDIX).inflamation_stage)
+		if(candidate.stat == DEAD || HAS_TRAIT(candidate, TRAIT_CRITICAL_CONDITION) || !candidate.get_organ_slot(ORGAN_SLOT_APPENDIX))
+			continue
+		var/obj/item/organ/internal/appendix/appendix = candidate.get_organ_slot(ORGAN_SLOT_APPENDIX)
+		if(appendix.inflamation_stage)
 			continue
 		if(!(candidate.mind.assigned_role.job_flags & JOB_CREW_MEMBER))//only crewmembers can get one, a bit unfair for some ghost roles and it wastes the event
 			continue
@@ -59,7 +62,9 @@
  * FALSE if something blocks it.
  */
 /datum/round_event/appendicitis/proc/attack_appendix()
-	winner.get_organ_slot(ORGAN_SLOT_APPENDIX).become_inflamed()
+	var/mob/living/carbon/human/winner = pick_weight(victims)
+	var/obj/item/organ/internal/appendix/appendix = winner.get_organ_slot(ORGAN_SLOT_APPENDIX)
+	appendix.become_inflamed()
 	announce_to_ghosts(winner)
 	victims -= winner
 	return TRUE
@@ -80,7 +85,7 @@
 
 /datum/event_admin_setup/input_number/appendicitis/prompt_admins()
 	var/datum/round_event_control/appendicitis/appendix_control = event_control
-	max_value = length(apendix_control.appendicitis_candidates)
+	max_value = length(appendix_control.appendicitis_candidates)
 	return ..()
 
 /datum/event_admin_setup/input_number/appendicitis/apply_to_event(datum/round_event/appendicitis/event)
