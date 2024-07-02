@@ -1,4 +1,5 @@
 ///Gamemode related configs below
+/*
 // Point Gain Multipliers
 /datum/config_entry/number/mundane_point_gain_multiplier
 	config_entry_value = 1
@@ -40,7 +41,7 @@
 /datum/config_entry/number/objectives_roundstart_point_multiplier
 	config_entry_value = 1
 	min_val = 0
-
+*/
 // Minimum population
 /datum/config_entry/number/mundane_min_pop
 	//config_entry_value = MUNDANE_MIN_POP
