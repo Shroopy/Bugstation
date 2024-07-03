@@ -670,6 +670,8 @@ SUBSYSTEM_DEF(gamemode)
 
 /// Loads config values from game_options.txt
 /datum/controller/subsystem/gamemode/proc/load_config_vars()
+	allow_pop_scaling = CONFIG_GET(flag/allow_storyteller_pop_scaling)
+
 	/*
 	point_gain_multipliers[EVENT_TRACK_MUNDANE] = CONFIG_GET(number/mundane_point_gain_multiplier)
 	point_gain_multipliers[EVENT_TRACK_MODERATE] = CONFIG_GET(number/moderate_point_gain_multiplier)
