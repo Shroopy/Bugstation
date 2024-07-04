@@ -11,6 +11,7 @@
 	earliest_start = 30 MINUTES
 	min_players = EVENT_LOWPOP_THRESHOLD
 	category = EVENT_CATEGORY_ENTITIES
+	track = EVENT_TRACK_MAJOR // BUG EDIT
 
 /datum/round_event/mold
 	fakeable = FALSE

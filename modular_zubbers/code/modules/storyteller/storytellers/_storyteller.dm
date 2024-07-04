@@ -14,7 +14,7 @@
 		EVENT_TRACK_MODERATE = 1,
 		EVENT_TRACK_MAJOR = 1,
 		EVENT_TRACK_ROLESET = 1,
-		EVENT_TRACK_OBJECTIVES = 1
+		//EVENT_TRACK_OBJECTIVES = 1
 		)
 	/// Multipliers for point gains.
 	var/list/point_gains_multipliers = list(
@@ -22,10 +22,19 @@
 		EVENT_TRACK_MODERATE = 1,
 		EVENT_TRACK_MAJOR = 1,
 		EVENT_TRACK_ROLESET = 1,
-		EVENT_TRACK_OBJECTIVES = 1
+		//EVENT_TRACK_OBJECTIVES = 1
 		)
+	var/list/starting_point_variance_multiplier = list(
+		EVENT_TRACK_MUNDANE = 1,
+		EVENT_TRACK_MODERATE = 1,
+		EVENT_TRACK_MAJOR = 1,
+		EVENT_TRACK_ROLESET = 1,
+		//EVENT_TRACK_OBJECTIVES = 1
+	)
 	/// Multipliers of weight to apply for each tag of an event.
-	var/list/tag_multipliers
+	var/list/tag_weight_multipliers
+
+	var/list/tag_cost_multipliers
 
 	/// Variance in cost of the purchased events. Effectively affects frequency of events
 	var/cost_variance = 15
@@ -57,13 +66,14 @@
 /// Add points to all tracks while respecting the multipliers.
 /datum/storyteller/proc/add_points(delta_time)
 	var/datum/controller/subsystem/gamemode/mode = SSgamemode
-	var/base_point = EVENT_POINT_GAINED_PER_SECOND * delta_time * mode.event_frequency_multiplier
+	var/base_point = EVENT_POINT_GAINED_PER_SECOND * mode.event_frequency_multiplier
 	for(var/track in mode.event_track_points)
-		var/point_gain = base_point * point_gains_multipliers[track] * mode.point_gain_multipliers[track]
+		var/point_gain = base_point * point_gains_multipliers[track] //* mode.point_gain_multipliers[track]
 		if(mode.allow_pop_scaling)
 			point_gain *= mode.current_pop_scale_multipliers[track]
-		mode.event_track_points[track] += point_gain
 		mode.last_point_gains[track] = point_gain
+		point_gain *= delta_time
+		mode.event_track_points[track] += point_gain
 
 /// Goes through every track of the gamemode and checks if it passes a threshold to buy an event, if does, buys one.
 /datum/storyteller/proc/handle_tracks()
@@ -116,6 +126,10 @@
 	var/datum/controller/subsystem/gamemode/mode = SSgamemode
 	// Perhaps use some bell curve instead of a flat variance?
 	var/total_cost = bought_event.cost * mode.point_thresholds[track]
+	if(tag_cost_multipliers)
+		for(var/tag in tag_cost_multipliers)
+			if(tag in bought_event.tags)
+				total_cost *= tag_cost_multipliers[tag]
 	if(!bought_event.roundstart)
 		total_cost *= (1 + (rand(-cost_variance, cost_variance)/100)) //Apply cost variance if not roundstart event
 	mode.event_track_points[track] -= total_cost
@@ -132,10 +146,10 @@
 	for(var/datum/round_event_control/event as anything in mode.event_pools[track])
 		var/weight_total = event.weight
 		/// Apply tag multipliers if able
-		if(tag_multipliers)
-			for(var/tag in tag_multipliers)
+		if(tag_weight_multipliers)
+			for(var/tag in tag_weight_multipliers)
 				if(tag in event.tags)
-					weight_total *= tag_multipliers[tag]
+					weight_total *= tag_weight_multipliers[tag]
 		/// Apply occurence multipliers if able
 		var/occurences = event.get_occurences()
 		if(occurences)

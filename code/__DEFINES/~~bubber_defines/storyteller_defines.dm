@@ -9,6 +9,7 @@
 #define TAG_COMMUNAL "communal"
 /// When the event targets a person for something (appendix, heart attack)
 #define TAG_TARGETED "targeted"
+#define TAG_VERY_TARGETED "very_targeted"
 /// When the event is positive and helps the crew, in some capacity (Shuttle Loan, Supply Pod)
 #define TAG_POSITIVE "positive"
 /// When one of the crewmembers becomes an antagonist
@@ -41,7 +42,7 @@
 
 #define GAMEMODE_PANEL_MAIN "Main"
 #define GAMEMODE_PANEL_VARIABLES "Variables"
-
+/*
 #define MUNDANE_POINT_THRESHOLD 40
 #define MODERATE_POINT_THRESHOLD 70
 #define MAJOR_POINT_THRESHOLD 130
@@ -67,7 +68,7 @@
 #define MAJOR_POP_SCALE_PENALTY 35
 #define ROLESET_POP_SCALE_PENALTY 35
 #define OBJECTIVES_POP_SCALE_PENALTY 35
-
+*/
 #define STORYTELLER_VOTE "storyteller"
 
 #define EVENT_TRACKS list(EVENT_TRACK_MUNDANE, EVENT_TRACK_MODERATE, EVENT_TRACK_MAJOR, EVENT_TRACK_ROLESET, EVENT_TRACK_OBJECTIVES)
@@ -76,7 +77,7 @@
 /// Defines for the antag cap to prevent midround injections.
 #define ANTAG_CAP_FLAT 1
 #define ANTAG_CAP_DENOMINATOR 9
-
+/*
 ///Below are defines for roundstart point pool. The GAIN ones are multiplied by ready population
 #define ROUNDSTART_MUNDANE_BASE 20
 #define ROUNDSTART_MUNDANE_GAIN 0.5
@@ -92,3 +93,10 @@
 
 #define ROUNDSTART_OBJECTIVES_BASE 40
 #define ROUNDSTART_OBJECTIVES_GAIN 2
+
+#define ROUNDSTART_MUNDANE_VARIANCE
+#define ROUNDSTART_MODERATE_VARIANCE
+#define ROUNDSTART_MAJOR_VARIANCE 15
+#define ROUNDSTART_ROLESET_VARIANCE
+#define ROUNDSTART_OBJECTIVES_VARIANCE
+*/
