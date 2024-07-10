@@ -121,4 +121,8 @@ BUG EDIT END */
 /datum/round_event_control/anomaly/anomaly_bluespace
 	track = EVENT_TRACK_MUNDANE
 	weight = 7.5 // Our stuff being teleported away is kinda annoying but not too bad
+
+/datum/round_event_control/vent_clog/strange
+	track = EVENT_TRACK_MUNDANE
+	max_occurrences = 0 // none of this for now, not sure about the animals in it
 // BUG EDIT END
