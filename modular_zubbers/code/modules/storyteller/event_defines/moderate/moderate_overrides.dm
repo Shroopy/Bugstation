@@ -69,7 +69,7 @@ BUG EDIT END */
 
 /datum/round_event_control/portal_storm_syndicate
 	track = EVENT_TRACK_MODERATE
-	tags = list(TAG_COMMUNUAL, TAG_COMBAT)
+	tags = list(TAG_COMMUNAL, TAG_COMBAT)
 	weight = 10
 
 // BUG EDIT START
