@@ -435,7 +435,7 @@
 				adjust_plant_health(-rand(1,5) / rating)
 
 			// Harvest code
-			if((age - lastproduce) > myseed.maturation + myseed.production && plant_status == HYDROTRAY_PLANT_GROWING) // BUG EDIT
+			if((age - lastproduce) > myseed.maturation && plant_status == HYDROTRAY_PLANT_GROWING) // BUG EDIT
 				if(myseed && myseed.yield != -1) // Unharvestable shouldn't be harvested
 					set_plant_status(HYDROTRAY_PLANT_HARVESTABLE)
 				else
