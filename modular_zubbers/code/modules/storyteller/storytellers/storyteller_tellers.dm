@@ -2,7 +2,13 @@
 	name = "The Guide"
 	desc = "The Guide is the default Storyteller, and the comparison point for every other Storyteller. Best for an average, varied experience."
 	antag_divisor = 8
+	tag_cost_multipliers = list(
+		TAG_TARGETED = 0.5, // targeted events cause little chaos
+		TAG_VERY_TARGETED = 0.5, // very targeted events cause even less chaos, multiplier compounded with targeted
+	)
+	population_min = 8
 
+/* BUG EDIT START
 /datum/storyteller/sleeper
 	name = "The Sleeper"
 	desc = "The Sleeper will be light on events compared to the Guide, especially so on ones involving combat or destruction. Best for more chill rounds."
@@ -59,10 +65,11 @@
 	tag_multipliers = list(TAG_DESTRUCTIVE = 2.5) // You asked and I delivered. Destructiveness increased
 	population_min = 25
 	antag_divisor = 10
+BUG EDIT END*/
 
 /datum/storyteller/ghost
 	name = "The Ghost"
 	desc = "The Ghost is the absence of a Storyteller. It will not spawn a single event of any sort, or run any Antagonists. Best for rounds where the population is so low that not even the Sleeper is low enough."
 	disable_distribution = TRUE
-	population_max = 35
+	population_max = 40
 	antag_divisor = 32

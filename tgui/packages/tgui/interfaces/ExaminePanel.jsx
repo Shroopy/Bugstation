@@ -50,6 +50,7 @@ export const ExaminePanel = (props) => {
     character_ad,
     headshot,
     headshot_nsfw, // Bubber edit addition
+    erp_disabled, // BUG EDIT
   } = data;
   return (
     <Window
@@ -89,7 +90,7 @@ export const ExaminePanel = (props) => {
                 <Section height="310px" title="Headshot">
                   <img
                     src={
-                      tabIndex === 2
+                      tabIndex === 2 && !data.erp_disabled /* BUG EDIT */
                         ? resolveAsset(headshot_nsfw)
                         : resolveAsset(headshot)
                     }
@@ -102,29 +103,8 @@ export const ExaminePanel = (props) => {
           </Stack.Item>
           <Stack.Item grow>
             {/* BUBBER EDIT BEGIN, NSFW FLAVOR TEXT */}
-            <Tabs fluid>
-              <Tabs.Tab
-                selected={tabIndex === 1}
-                onClick={() => setTabIndex(1)}
-              >
-                <Section fitted title={'Flavor Text'} />
-              </Tabs.Tab>
-              <Tabs.Tab
-                selected={tabIndex === 2}
-                onClick={() => setTabIndex(2)}
-              >
-                <Section fitted title={'NSFW (Warning)'} />
-              </Tabs.Tab>
-              <Tabs.Tab
-                selected={tabIndex === 3}
-                onClick={() => setTabIndex(3)}
-              >
-                <Section
-                  fitted
-                  title={custom_species ? custom_species : 'Unnamed Species'}
-                />
-              </Tabs.Tab>
-            </Tabs>
+            {/* BUG EDIT BELOW */}
+            {get_tabs(data.erp_disabled, tabIndex, setTabIndex, custom_species)}
             {tabIndex === 1 && (
               <Section
                 style={{ 'overflow-y': 'scroll' }}
@@ -139,7 +119,7 @@ export const ExaminePanel = (props) => {
                 {formatURLs(flavor_text)}
               </Section>
             )}
-            {tabIndex === 2 && (
+            {tabIndex === 2 && !erp_disabled /* BUG EDIT */ && (
               <Section
                 style={{ 'overflow-y': 'scroll' }}
                 fitted
@@ -153,22 +133,25 @@ export const ExaminePanel = (props) => {
                 {formatURLs(flavor_text_nsfw)}
               </Section>
             )}
-            {tabIndex === 3 && (
-              <Section
-                style={{ 'overflow-y': 'scroll' }}
-                fitted
-                preserveWhitespace
-                minHeight="50%"
-                maxHeight="50%"
-                fontSize="14px"
-                lineHeight="1.7"
-                textIndent="3em"
-              >
-                {custom_species
-                  ? formatURLs(custom_species_lore)
-                  : 'Just a normal space dweller.'}
-              </Section>
-            )}
+            {/* BUG EDIT START */}
+            {(tabIndex === 3 && !erp_disabled) ||
+              (tabIndex === 2 && erp_disabled && (
+                <Section
+                  style={{ 'overflow-y': 'scroll' }}
+                  fitted
+                  preserveWhitespace
+                  minHeight="50%"
+                  maxHeight="50%"
+                  fontSize="14px"
+                  lineHeight="1.7"
+                  textIndent="3em"
+                >
+                  {custom_species
+                    ? formatURLs(custom_species_lore)
+                    : 'Just a normal space dweller.'}
+                </Section>
+              ))}
+            {/* BUG EDIT END */}
             <Tabs fluid>
               <Tabs.Tab
                 selected={lowerTabIndex === 1}
@@ -216,3 +199,40 @@ export const ExaminePanel = (props) => {
     </Window>
   );
 };
+
+/* BUG EDIT START */
+function get_tabs(erp_disabled, tabIndex, setTabIndex, custom_species) {
+  if (!erp_disabled) {
+    return (
+      <Tabs fluid>
+        <Tabs.Tab selected={tabIndex === 1} onClick={() => setTabIndex(1)}>
+          <Section fitted title={'Flavor Text'} />
+        </Tabs.Tab>
+        <Tabs.Tab selected={tabIndex === 2} onClick={() => setTabIndex(2)}>
+          <Section fitted title={'NSFW (Warning)'} />
+        </Tabs.Tab>
+        <Tabs.Tab selected={tabIndex === 3} onClick={() => setTabIndex(3)}>
+          <Section
+            fitted
+            title={custom_species ? custom_species : 'Unnamed Species'}
+          />
+        </Tabs.Tab>
+      </Tabs>
+    );
+  } else {
+    return (
+      <Tabs fluid>
+        <Tabs.Tab selected={tabIndex === 1} onClick={() => setTabIndex(1)}>
+          <Section fitted title={'Flavor Text'} />
+        </Tabs.Tab>
+        <Tabs.Tab selected={tabIndex === 2} onClick={() => setTabIndex(2)}>
+          <Section
+            fitted
+            title={custom_species ? custom_species : 'Unnamed Species'}
+          />
+        </Tabs.Tab>
+      </Tabs>
+    );
+  }
+}
+/* BUG EDIT END */

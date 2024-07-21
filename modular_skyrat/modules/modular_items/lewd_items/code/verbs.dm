@@ -61,6 +61,7 @@
 
 	return TRUE
 
+/* BUG EDIT START
 /mob/living/carbon/human/verb/lick(mob/living/carbon/human/target in get_adjacent_humans())
 	set name = "Lick"
 	set category = "IC"
@@ -89,6 +90,7 @@
 		return FALSE
 
 	to_chat(src, span_notice("[target] smells like [smell]."))
+BUG EDIT END */
 
 /// Returns a list containing all of the humans adjacent to the user.
 /mob/living/proc/get_adjacent_humans()

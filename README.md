@@ -12,7 +12,7 @@
 | Code                      | [https://github.com/Shroopy/Bugstation](https://github.com/Shroopy/Bugstation) |
 | Wiki                      | [https://tgstation13.org/wiki/Main_Page](https://tgstation13.org/wiki/Main_Page) |
 | Codedocs                  | [https://skyrat-ss13.github.io/Skyrat-tg/](https://skyrat-ss13.github.io/Skyrat-tg/) |
-| Bubberstation Discord     | [https://discord.gg/x4CVEHy6u7](https://discord.gg/x4CVEHy6u7) |
+| Bugstation Discord     | [https://discord.gg/37gNK4cvjr](https://discord.gg/37gNK4cvjr) |
 | Coderbus Discord          | [https://discord.gg/Vh8TJp9](https://discord.gg/Vh8TJp9) |
 
 This is Bugstation's downstream fork of Bubberstation, which is in turn a fork of of Skyrat, which is in turn a fork of tgstation.

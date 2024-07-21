@@ -1,12 +1,14 @@
+/*
 /datum/storyteller/predictable
 	name = "The Predictable Chaos"
 	desc = "The Predictable Chaos will attempt to spawn a lot of antagonists relative to the crew population, while also ensuring events roll every set amount of time. Expect minor events every 10 minutes, moderate events every 30 minutes, and major events every hour and a half."
 	welcome_text = "Waiter, more chaos! That's enough. Thank you, waiter."
 	population_min = 35
+	population_max = 0 // BUG EDIT: disable it
 
 	var/crew_per_antag = 20 //Basically this means for every 10 crew, spawn 1 antag. REMEMBER: This is CREW pop, NOT server pop
 
-	tag_multipliers = list(
+	tag_weight_multipliers = list(
 
 		TAG_COMBAT = 0.25, //Already got this from the constant antag spawns.
 		TAG_POSITIVE = 1.25, //Increase this even more if there is too much chaos in events. This is basically how you balance this storyteller.
@@ -47,7 +49,6 @@
 	COOLDOWN_DECLARE(mundane_event_cooldown)
 	COOLDOWN_DECLARE(moderate_event_cooldown)
 	COOLDOWN_DECLARE(major_event_cooldown)
-
 
 /datum/storyteller/predictable/New(...)
 	reset_cooldowns()
@@ -154,3 +155,4 @@
 		return TRUE
 
 	return FALSE
+*/

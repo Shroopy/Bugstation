@@ -35,7 +35,7 @@
 	typepath = /datum/round_event/cme/unknown
 	weight = 15
 	min_players = 75
-	max_occurrences = 1
+	max_occurrences = 0 // BUG EDIT: I'm not sure how this works so I'm disabling it for now. TODO
 	description = "Spawns a CME event of a unknown severity"
 
 /datum/round_event/cme/unknown

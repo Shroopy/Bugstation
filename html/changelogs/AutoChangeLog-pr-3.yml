@@ -1,0 +1,6 @@
+author: "Shroopy"
+delete-after: True
+changes:
+  - rscadd: "Added agender to list of character directory genders"
+  - rscdel: "Removed null, andro, and gyno from list of character directory genders"
+  - code_imp: "A bunch of nsfw stuff no longer shows up if erp preferences are disabled"

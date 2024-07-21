@@ -37,8 +37,10 @@
 		owner.adjustToxLoss(2 * seconds_per_tick, forced = TRUE)
 	else if(inflamation_stage)
 		inflamation(seconds_per_tick)
+	/* BUG EDIT START
 	else if(SPT_PROB(APPENDICITIS_PROB, seconds_per_tick))
 		become_inflamed()
+	BUG EDIT END */
 
 /obj/item/organ/internal/appendix/proc/become_inflamed()
 	inflamation_stage = 1
