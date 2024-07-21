@@ -106,8 +106,11 @@
 	icon_state = "bell_pepper"
 	foodtypes = FRUIT
 
+/obj/item/food/grown/bell_pepper/make_bakeable()
+	AddComponent(/datum/component/bakeable, /obj/item/food/roasted_bell_pepper, rand(15 SECONDS, 25 SECONDS), TRUE, TRUE)
+
 // Bell Pepper
-/obj/item/seeds/chili/bell_pepper2
+/obj/item/seeds/chili/bell_pepper/bell
 	name = "pack of bell pepper seeds"
 	desc = "These seeds grow into bell pepper plants. MILD! MILD! MILD!"
 	icon_state = "seed-bell-pepper"
@@ -123,16 +126,13 @@
 	mutatelist = null
 	reagents_add = list(/datum/reagent/consumable/nutriment/vitamin = 0.08, /datum/reagent/consumable/nutriment = 0.04)
 
-/obj/item/food/grown/bell_pepper2
+/obj/item/food/grown/bell_pepper/bell
 	seed = /obj/item/seeds/chili/bell_pepper2
 	name = "bell pepper"
 	desc = "A big mild pepper that's good for many things."
 	icon_state = "bell_pepper_2"
 	foodtypes = FRUIT
 
-/obj/item/food/grown/bell_pepper2/Initialize()
+/obj/item/food/grown/bell_pepper/bell/Initialize()
 	. = ..()
 	src.transform *= 0.75
-
-/obj/item/food/grown/bell_pepper/make_bakeable()
-	AddComponent(/datum/component/bakeable, /obj/item/food/roasted_bell_pepper, rand(15 SECONDS, 25 SECONDS), TRUE, TRUE)
