@@ -60,5 +60,20 @@ BUG EDIT END */
 
 /datum/round_event_control/spider_infestation
 	track = EVENT_TRACK_MAJOR // BUG EDIT
+	weight = 10
+
+/datum/round_event_control/revenant
+	min_players = 20
+	track = EVENT_TRACK_MAJOR
+	tags = list(TAG_DESTRUCTIVE, TAG_SPOOKY)
+	weight = 10
+
+/datum/round_event_control/abductor
+	track = EVENT_TRACK_MAJOR
+	tags = list(TAG_COMBAT, TAG_SPOOKY)
+	weight = 10
+
+/datum/round_event_control/fugitives
+	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMBAT)
 	weight = 10
