@@ -133,6 +133,6 @@
 	icon_state = "bell_pepper_2"
 	foodtypes = FRUIT
 
-/obj/item/food/grown/bell_pepper/bell/Initialize()
+/obj/item/food/grown/bell_pepper/bell/Initialize(mapload)
 	. = ..()
 	src.transform *= 0.75
