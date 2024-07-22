@@ -116,7 +116,7 @@
 	icon_state = "seed-bell-pepper"
 	species = "bellpepper"
 	plantname = "Bell Pepper Plants"
-	product = /obj/item/food/grown/bell_pepper2
+	product = /obj/item/food/grown/bell_pepper/bell
 	endurance = 10
 	maturation = 10
 	production = 10
@@ -127,7 +127,7 @@
 	reagents_add = list(/datum/reagent/consumable/nutriment/vitamin = 0.08, /datum/reagent/consumable/nutriment = 0.04)
 
 /obj/item/food/grown/bell_pepper/bell
-	seed = /obj/item/seeds/chili/bell_pepper2
+	seed = /obj/item/seeds/chili/bell_pepper/bell
 	name = "bell pepper"
 	desc = "A big mild pepper that's good for many things."
 	icon_state = "bell_pepper_2"
