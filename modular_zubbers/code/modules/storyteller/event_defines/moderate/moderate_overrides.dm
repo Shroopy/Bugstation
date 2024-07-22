@@ -122,4 +122,9 @@ BUG EDIT END */
 	tags = list(TAG_COMBAT)
 	weight = 10
 
+/datum/round_event_control/vent_clog/critical
+	track = EVENT_TRACK_MODERATE
+	tags = list(TAG_COMBAT)
+	weight = 10
+
 // BUG EDIT END
