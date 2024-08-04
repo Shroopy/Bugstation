@@ -237,6 +237,7 @@
 		var/bee_amount = round(created_volume * 0.2)
 		for(var/i in 1 to bee_amount)
 			var/mob/living/basic/bee/timed/new_bee = new(location)
+			new_bee.faction = list(FACTION_HOSTILE)
 			if(LAZYLEN(beeagents))
 				new_bee.assign_reagent(pick(beeagents))
 
