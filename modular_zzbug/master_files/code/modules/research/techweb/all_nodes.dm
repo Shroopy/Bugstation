@@ -20,7 +20,7 @@
 	design_ids -= "s12g_incinslug"
 	design_ids -= "s12g_flechette"
 
-/datum/techweb_node/basic_arms
+/datum/techweb_node/basic_arms/New()
 	. = ..()
 	design_ids -= "sec_dart"
 	design_ids -= "sec_Islug"
