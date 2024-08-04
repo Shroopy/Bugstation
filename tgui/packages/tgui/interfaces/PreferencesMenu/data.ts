@@ -251,6 +251,8 @@ export type PreferencesMenuData = {
   name_to_use: string;
 
   window: Window;
+
+  erp_disabled: boolean; // BUG EDIT
 };
 
 export type ServerData = {
