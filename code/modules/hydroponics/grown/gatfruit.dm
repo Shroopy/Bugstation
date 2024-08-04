@@ -18,6 +18,7 @@
 	rarity = 60 // Obtainable only with xenobio+superluck.
 	growing_icon = 'icons/obj/service/hydroponics/growing_fruits.dmi'
 	reagents_add = list(/datum/reagent/sulfur = 0.1, /datum/reagent/carbon = 0.1, /datum/reagent/nitrogen = 0.07, /datum/reagent/potassium = 0.05)
+	graft_gene = /datum/plant_gene/trait/repeated_harvest // BUG EDIT
 
 /obj/item/food/grown/shell/gatfruit
 	seed = /obj/item/seeds/gatfruit

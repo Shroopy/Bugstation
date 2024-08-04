@@ -18,6 +18,7 @@
 	genes = list(/datum/plant_gene/trait/repeated_harvest)
 	mutatelist = list(/obj/item/seeds/chili/ice, /obj/item/seeds/chili/ghost)
 	reagents_add = list(/datum/reagent/consumable/capsaicin = 0.25, /datum/reagent/consumable/nutriment/vitamin = 0.04, /datum/reagent/consumable/nutriment = 0.04)
+	graft_gene = /datum/plant_gene/trait/repeated_harvest // BUG EDIT
 
 /obj/item/food/grown/chili
 	seed = /obj/item/seeds/chili
@@ -107,3 +108,31 @@
 
 /obj/item/food/grown/bell_pepper/make_bakeable()
 	AddComponent(/datum/component/bakeable, /obj/item/food/roasted_bell_pepper, rand(15 SECONDS, 25 SECONDS), TRUE, TRUE)
+
+// Bell Pepper
+/obj/item/seeds/chili/bell_pepper/bell
+	name = "pack of bell pepper seeds"
+	desc = "These seeds grow into bell pepper plants. MILD! MILD! MILD!"
+	icon_state = "seed-bell-pepper"
+	species = "bellpepper"
+	plantname = "Bell Pepper Plants"
+	product = /obj/item/food/grown/bell_pepper/bell
+	endurance = 10
+	maturation = 10
+	production = 10
+	yield = 3
+	rarity = PLANT_MODERATELY_RARE
+	genes = list(/datum/plant_gene/trait/repeated_harvest)
+	mutatelist = null
+	reagents_add = list(/datum/reagent/consumable/nutriment/vitamin = 0.08, /datum/reagent/consumable/nutriment = 0.04)
+
+/obj/item/food/grown/bell_pepper/bell
+	seed = /obj/item/seeds/chili/bell_pepper/bell
+	name = "bell pepper"
+	desc = "A big mild pepper that's good for many things."
+	icon_state = "bell_pepper_2"
+	foodtypes = FRUIT
+
+/obj/item/food/grown/bell_pepper/bell/Initialize(mapload)
+	. = ..()
+	src.transform *= 0.75

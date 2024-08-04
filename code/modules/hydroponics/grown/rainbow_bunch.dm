@@ -18,6 +18,7 @@
 	icon_dead = "rainbowbunch-dead"
 	genes = list(/datum/plant_gene/trait/repeated_harvest, /datum/plant_gene/trait/preserved)
 	reagents_add = list(/datum/reagent/consumable/nutriment = 0.05)
+	graft_gene = /datum/plant_gene/trait/preserved // BUG EDIT
 
 /obj/item/food/grown/rainbow_flower
 	seed = /obj/item/seeds/rainbow_bunch
