@@ -30,7 +30,7 @@
 	health = 10
 	melee_damage_lower = 1
 	melee_damage_upper = 1
-	faction = list(FACTION_HOSTILE)
+	faction = list(FACTION_NEUTRAL)
 	pass_flags = PASSTABLE | PASSGRILLE | PASSMOB | PASSMACHINE
 	mob_size = MOB_SIZE_TINY
 	mob_biotypes = MOB_ORGANIC|MOB_BUG
