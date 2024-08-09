@@ -317,9 +317,10 @@
 		if(myseed && plant_status != HYDROTRAY_PLANT_DEAD)
 			// Advance age
 			age++
-			if(age < myseed.maturation)
-				lastproduce = age
-
+			// BUG EDIT START: this is just totally unnecessary
+			// if(age < myseed.maturation)
+			// 	lastproduce = age
+			// BUG EDIT END
 			needs_update = TRUE
 
 
@@ -434,7 +435,7 @@
 				adjust_plant_health(-rand(1,5) / rating)
 
 			// Harvest code
-			if(age > myseed.production && (age - lastproduce) > myseed.production && plant_status == HYDROTRAY_PLANT_GROWING)
+			if((age - lastproduce) > myseed.maturation && plant_status == HYDROTRAY_PLANT_GROWING) // BUG EDIT
 				if(myseed && myseed.yield != -1) // Unharvestable shouldn't be harvested
 					set_plant_status(HYDROTRAY_PLANT_HARVESTABLE)
 				else
@@ -903,6 +904,7 @@
 			to_chat(user, span_notice("You plant [O]."))
 			set_seed(O)
 			age = 1
+			lastproduce = 0 // BUG EDIT: properly set lastproduce in one place
 			set_plant_health(myseed.endurance)
 			lastcycle = world.time
 			return
@@ -929,6 +931,11 @@
 		else if(myseed.grafted)
 			to_chat(user, span_notice("This plant has already been grafted."))
 			return
+		// BUG EDIT START
+		else if(!myseed.graft_gene)
+			to_chat(user, span_notice("This plant has no trait to graft."))
+			return
+		// BUG EDIT END
 		else
 			user.visible_message(span_notice("[user] grafts off a limb from [src]."), span_notice("You carefully graft off a portion of [src]."))
 			var/obj/item/graft/snip = myseed.create_graft()
@@ -1007,11 +1014,12 @@
 		if(O.use_tool(src, user, 50, volume=50) || (!myseed && !weedlevel))
 			user.visible_message(span_notice("[user] digs out the plants in [src]!"), span_notice("You dig out all of [src]'s plants!"))
 			if(myseed) //Could be that they're just using it as a de-weeder
-				age = 0
+				// age = 0 // BUG EDIT: this is unnecessary since we're getting rid of the seed
 				set_plant_health(0, update_icon = FALSE, forced = TRUE)
-				lastproduce = 0
+				// lastproduce = 0 // BUG EDIT: ditto
 				set_seed(null)
 			set_weedlevel(0) //Has a side effect of cleaning up those nasty weeds
+			set_pestlevel(0) // BUG EDIT // Throw out the pests too
 			return
 	else if(istype(O, /obj/item/storage/part_replacer))
 		RefreshParts()
@@ -1120,6 +1128,7 @@
 		to_chat(user, span_notice("You harvest [product_count] items from the [myseed.plantname]."))
 	if(!myseed.get_gene(/datum/plant_gene/trait/repeated_harvest))
 		set_seed(null)
+		set_pestlevel(0) // BUG EDIT // The pests are on the plant, which you're removing
 		if(self_sustaining) //No reason to pay for an empty tray.
 			set_self_sustaining(FALSE)
 	else

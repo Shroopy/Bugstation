@@ -18,6 +18,7 @@
 	genes = list(/datum/plant_gene/trait/preserved)
 	mutatelist = list(/obj/item/seeds/poppy/geranium, /obj/item/seeds/poppy/lily)
 	reagents_add = list(/datum/reagent/medicine/c2/libital = 0.2, /datum/reagent/consumable/nutriment = 0.05)
+	graft_gene = /datum/plant_gene/trait/preserved // BUG EDIT
 
 /obj/item/food/grown/poppy
 	seed = /obj/item/seeds/poppy
@@ -179,6 +180,7 @@
 	icon_dead = "sunflower-dead"
 	mutatelist = list(/obj/item/seeds/sunflower/moonflower, /obj/item/seeds/sunflower/novaflower)
 	reagents_add = list(/datum/reagent/consumable/nutriment/fat/oil = 0.08, /datum/reagent/consumable/nutriment = 0.04)
+	graft_gene = /datum/plant_gene/trait/preserved // BUG EDIT
 
 /obj/item/food/grown/sunflower // FLOWER POWER!
 	seed = /obj/item/seeds/sunflower
@@ -284,6 +286,7 @@
 	mutatelist = list(/obj/item/seeds/carbon_rose)
 	//Roses are commonly used as herbal medicines (diarrhodons) and for their 'rose oil'.
 	reagents_add = list(/datum/reagent/consumable/nutriment = 0.05, /datum/reagent/medicine/granibitaluri = 0.1, /datum/reagent/fuel/oil = 0.05)
+	graft_gene = /datum/plant_gene/trait/preserved // BUG EDIT
 
 /obj/item/food/grown/rose
 	seed = /obj/item/seeds/rose
