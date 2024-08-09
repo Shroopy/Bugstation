@@ -1,0 +1,6 @@
+author: "Shroopy"
+delete-after: True
+changes:
+  - balance: "Plants now take longer to grow but need less frequent maintenance."
+  - balance: "Perennial growth cannot be taken from any plant with no trait. Many plants now have the perennial growth trait."
+  - balance: "The seed generator now makes fewer seeds."
