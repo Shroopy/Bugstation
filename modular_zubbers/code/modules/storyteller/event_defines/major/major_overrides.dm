@@ -77,3 +77,8 @@ BUG EDIT END */
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMBAT)
 	weight = 10
+
+/datum/round_event_control/voidwalker
+	track = EVENT_TRACK_MAJOR
+	tags = list(TAG_COMBAT, TAG_SPOOKY, TAG_SPACE)
+	weight = 10

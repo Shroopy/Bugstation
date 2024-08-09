@@ -17,7 +17,7 @@ SUBSYSTEM_DEF(automapper)
 	flags = SS_NO_FIRE
 	init_order = INIT_ORDER_AUTOMAPPER
 	/// The path to our TOML file
-	var/config_file = "_maps/bubber/automapper/automapper_config.toml" //BUBBER EDIT: POINTS TO OUR MODULAR AUTOMAPPER
+	var/config_file = "_maps/bug/automapper/automapper_config.toml" //BUBBER EDIT: POINTS TO OUR MODULAR AUTOMAPPER //BUG EDIT: now it's ours hehe
 	/// Our loaded TOML file
 	var/loaded_config
 	/// Our preloaded map templates

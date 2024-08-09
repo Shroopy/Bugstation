@@ -43,7 +43,7 @@ export type Name = {
 
 export type Species = {
   name: string;
-  desc: string;
+  desc: string[];
   lore: string[];
   icon: string;
 
@@ -251,6 +251,8 @@ export type PreferencesMenuData = {
   name_to_use: string;
 
   window: Window;
+
+  erp_disabled: boolean; // BUG EDIT
 };
 
 export type ServerData = {

@@ -1,6 +1,6 @@
 // Berries
 /obj/item/seeds/berry
-	name = "pack of berry seeds"
+	name = "berry seed pack"
 	desc = "These seeds grow into berry bushes."
 	icon_state = "seed-berry"
 	species = "berry"
@@ -32,7 +32,7 @@
 
 // Poison Berries
 /obj/item/seeds/berry/poison
-	name = "pack of poison-berry seeds"
+	name = "poison-berry seed pack"
 	desc = "These seeds grow into poison-berry bushes."
 	icon_state = "seed-poisonberry"
 	species = "poisonberry"
@@ -56,7 +56,7 @@
 
 // Death Berries
 /obj/item/seeds/berry/death
-	name = "pack of death-berry seeds"
+	name = "death-berry seed pack"
 	desc = "These seeds grow into death berries."
 	icon_state = "seed-deathberry"
 	species = "deathberry"
@@ -82,7 +82,7 @@
 
 // Glow Berries
 /obj/item/seeds/berry/glow
-	name = "pack of glow-berry seeds"
+	name = "glow-berry seed pack"
 	desc = "These seeds grow into glow-berry bushes."
 	icon_state = "seed-glowberry"
 	species = "glowberry"
@@ -109,7 +109,7 @@
 
 // Grapes
 /obj/item/seeds/grape
-	name = "pack of grape seeds"
+	name = "grape seed pack"
 	desc = "These seeds grow into grape vines."
 	icon_state = "seed-grapes"
 	species = "grape"
@@ -145,7 +145,7 @@
 
 // Green Grapes
 /obj/item/seeds/grape/green
-	name = "pack of green grape seeds"
+	name = "green grape seed pack"
 	desc = "These seeds grow into green-grape vines."
 	icon_state = "seed-greengrapes"
 	species = "greengrape"
@@ -164,7 +164,7 @@
 
 // Toechtauese Berries
 /obj/item/seeds/toechtauese
-	name = "pack of töchtaüse berry seeds"
+	name = "töchtaüse berry seed pack"
 	desc = "These seeds grow into töchtaüse bushes."
 	icon_state = "seed-toechtauese"
 	species = "toechtauese"
@@ -193,7 +193,7 @@
 	distill_reagent = /datum/reagent/toxin/itching_powder
 
 /obj/item/seeds/lanternfruit
-	name = "pack of lanternfruit seeds"
+	name = "lanternfruit seed pack"
 	desc = "These seeds grow into lanternfruit pods."
 	icon_state = "seed-lanternfruit"
 	species = "lanternfruit"

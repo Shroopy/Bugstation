@@ -31,67 +31,69 @@ export const GamePreferencesPage = (props) => {
   )) {
     const feature = features[featureId];
 
-    let nameInner: ReactNode = feature?.name || featureId;
+    if (!(data.erp_disabled && feature.erp)) {
+      let nameInner: ReactNode = feature?.name || featureId;
 
-    if (feature?.description) {
-      nameInner = (
-        <Box
-          as="span"
-          style={{
-            borderBottom: '2px dotted rgba(255, 255, 255, 0.8)',
-          }}
-        >
+      if (feature?.description) {
+        nameInner = (
+          <Box
+            as="span"
+            style={{
+              borderBottom: '2px dotted rgba(255, 255, 255, 0.8)',
+            }}
+          >
+            {nameInner}
+          </Box>
+        );
+      }
+
+      let name: ReactNode = (
+        <Flex.Item grow={1} pr={2} basis={0} ml={2}>
           {nameInner}
-        </Box>
-      );
-    }
-
-    let name: ReactNode = (
-      <Flex.Item grow={1} pr={2} basis={0} ml={2}>
-        {nameInner}
-      </Flex.Item>
-    );
-
-    if (feature?.description) {
-      name = (
-        <Tooltip content={feature.description} position="bottom-start">
-          {name}
-        </Tooltip>
-      );
-    }
-
-    const child = (
-      <Flex align="center" key={featureId} pb={2}>
-        {name}
-
-        <Flex.Item grow={1} basis={0}>
-          {(feature && (
-            <FeatureValueInput
-              feature={feature}
-              featureId={featureId}
-              value={value}
-              act={act}
-            />
-          )) || (
-            <Box as="b" color="red">
-              ...is not filled out properly!!!
-            </Box>
-          )}
         </Flex.Item>
-      </Flex>
-    );
+      );
 
-    const entry = {
-      name: feature?.name || featureId,
-      children: child,
-    };
+      if (feature?.description) {
+        name = (
+          <Tooltip content={feature.description} position="bottom-start">
+            {name}
+          </Tooltip>
+        );
+      }
 
-    const category = feature?.category || 'ERROR';
+      const child = (
+        <Flex align="center" key={featureId} pb={2}>
+          {name}
 
-    gamePreferences[category] = binaryInsertPreference(
-      gamePreferences[category] || [],
-      entry,
-    );
+          <Flex.Item grow={1} basis={0}>
+            {(feature && (
+              <FeatureValueInput
+                feature={feature}
+                featureId={featureId}
+                value={value}
+                act={act}
+              />
+            )) || (
+              <Box as="b" color="red">
+                ...is not filled out properly!!!
+              </Box>
+            )}
+          </Flex.Item>
+        </Flex>
+      );
+
+      const entry = {
+        name: feature?.name || featureId,
+        children: child,
+      };
+
+      const category = feature?.category || 'ERROR';
+
+      gamePreferences[category] = binaryInsertPreference(
+        gamePreferences[category] || [],
+        entry,
+      );
+    }
   }
 
   const gamePreferenceEntries: [string, ReactNode][] = sortByName(

@@ -12,6 +12,7 @@ export const emote_length: FeatureChoiced = {
   description:
     'What length of emote your prefer during an RP scene, if you have one. Shows on your Character Advert.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const approach_pref: FeatureChoiced = {
@@ -20,6 +21,7 @@ export const approach_pref: FeatureChoiced = {
   description:
     'How you would like to be approached for RP scenes, if at all. Shows on your Character Advert.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const furry_pref: FeatureChoiced = {
@@ -28,6 +30,7 @@ export const furry_pref: FeatureChoiced = {
   description:
     'How, and if, you would like to engage in RP with furry characters, such as Anthromorphs, Birdfolk or Insectoids.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const scalie_pref: FeatureChoiced = {
@@ -36,6 +39,7 @@ export const scalie_pref: FeatureChoiced = {
   description:
     'How, and if, you would like to engage in RP with scalie characters, such as Lizards, Fish, or Dragons.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const other_pref: FeatureChoiced = {
@@ -44,6 +48,7 @@ export const other_pref: FeatureChoiced = {
   description:
     'How, and if, you would like to engage in RP with outlandish characters, such as Silicons, Taurs, Megafauna and Xenos.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const demihuman_pref: FeatureChoiced = {
@@ -52,6 +57,7 @@ export const demihuman_pref: FeatureChoiced = {
   description:
     'How, and if, you would like to engage in RP with demihuman characters, such as cat or dog humans, monsterfolk or demons.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const human_pref: FeatureChoiced = {
@@ -60,6 +66,7 @@ export const human_pref: FeatureChoiced = {
   description:
     'How, and if, you would like to engage in RP wih human characters. You know what a human is.',
   component: FeatureDropdownInput,
+  erp: true,
 };
 
 export const character_ad: Feature<string> = {
