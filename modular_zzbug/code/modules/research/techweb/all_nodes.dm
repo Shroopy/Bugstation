@@ -2,7 +2,7 @@
 	id = "storedmunition_tech_exotic"
 	display_name = "Exotic Military Grade Munition Research"
 	description = "Exotic ammo types in cutting-edge magazines."
-	prereq_ids = list("storedmunition_tech", "exotic_ammo")
+	prereq_ids = list(TECHWEB_NODE_MAGAZINES_SIM, "exotic_ammo")
 	design_ids = list(
 		"s12g_hornet",
 		"s12g_antitide",
