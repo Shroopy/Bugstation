@@ -69,7 +69,7 @@
 	. = ..()
 	design_ids += list(
 		"blanksynth",
-		"dominatrixmodule",
+		// "dominatrixmodule", // BUG EDIT
 	)
 
 // Computer Tech
