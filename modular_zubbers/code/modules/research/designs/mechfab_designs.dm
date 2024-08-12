@@ -67,6 +67,7 @@
 		RND_CATEGORY_MECHFAB_CYBORG_MODULES + RND_SUBCATEGORY_MECHFAB_CYBORG_MODULES_RESEARCH
 	)
 
+/* BUG EDIT REMOVAL START
 /datum/design/borg_dominatrix
 	name = "borg dominatrix module"
 	id = "dominatrixmodule"
@@ -80,6 +81,7 @@
 	category = list(
 		RND_CATEGORY_MECHFAB_CYBORG_MODULES + RND_SUBCATEGORY_MECHFAB_CYBORG_MODULES_ALL
 	)
+BUG EDIT REMOVAL END */
 
 //so we have our own category
 /datum/design/borg_upgrade_surgical_processor_sci
