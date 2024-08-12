@@ -396,7 +396,7 @@ ROUNDSTART_RACES mammal
 ROUNDSTART_RACES vulpkanin
 ROUNDSTART_RACES tajaran
 ROUNDSTART_RACES akula
-ROUNDSTART_RACES unathi
+#ROUNDSTART_RACES unathi
 ROUNDSTART_RACES skrell
 ROUNDSTART_RACES humanoid
 ROUNDSTART_RACES xeno
@@ -408,12 +408,12 @@ ROUNDSTART_RACES vox_primalis
 ROUNDSTART_RACES aquatic
 ROUNDSTART_RACES insect
 ROUNDSTART_RACES synth
-ROUNDSTART_RACES ghoul
+#ROUNDSTART_RACES ghoul
 ROUNDSTART_RACES shadekin
 
 ## BUBBER RACES DOWN HERE
-ROUNDSTART_RACES lesser_abductor
-ROUNDSTART_RACES zombie
+#ROUNDSTART_RACES lesser_abductor
+#ROUNDSTART_RACES zombie
 
 ##-------------------------------------------------------------------------------------------
 
