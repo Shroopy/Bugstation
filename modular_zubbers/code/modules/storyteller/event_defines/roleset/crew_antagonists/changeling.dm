@@ -8,7 +8,7 @@
 	min_players = 20
 	maximum_antags_global = 4
 
-	tags = list(TAG_COMBAT, TAG_CREW_ANTAG)
+	tags = list(TAG_COMBAT, TAG_SPOOKY, TAG_CREW_ANTAG)
 
 /datum/round_event_control/antagonist/solo/changeling/midround
 	name = "Genome Awakening (Changelings)"
