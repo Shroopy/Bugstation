@@ -19,9 +19,9 @@
 	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 6)
 	attack_verb_continuous = list("slashes", "stabs", "slices", "tears", "lacerates", "rips", "dices", "cuts")
 	attack_verb_simple = list("slash", "stab", "slice", "tear", "lacerate", "rip", "dice", "cut")
-	sharpness = SHARP_EDGED
+	sharpness = SHARP_POINTY
 	armor_type = /datum/armor/item_knife
-	wound_bonus = 5
+	wound_bonus = 15
 	bare_wound_bonus = 15
 	tool_behaviour = TOOL_KNIFE
 
@@ -63,6 +63,7 @@
 	item_flags = CRUEL_IMPLEMENT //maybe they want to use it in surgery
 	force = 15
 	throwforce = 15
+	sharpness = SHARP_EDGED
 	wound_bonus = 20
 	w_class = WEIGHT_CLASS_NORMAL
 
@@ -101,6 +102,7 @@
 	attack_verb_simple = list("slice", "dice", "chop", "cube", "mince", "julienne", "chiffonade", "batonnet")
 	w_class = WEIGHT_CLASS_NORMAL
 	custom_price = PAYCHECK_CREW * 5
+	sharpness = SHARP_EDGED
 	wound_bonus = 15
 
 /obj/item/knife/hunting
@@ -109,6 +111,7 @@
 	desc = "Despite its name, it's mainly used for cutting meat from dead prey rather than actual hunting."
 	inhand_icon_state = "huntingknife"
 	icon_state = "huntingknife"
+	sharpness = SHARP_EDGED
 	wound_bonus = 10
 
 /obj/item/knife/hunting/set_butchering()
@@ -247,7 +250,7 @@
 	desc = "A makeshift titanium-infused glass shiv."
 	throwforce = 14
 	throw_range = 7
-	wound_bonus = 10
+	wound_bonus = 20
 	armor_type = /datum/armor/shiv_titanium
 	custom_materials = list(/datum/material/glass=SMALL_MATERIAL_AMOUNT * 4, /datum/material/titanium=SMALL_MATERIAL_AMOUNT * 2)
 
@@ -269,7 +272,7 @@
 	throwforce = 15
 	throw_speed = 4
 	throw_range = 8
-	wound_bonus = 10
+	wound_bonus = 20
 	bare_wound_bonus = 20
 	armor_type = /datum/armor/shiv_plastitanium
 	custom_materials = list(/datum/material/glass= SMALL_MATERIAL_AMOUNT * 4, /datum/material/alloy/plastitanium= SMALL_MATERIAL_AMOUNT * 2)
