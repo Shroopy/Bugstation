@@ -457,7 +457,7 @@
 		return ..()
 	icon_state = "aloe_mesh_closed"
 
-/obj/item/stack/medical/aloe
+/obj/item/stack/medical/aloe  // TODO should probably sanitize burns
 	name = "aloe cream"
 	desc = "A healing paste for minor cuts and burns. This shouldn't be found in normal gameplay, tell a dev!"
 
