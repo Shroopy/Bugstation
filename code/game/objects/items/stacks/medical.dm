@@ -457,10 +457,9 @@
 		return ..()
 	icon_state = "aloe_mesh_closed"
 
-/*
 /obj/item/stack/medical/aloe
 	name = "aloe cream"
-	desc = "A healing paste for minor cuts and burns."
+	desc = "A healing paste for minor cuts and burns. This shouldn't be found in normal gameplay, tell a dev!"
 
 	gender = PLURAL
 	singular_name = "aloe cream"
@@ -478,7 +477,6 @@
 
 /obj/item/stack/medical/aloe/fresh
 	amount = 2
-*/
 
 /obj/item/stack/medical/bone_gel
 	name = "bone gel"
@@ -530,11 +528,10 @@
 /obj/item/stack/medical/bone_gel/one
 	amount = 1
 
-/*
 /obj/item/stack/medical/poultice
 	name = "mourning poultices"
 	singular_name = "mourning poultice"
-	desc = "A type of primitive herbal poultice.\nWhile traditionally used to prepare corpses for the mourning feast, it can also treat scrapes and burns on the living, however, it is liable to cause shortness of breath when employed in this manner.\nIt is imbued with ancient wisdom."
+	desc = "A type of primitive herbal poultice.\nWhile traditionally used to prepare corpses for the mourning feast, it can also treat scrapes and burns on the living, however, it is liable to cause shortness of breath when employed in this manner.\nIt is imbued with ancient wisdom.\nThis shouldn't be found in normal gameplay, tell a dev!"
 	icon_state = "poultice"
 	amount = 15
 	max_amount = 15
@@ -557,7 +554,6 @@
 /obj/item/stack/medical/poultice/post_heal_effects(amount_healed, mob/living/carbon/healed_mob, mob/user)
 	. = ..()
 	healed_mob.adjustOxyLoss(amount_healed)
-*/
 
 /obj/item/stack/medical/bandage
 	name = "first aid bandage"
