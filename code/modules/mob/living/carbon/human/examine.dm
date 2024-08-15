@@ -466,7 +466,7 @@
 			var/exploitable_text = target_records.exploitable_information
 			if((length(background_text) > RECORDS_INVISIBLE_THRESHOLD))
 				. += "<a href='?src=[REF(src)];bgrecords=1'>\[View background info\]</a>"
-			if((length(exploitable_text) > RECORDS_INVISIBLE_THRESHOLD) && ((exploitable_text) != EXPLOITABLE_DEFAULT_TEXT))
+			if((length(exploitable_text) > RECORDS_INVISIBLE_THRESHOLD)) // BUG EDIT
 				. += "<a href='?src=[REF(src)];exprecords=1'>\[View exploitable info\]</a>"
 
 	. += EXAMINE_SECTION_BREAK

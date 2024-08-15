@@ -115,8 +115,10 @@ BUG EDIT END */
 	savefile_key = "exploitable_info"
 	maximum_value_length = MAX_FLAVOR_LEN
 
+/* BUG EDIT START
 /datum/preference/text/exploitable/create_default_value()
 	return EXPLOITABLE_DEFAULT_TEXT
+ BUG EDIT END */
 
 /datum/preference/text/exploitable/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	return FALSE

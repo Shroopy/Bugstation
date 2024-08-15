@@ -237,9 +237,13 @@ GLOBAL_DATUM(character_directory, /datum/character_directory)
 		ooc_notes = READ_PREFS(mob, text/ooc_notes)
 		//If the user is an antagonist or Observer, we want them to be able to see exploitables in the Directory.
 		if(user.mind?.has_antag_datum(/datum/antagonist) || isobserver(user))
+			/* BUG EDIT START
 			if(exploitable == EXPLOITABLE_DEFAULT_TEXT)
 				exploitable = "Unset"
 			else exploitable = READ_PREFS(mob, text/exploitable)
+			*/
+			exploitable = READ_PREFS(mob, text/exploitable)
+			// BUG EDIT END
 		else exploitable = "Obscured"
 		//And finally, we want to get the mob's name, taking into account disguised names.
 		name = mob.real_name ? mob.name : mob.real_name

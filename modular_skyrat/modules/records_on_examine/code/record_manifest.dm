@@ -14,7 +14,7 @@
 	for(var/datum/record/crew/crew_record in GLOB.manifest.general)
 		var/exploitables = crew_record.exploitable_information
 
-		var/exploitables_empty = ((length(exploitables) < 1) || ((exploitables) == EXPLOITABLE_DEFAULT_TEXT))
+		var/exploitables_empty = ((length(exploitables) < 1)) // BUG EDIT
 
 		if (exploitables_empty)
 			continue
