@@ -37,6 +37,8 @@
 			handle_heart(seconds_per_tick, times_fired)
 			//handles liver failure effects, if we lack a liver
 			handle_liver(seconds_per_tick, times_fired)
+			if(!(src.mob_biotypes & MOB_ROBOTIC) && src.health < src.maxHealth)
+				heal(seconds_per_tick, times_fired)
 
 		// for special species interactions
 		dna.species.spec_life(src, seconds_per_tick, times_fired)

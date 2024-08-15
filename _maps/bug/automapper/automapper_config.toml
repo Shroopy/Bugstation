@@ -620,3 +620,11 @@ directory = "_maps/bug/automapper/templates/MetaStation/"
 required_map = "MetaStation.dmm"
 coordinates = [105, 177, 1]
 trait_name = "Station"
+
+# Icemoon Bathhouse
+[templates.icemoon_underground_bathouse]
+map_files = ["icemoon_underground_bathouse.dmm"]
+directory = "_maps/bug/automapper/templates/RandomRuins/IceRuins/"
+required_map = "icemoon_underground_bathouse.dmm"
+coordinates = [10, 7, 1]
+trait_name = "Station"

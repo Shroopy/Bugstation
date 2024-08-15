@@ -202,7 +202,7 @@
 	icon_state = "brutepack"
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
-	heal_brute = 40
+	heal_brute = 0
 	self_delay = 4 SECONDS
 	other_delay = 2 SECONDS
 	grind_results = list(/datum/reagent/medicine/c2/libital = 10)
@@ -338,7 +338,7 @@
 	amount = 10
 	max_amount = 10
 	repeating = TRUE
-	heal_brute = 10
+	heal_brute = 0
 	stop_bleeding = 0.6
 	grind_results = list(/datum/reagent/medicine/spaceacillin = 2)
 	merge_type = /obj/item/stack/medical/suture
@@ -346,7 +346,7 @@
 /obj/item/stack/medical/suture/emergency
 	name = "emergency suture"
 	desc = "A value pack of cheap sutures, not very good at repairing damage, but still decent at stopping bleeding."
-	heal_brute = 5
+	heal_brute = 0
 	amount = 5
 	max_amount = 5
 	merge_type = /obj/item/stack/medical/suture/emergency
@@ -355,7 +355,7 @@
 	name = "medicated suture"
 	icon_state = "suture_purp"
 	desc = "A suture infused with drugs that speed up wound healing of the treated laceration."
-	heal_brute = 15
+	heal_brute = 0
 	stop_bleeding = 0.75
 	grind_results = list(/datum/reagent/medicine/polypyr = 1)
 	merge_type = /obj/item/stack/medical/suture/medicated
@@ -373,7 +373,7 @@
 	self_delay = 4 SECONDS
 	other_delay = 2 SECONDS
 
-	heal_burn = 5
+	heal_burn = 0
 	flesh_regeneration = 2.5
 	sanitization = 0.25
 	grind_results = list(/datum/reagent/medicine/c2/lenturi = 10)
@@ -392,7 +392,7 @@
 	self_delay = 3 SECONDS
 	other_delay = 1 SECONDS
 	amount = 15
-	heal_burn = 10
+	heal_burn = 0
 	max_amount = 15
 	repeating = TRUE
 	sanitization = 0.75
@@ -446,7 +446,7 @@
 
 	gender = PLURAL
 	icon_state = "aloe_mesh"
-	heal_burn = 15
+	heal_burn = 0
 	sanitization = 1.25
 	flesh_regeneration = 3.5
 	grind_results = list(/datum/reagent/consumable/aloejuice = 1)
@@ -457,9 +457,9 @@
 		return ..()
 	icon_state = "aloe_mesh_closed"
 
-/obj/item/stack/medical/aloe
+/obj/item/stack/medical/aloe  // TODO should probably sanitize burns
 	name = "aloe cream"
-	desc = "A healing paste for minor cuts and burns."
+	desc = "A healing paste for minor cuts and burns. This shouldn't be found in normal gameplay, tell a dev!"
 
 	gender = PLURAL
 	singular_name = "aloe cream"
@@ -531,7 +531,7 @@
 /obj/item/stack/medical/poultice
 	name = "mourning poultices"
 	singular_name = "mourning poultice"
-	desc = "A type of primitive herbal poultice.\nWhile traditionally used to prepare corpses for the mourning feast, it can also treat scrapes and burns on the living, however, it is liable to cause shortness of breath when employed in this manner.\nIt is imbued with ancient wisdom."
+	desc = "A type of primitive herbal poultice.\nWhile traditionally used to prepare corpses for the mourning feast, it can also treat scrapes and burns on the living, however, it is liable to cause shortness of breath when employed in this manner.\nIt is imbued with ancient wisdom.\nThis shouldn't be found in normal gameplay, tell a dev!"
 	icon_state = "poultice"
 	amount = 15
 	max_amount = 15
@@ -565,7 +565,7 @@
 	max_amount = 1
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
-	heal_brute = 25
+	heal_brute = 0
 	stop_bleeding = 0.2
 	self_delay = 3 SECONDS
 	other_delay = 1 SECONDS

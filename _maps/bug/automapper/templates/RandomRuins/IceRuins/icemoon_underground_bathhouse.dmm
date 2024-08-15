@@ -1,0 +1,13 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/structure/table/greyscale,
+/obj/item/clothing/shoes/sneakers/white{
+	name = "white slippers"
+	},
+/obj/item/clothing/under/misc/pj/blue,
+/turf/open/floor/iron/white,
+/area/ruin/powered/bathhouse)
+
+(1,1,1) = {"
+a
+"}
