@@ -24,6 +24,7 @@ BUG EDIT END */
 	track = EVENT_TRACK_MUNDANE
 	tags = list(TAG_DESTRUCTIVE, TAG_SPACE)
 	weight = 10
+	max_occurrences = 0 // space dust is a nothing event
 
 /datum/round_event_control/electrical_storm
 	track = EVENT_TRACK_MUNDANE
