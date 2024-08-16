@@ -31,12 +31,6 @@
 	desc = "Chill makes events happen half as often, and gives more time at the start of the round before starting events. Lowpop accounts for the fact that targeted and destructive events are more dangerous with few crew."
 	antag_divisor = 8
 	population_max = 16
-	starting_point_multipliers = list(
-		EVENT_TRACK_MUNDANE = 2,
-		EVENT_TRACK_MODERATE = 2,
-		EVENT_TRACK_MAJOR = 2,
-		EVENT_TRACK_ROLESET = 2,
-		)
 	point_gains_multipliers = list(
 		EVENT_TRACK_MUNDANE = 0.5,
 		EVENT_TRACK_MODERATE = 0.5,
