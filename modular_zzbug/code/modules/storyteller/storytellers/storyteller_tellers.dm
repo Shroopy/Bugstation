@@ -66,3 +66,28 @@
 		TAG_VERY_TARGETED = 0.5, // very targeted events cause even less chaos, multiplier compounded with targeted
 	)
 	guarantees_roundstart_roleset = FALSE
+
+/datum/storyteller/lowpop_trusty
+	name = "Trusty"
+	desc = "Trusty removes all player-controlled antags. Good for co-operative-focused rounds! Lowpop accounts for the fact that targeted and destructive events are more dangerous with few crew."
+	antag_divisor = 0
+	population_max = 16
+	starting_point_multipliers = list(
+		EVENT_TRACK_MUNDANE = 1,
+		EVENT_TRACK_MODERATE = 1,
+		EVENT_TRACK_MAJOR = 1,
+		EVENT_TRACK_ROLESET = 0,
+		)
+	point_gains_multipliers = list(
+		EVENT_TRACK_MUNDANE = 1,
+		EVENT_TRACK_MODERATE = 1,
+		EVENT_TRACK_MAJOR = 1,
+		EVENT_TRACK_ROLESET = 0,
+		)
+	tag_cost_multipliers = list(
+		TAG_DESTRUCTIVE = 2 // It's not so easy to deal with destructive stuff on lowpop, who knows if we have engineers
+	)
+	tag_weight_multipliers = list(
+		TAG_DESTRUCTIVE = 0.5 // See above
+	)
+	guarantees_roundstart_roleset = FALSE
