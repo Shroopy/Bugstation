@@ -65,3 +65,4 @@
 		TAG_TARGETED = 0.5, // targeted events cause little chaos
 		TAG_VERY_TARGETED = 0.5, // very targeted events cause even less chaos, multiplier compounded with targeted
 	)
+	guarantees_roundstart_roleset = FALSE
