@@ -1,7 +1,10 @@
+// Overridden by robot_healing.dm in modular_zubbers
+
 #define DAMAGE_ROUNDING 0.1
 #define FAIL_DAMAGE_MULTIPLIER 0.8
 #define FINAL_STEP_HEAL_MULTIPLIER 0.55
 
+/* BUBBER REMOVAL START
 //Almost copypaste of tend wounds, with some changes
 /datum/surgery/robot_healing
 	steps = list(
@@ -33,6 +36,7 @@
 			healing_step_type,
 			/datum/surgery_step/mechanic_close,
 		)
+BUBBER REMOVAL END */
 
 /datum/surgery_step/robot_heal
 	name = "repair body (crowbar/wirecutters)"
@@ -70,10 +74,10 @@
 		woundtype = "wiring"
 		return
 
-	if(!istype(surgery, /datum/surgery/robot_healing))
+	if(!istype(surgery, /datum/surgery/robot/healing)) // BUBBER EDIT
 		return
 
-	var/datum/surgery/robot_healing/the_surgery = surgery
+	var/datum/surgery/robot/healing/the_surgery = surgery // BUBBER EDIT
 	if(the_surgery.surgery_preop_message_sent)
 		return
 
@@ -126,8 +130,8 @@
 
 	display_results(user, target, span_notice("[self_message]."), "[other_message].", "[other_message].")
 
-	if(istype(surgery, /datum/surgery/robot_healing))
-		var/datum/surgery/robot_healing/the_surgery = surgery
+	if(istype(surgery, /datum/surgery/robot/healing)) // BUBBER EDIT
+		var/datum/surgery/robot/healing/the_surgery = surgery // BUBBER EDIT
 		the_surgery.surgery_preop_message_sent = TRUE
 
 	return TRUE
@@ -158,25 +162,27 @@
 	return FALSE
 
 /***************************TYPES***************************/
+/* BUBBER REMOVAL START
 /datum/surgery/robot_healing/basic
-	name = "Repair robotic limbs (Basic)"
+	name = "Repair robotics (Basic)"
 	desc = "A surgical procedure that provides repairs and maintenance to robotic limbs. Is slightly more efficient when the patient is severely damaged."
 	healing_step_type = /datum/surgery_step/robot_heal/basic
 	replaced_by = /datum/surgery/robot_healing/upgraded
 
 /datum/surgery/robot_healing/upgraded
-	name = "Repair robotic limbs (Adv.)"
+	name = "Repair robotics (Adv.)"
 	desc = "A surgical procedure that provides highly effective repairs and maintenance to robotic limbs. Is somewhat more efficient when the patient is severely damaged."
 	healing_step_type = /datum/surgery_step/robot_heal/upgraded
 	replaced_by = /datum/surgery/robot_healing/experimental
 	requires_tech = TRUE
 
 /datum/surgery/robot_healing/experimental
-	name = "Repair robotic limbs (Exp.)"
+	name = "Repair robotics (Exp.)"
 	desc = "A surgical procedure that quickly provides highly effective repairs and maintenance to robotic limbs. Is moderately more efficient when the patient is severely damaged."
 	healing_step_type = /datum/surgery_step/robot_heal/experimental
 	replaced_by = null
 	requires_tech = TRUE
+BUBBER REMOVAL END */
 
 /***************************STEPS***************************/
 
