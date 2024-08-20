@@ -61,6 +61,13 @@
 	},
 /turf/open/floor/plating,
 /area/station/security/execution/transfer)
+"aiI" = (
+/obj/structure/cable,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/iron/white,
+/area/station/security/prison)
 "ajw" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/turf_decal/stripes/white/line{
@@ -1798,6 +1805,12 @@
 /obj/structure/cable,
 /turf/open/floor/grass,
 /area/station/security/prison/garden)
+"uiQ" = (
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/iron/white,
+/area/station/security/prison)
 "umr" = (
 /obj/structure/sign/warning/electric_shock,
 /turf/closed/wall/r_wall,
@@ -2265,8 +2278,8 @@ mWy
 gva
 eMf
 jAu
-jAu
-mSq
+fYh
+uiQ
 jAu
 gHA
 wIY
@@ -2274,7 +2287,7 @@ qtA
 jAu
 bSt
 jAu
-jAu
+fYh
 qtA
 kiW
 mWy
@@ -2290,7 +2303,7 @@ swA
 (8,1,1) = {"
 mWy
 doU
-eMf
+aiI
 pfM
 eMf
 eMf
@@ -2299,7 +2312,7 @@ eMf
 pfM
 pLB
 eMf
-eMf
+aiI
 eMf
 eMf
 eMf
@@ -2326,7 +2339,7 @@ sAv
 sAv
 doU
 jAu
-jAu
+fYh
 jAu
 xSO
 oXm
@@ -2730,9 +2743,9 @@ swA
 swA
 mWy
 jAu
+fYh
 jAu
-jAu
-jAu
+fYh
 jAu
 awi
 tPH
@@ -2757,7 +2770,7 @@ swA
 swA
 mWy
 doU
-eMf
+aiI
 eMf
 eMf
 eMf
