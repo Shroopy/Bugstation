@@ -61,13 +61,6 @@
 	},
 /turf/open/floor/plating,
 /area/station/security/execution/transfer)
-"aiI" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/obj/effect/mapping_helpers/broken_floor,
-/turf/open/floor/iron/white,
-/area/station/security/prison)
 "ajw" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/turf_decal/stripes/white/line{
@@ -2306,7 +2299,7 @@ eMf
 pfM
 pLB
 eMf
-aiI
+eMf
 eMf
 eMf
 eMf
