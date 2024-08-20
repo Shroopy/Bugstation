@@ -620,3 +620,11 @@ directory = "_maps/bug/automapper/templates/MetaStation/"
 required_map = "MetaStation.dmm"
 coordinates = [105, 177, 1]
 trait_name = "Station"
+
+# TODO ADD KILO PERMA
+[templates.kilostation_perma]
+map_files = ["kilostation_perma.dmm"]
+directory = "_maps/bug/automapper/templates/KiloStation/"
+required_map = "KiloStation.dmm"
+coordinates = [18, 84, 1]
+trait_name = "Station"
