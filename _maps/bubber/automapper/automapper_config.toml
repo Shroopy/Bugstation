@@ -340,12 +340,12 @@ trait_name = "Mining"
 # ADD ALL BUBBER EDITS BENEATH THIS!
 
 # Metastation Armory
-[templates.metastation_armory]
-map_files = ["metastation_armory.dmm"]
-directory = "_maps/bubber/automapper/templates/MetaStation/"
-required_map = "MetaStation.dmm"
-coordinates = [105, 171, 1]
-trait_name = "Station"
+#[templates.metastation_armory]
+#map_files = ["metastation_armory.dmm"]
+#directory = "_maps/bubber/automapper/templates/MetaStation/"
+#required_map = "MetaStation.dmm"
+#coordinates = [105, 171, 1]
+#trait_name = "Station"
 
 # Biodome Armory
 [templates.biodome_armory]
@@ -608,4 +608,15 @@ map_files = ["wawastation_armory.dmm"]
 directory = "_maps/skyrat/automapper/templates/wawastation/"
 required_map = "wawastation.dmm"
 coordinates = [63, 127, 2]
+trait_name = "Station"
+
+#BUG EDITS -------------------------------
+# ADD ALL BUG EDITS BENEATH THIS!
+
+# Metastation Armory
+[templates.metastation_armory]
+map_files = ["metastation_armory.dmm"]
+directory = "_maps/bug/automapper/templates/MetaStation/"
+required_map = "MetaStation.dmm"
+coordinates = [105, 177, 1]
 trait_name = "Station"
