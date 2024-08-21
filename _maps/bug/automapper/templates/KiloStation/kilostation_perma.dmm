@@ -87,7 +87,7 @@
 /obj/effect/spawner/random/contraband/prison,
 /obj/item/weldingtool/mini,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "arX" = (
 /obj/structure/table,
 /obj/item/reagent_containers/cup/glass/drinkingglass,
@@ -353,7 +353,7 @@
 	name = "Jerm"
 	},
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "cyZ" = (
 /obj/machinery/hydroponics/soil,
 /obj/item/seeds/ambrosia,
@@ -387,7 +387,7 @@
 	},
 /obj/machinery/airalarm/directional/west,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "dfS" = (
 /obj/structure/toilet,
 /obj/machinery/light/small/directional/north,
@@ -512,7 +512,7 @@
 /obj/item/radio/intercom/directional/north,
 /obj/item/storage/bag/trash,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "eCf" = (
 /obj/effect/turf_decal/stripes/corner,
 /obj/effect/decal/cleanable/dirt,
@@ -628,11 +628,8 @@
 /turf/open/floor/iron,
 /area/station/security/execution/transfer)
 "goj" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/turf/open/floor/iron,
-/area/station/security/prison)
+/turf/closed/wall,
+/area/station/security/prison/safe)
 "gva" = (
 /obj/machinery/camera/directional/west{
 	c_tag = "Prison Cells";
@@ -906,7 +903,7 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "iBH" = (
 /obj/machinery/camera/directional/north{
 	c_tag = "Prison Labor";
@@ -982,7 +979,7 @@
 /obj/machinery/power/apc/auto_name/directional/north,
 /obj/structure/cable,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "jsI" = (
 /obj/structure/hoop{
 	dir = 8
@@ -1117,7 +1114,7 @@
 /obj/item/mop,
 /obj/item/watertank/janitor,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "kNf" = (
 /obj/structure/sign/warning/electric_shock,
 /turf/closed/wall/r_wall,
@@ -1376,6 +1373,10 @@
 /obj/effect/turf_decal/tile/red/half/contrasted,
 /turf/open/floor/iron,
 /area/station/security/execution/transfer)
+"oHs" = (
+/obj/structure/cable,
+/turf/open/floor/iron,
+/area/station/security/prison/safe)
 "oLH" = (
 /obj/effect/landmark/event_spawn,
 /turf/open/floor/iron,
@@ -1916,7 +1917,7 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/structure/cable,
 /turf/open/floor/iron,
-/area/station/security/prison)
+/area/station/security/prison/safe)
 "vGt" = (
 /obj/structure/table,
 /obj/structure/cable,
@@ -2636,11 +2637,11 @@ swA
 swA
 swA
 swA
-sAv
+dWG
 cyv
 cYA
 kHq
-rSi
+goj
 cXX
 ikH
 rSi
@@ -2663,9 +2664,9 @@ swA
 swA
 swA
 swA
-sAv
+dWG
 eAn
-goj
+wJw
 ixf
 vCM
 eMf
@@ -2690,11 +2691,11 @@ swA
 swA
 swA
 swA
-sAv
+dWG
 jsj
-ssF
+oHs
 aqq
-rSi
+goj
 jAu
 eMf
 lmr
@@ -2717,11 +2718,11 @@ swA
 swA
 swA
 swA
-ifQ
-rSi
-rSi
-rSi
-rSi
+nKO
+goj
+goj
+goj
+goj
 jAu
 oZb
 xck
