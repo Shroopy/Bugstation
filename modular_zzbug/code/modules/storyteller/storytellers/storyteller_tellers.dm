@@ -68,7 +68,7 @@
 	guarantees_roundstart_roleset = FALSE
 
 /datum/storyteller/lowpop_trusty
-	name = "Trusty"
+	name = "Lowpop Trusty"
 	desc = "Trusty removes all player-controlled antags. Good for co-operative-focused rounds! Lowpop accounts for the fact that targeted and destructive events are more dangerous with few crew."
 	antag_divisor = 0
 	population_max = 16
