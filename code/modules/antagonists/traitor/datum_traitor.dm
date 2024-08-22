@@ -84,7 +84,7 @@
 			uplink_handler = uplink.uplink_handler
 		uplink_handler.uplink_flag = uplink_flag_given
 		uplink_handler.primary_objectives = objectives
-		uplink_handler.has_progression = FALSE // BUG EDIT
+		uplink_handler.has_progression = TRUE
 		SStraitor.register_uplink_handler(uplink_handler)
 
 		if(give_secondary_objectives)
