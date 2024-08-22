@@ -3,6 +3,7 @@
 	desc = "A destructive robotic defragmentation method which guarantees removal of almost all brain traumas, but might cause another permanent trauma in return."
 	requires_bodypart_type = BODYTYPE_ROBOTIC
 	possible_locs = list(BODY_ZONE_HEAD)
+	surgery_flags = SURGERY_SELF_OPERABLE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/pry_off_plating,
@@ -15,11 +16,13 @@
 	)
 	num_opening_steps = 3
 	num_steps_until_closing = 6
+	close_surgery = /datum/surgery/robot/advanced/close_lobotomy
 
 /datum/surgery/robot/advanced/close_lobotomy
 	name = "Close Surgery (Destructive Posibrain Defragmentation)"
 	requires_bodypart_type = BODYTYPE_ROBOTIC
 	possible_locs = list(BODY_ZONE_HEAD)
+	surgery_flags = SURGERY_SELF_OPERABLE
 	steps = list(
 		/datum/surgery_step/mechanic_wrench,
 		/datum/surgery_step/reattach_plating,
@@ -94,3 +97,34 @@
 	else
 		user.visible_message(span_warning("[user] suddenly notices that the posibrain [user.p_they()] [user.p_were()] working on is not there anymore."), span_warning("You suddenly notice that the posibrain you were working on is not there anymore."))
 	return FALSE
+
+/datum/surgery/robot/advanced/blessed_lobotomy
+	name = "Reticulate Posibrain Splines"
+	desc = "A surgical procedure that refurbishes low level components in the posibrain, to fix the strongest trauma errors."
+	possible_locs = list(BODY_ZONE_CHEST) // The brains are in the chest
+	requires_bodypart_type = BODYTYPE_ROBOTIC
+	target_mobtypes = list(/mob/living/carbon/human)
+	steps = list(
+		/datum/surgery_step/mechanic_open,
+		/datum/surgery_step/pry_off_plating,
+		/datum/surgery_step/mechanic_unwrench,
+		/datum/surgery_step/prepare_electronics,
+		/datum/surgery_step/fix_robot_brain/advanced,
+		/datum/surgery_step/mechanic_wrench,
+		/datum/surgery_step/reattach_plating,
+		/datum/surgery_step/mechanic_close,
+	)
+	num_opening_steps = 3
+	num_steps_until_closing = 6
+	close_surgery = /datum/surgery/robot/advanced/close_blessed_lobotomy
+
+/datum/surgery/robot/advanced/close_blessed_lobotomy
+	name = "Close Surgery (Reticulate Posibrain Splines)"
+	possible_locs = list(BODY_ZONE_CHEST) // The brains are in the chest
+	requires_bodypart_type = BODYTYPE_ROBOTIC
+	steps = list(
+		/datum/surgery_step/mechanic_wrench,
+		/datum/surgery_step/reattach_plating,
+		/datum/surgery_step/mechanic_close,
+	)
+	is_closer = TRUE
