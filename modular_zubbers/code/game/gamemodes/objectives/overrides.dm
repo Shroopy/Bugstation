@@ -10,6 +10,8 @@
 	steal_objective.find_target()
 	return steal_objective
 
+/* BUG REMOVAL START
 /datum/uplink_handler/generate_objectives()
 	on_update()
 	return FALSE
+BUG REMOVAL END */
