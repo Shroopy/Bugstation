@@ -36,6 +36,7 @@
 		stoplag()
 	return TRUE
 
+/* BUG REMOVAL START
 /datum/action/changeling/dissonant_shriek
 	name = "Dissonant Shriek"
 	desc = "We shift our vocal cords to release a high-frequency sound that overloads nearby electronics. Costs 20 chemicals."
@@ -56,3 +57,4 @@
 		stoplag()
 
 	return TRUE
+BUG REMOVAL END */
