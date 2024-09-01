@@ -451,22 +451,23 @@
 //comes with the station, and is already tapped.
 /obj/structure/ore_vent/starter_resources
 	name = "active ore vent"
-	desc = "An ore vent, brimming with underground ore. It's already supplying the station with iron and glass."
+	desc = "An ore vent, brimming with underground ore. It's already supplying the station with iron and glass, as well as trace quantities of other materials." // BUG EDIT
 	tapped = TRUE
 	discovered = TRUE
 	unique_vent = TRUE
 	boulder_size = BOULDER_SIZE_SMALL
 	mineral_breakdown = list(
 		// BUG EDIT START
-		/datum/material/iron = 125,
-		/datum/material/glass = 125,
-		/obj/item/stack/ore/plasma = 60,
-		/obj/item/stack/ore/uranium = 30,
-		/obj/item/stack/ore/silver = 30,
-		/obj/item/stack/ore/gold = 30,
-		/obj/item/stack/ore/titanium = 30,
-		/obj/item/stack/ore/diamond = 10,
-		/obj/item/stack/ore/bluespace_crystal = 1,
+		/datum/material/iron = 10,
+		/datum/material/glass = 10,
+		/datum/material/plasma = 4,
+		/datum/material/uranium = 3,
+		/datum/material/silver = 3,
+		/datum/material/gold = 3,
+		/datum/material/titanium = 3,
+		/datum/material/diamond = 2,
+		/datum/material/plastic = 2,
+		/datum/material/bluespace = 1,
 		// BUG EDIT END
 	)
 
