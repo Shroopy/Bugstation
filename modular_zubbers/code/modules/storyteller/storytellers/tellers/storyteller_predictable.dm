@@ -1,4 +1,4 @@
-/*
+/* BUG REMOVAL START
 /datum/storyteller/predictable
 	name = "The Predictable Chaos"
 	desc = "The Predictable Chaos will attempt to spawn a lot of antagonists relative to the crew population, while also ensuring events roll every set amount of time. Expect minor events every 10 minutes, moderate events every 30 minutes, and major events every hour and a half."
@@ -16,6 +16,8 @@
 		TAG_TARGETED = 0.25, //Let us not waste event rolls on single people every 5 or so minutes.
 
 		TAG_OUTSIDER_ANTAG = 0.25, //BurgerBB was here.
+
+		TAG_CHAOTIC = 0.75, //Already got this from the constant antag spawns.
 
 	)
 
@@ -155,4 +157,4 @@
 		return TRUE
 
 	return FALSE
-*/
+BUG REMOVAL END */
