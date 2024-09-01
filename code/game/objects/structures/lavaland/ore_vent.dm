@@ -457,8 +457,17 @@
 	unique_vent = TRUE
 	boulder_size = BOULDER_SIZE_SMALL
 	mineral_breakdown = list(
-		/datum/material/iron = 50,
-		/datum/material/glass = 50,
+		// BUG EDIT START
+		/datum/material/iron = 125,
+		/datum/material/glass = 125,
+		/obj/item/stack/ore/plasma = 60,
+		/obj/item/stack/ore/uranium = 30,
+		/obj/item/stack/ore/silver = 30,
+		/obj/item/stack/ore/gold = 30,
+		/obj/item/stack/ore/titanium = 30,
+		/obj/item/stack/ore/diamond = 10,
+		/obj/item/stack/ore/bluespace_crystal = 1,
+		// BUG EDIT END
 	)
 
 /obj/structure/ore_vent/random
