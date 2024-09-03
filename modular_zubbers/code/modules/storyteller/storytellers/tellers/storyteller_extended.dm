@@ -1,9 +1,7 @@
-/* BUG REMOVAL START
 /datum/storyteller/extended
 	name = "Extended"
 	desc = "Extended is the absence of a Storyteller. It will not spawn a single event of any sort, or run any Antagonists. Best for rounds where the population is so low that not even peaceful storytellers are low enough."
-	welcome_text = "How is dorms already full? The shift hasn't even started yet."
+	// welcome_text = "How is dorms already full? The shift hasn't even started yet." // BUG REMOVAL
 	disable_distribution = TRUE
-	population_max = 40
+	// population_max = 40 // BUG REMOVAL
 	antag_divisor = 32
-BUG REMOVAL END */
