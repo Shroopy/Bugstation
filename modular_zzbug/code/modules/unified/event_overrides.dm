@@ -388,7 +388,11 @@
 /datum/round_event_control/stray_cargo/changeling_zombie/New()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
-// ANTAGS - TODO add costs
+// ANTAGS
+
+/datum/round_event_control/antagonist
+	cost = COST_MAJOR
+	cooldown_override = 5
 
 /datum/round_event_control/antagonist/solo/bloodsucker
 	weight = 8
@@ -432,6 +436,7 @@
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/team/nuke_ops
+	cost = COST_SUPERMAJOR
 	weight = WEIGHT_UNLIKELY
 
 	base_antags = 2
@@ -448,11 +453,7 @@
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/obsessed
-	name = "Obsessed"
-	roundstart = TRUE
-
-	antag_flag = ROLE_OBSESSED
-	antag_datum = /datum/antagonist/obsessed
+	cost = COST_SEMIMAJOR
 	weight = 8
 	maximum_antags_global = 1
 
