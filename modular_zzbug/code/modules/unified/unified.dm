@@ -135,8 +135,8 @@ SUBSYSTEM_DEF(unified)
 			valid_events[event] = event.calculated_weight
 	///If we didn't get any events, remove the points inform admins and dont do anything
 	if(!length(valid_events))
-		message_admins("Storyteller failed to pick an event.")
-		log_admin("Storyteller failed to pick an event.")
+		message_admins("Unified failed to pick an event.")
+		log_admin("Unified failed to pick an event.")
 		return
 	picked_event = pick_weight(valid_events)
 	if(!picked_event)
@@ -194,8 +194,8 @@ SUBSYSTEM_DEF(unified)
 			valid_events[event] = event.calculated_weight
 	///If we didn't get any events, remove the points inform admins and dont do anything
 	if(!length(valid_events))
-		message_admins("Storyteller failed to pick an event.")
-		log_admin("Storyteller failed to pick an event.")
+		message_admins("Unified failed to pick a roundstart event.")
+		log_admin("Unified failed to pick a roundstart event.")
 		return
 	picked_event = pick_weight(valid_events)
 	if(!picked_event)
