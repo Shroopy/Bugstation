@@ -69,6 +69,11 @@ We then just check what the last one is in SSgamemode.storyteller_vote_choices()
 
 /// Collects current storyteller and stores it
 /datum/controller/subsystem/persistence/proc/collect_storyteller()
-	rustg_file_write("[SSgamemode.storyteller.name]", STORYTELLER_LAST_FILEPATH)
+	var/storyboy_name
+	if(SSgamemode.storyteller)
+		storyboy_name = SSgamemode.storyteller.name
+	else
+		storyboy_name = "None"
+	rustg_file_write("[storyboy_name]", STORYTELLER_LAST_FILEPATH)
 
 #undef STORYTELLER_LAST_FILEPATH
