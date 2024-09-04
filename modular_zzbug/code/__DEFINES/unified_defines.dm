@@ -15,3 +15,5 @@
 
 #define WEIGHT_NORMAL 10
 #define WEIGHT_UNLIKELY 5
+
+#define BASE_POINTS 200

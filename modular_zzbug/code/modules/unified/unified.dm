@@ -10,8 +10,10 @@ SUBSYSTEM_DEF(unified)
 	/// Next process for our storyteller. The wait time is STORYTELLER_WAIT_TIME
 	var/next_process = 0
 
-	/// Our total event point budget for the shift. Initialized in Initialize()
+	/// Our total event point budget for the shift. Initialized in pre_setup()
 	var/points = 0
+	/// Our starting event point budget for the shift. Initialized in pre_setup()
+	var/starting_points = 0
 
 	/// The time after which we can schedule another event
 	var/cooldown_over = 0
@@ -156,12 +158,17 @@ SUBSYSTEM_DEF(unified)
 		if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
 			job_cost *= 2
 		total_cost *= job_cost
+	if(total_cost > points)
+		message_admins("Unified tried to buy an event over its budget.")
+		log_admin("Unified tried to buy an event over its budget.")
+		return
 	points -= total_cost
 	var/cooldown // in minutes
 	if(picked_event.cooldown_override)
-		cooldown = rand(picked_event.cooldown_override/2, picked_event.cooldown_override*1.5)
+		cooldown = rand(picked_event.cooldown_override*0.5, picked_event.cooldown_override*1.5)
 	else
-		cooldown = rand(total_cost/2, total_cost*1.5)
+		cooldown = rand(total_cost*0.5, total_cost*1.5)
+		cooldown *= BASE_POINTS/starting_points // the higher the starting points, the lower the cooldown
 	cooldown_over = world.time + cooldown MINUTES // convert cooldown to deciseconds
 	message_admins("Unified purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [cooldown] minutes.")
 	log_admin("Storyteller purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [cooldown] minutes.")
@@ -225,7 +232,7 @@ SUBSYSTEM_DEF(unified)
 				job_weighting *= 0.5
 			if(TAG_SECURITY in event.tags && sec_crew == 0)
 				job_weighting *= 0.5
-			if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
+			if(TAG_SCIENCE in event.tags && sci_crew == 0)
 				job_weighting *= 0.5
 			if(head_crew == 0)
 				job_weighting = 0
@@ -492,7 +499,8 @@ SUBSYSTEM_DEF(unified)
 	calculate_ready_players()
 	handle_pre_setup_roundstart_events()
 	cooldown_over = world.time + rand(2.5, 20) MINUTES // give 2.5 to 20 minutes before non-roundstart events start happening
-	points = rand(100, 300)
+	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
+	points = starting_points
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
