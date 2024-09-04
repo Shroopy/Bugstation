@@ -9,6 +9,7 @@
 #define UNIFIED_PANEL_MAIN "Main"
 #define UNIFIED_PANEL_VARIABLES "Variables"
 
+#define COST_VERY_MINOR 5
 #define COST_MINOR 10
 #define COST_MODERATE 20
 #define COST_SEMIMAJOR 30

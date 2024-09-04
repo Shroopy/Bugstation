@@ -44,7 +44,7 @@
 /datum/round_event_control/New()
 	if(config && !wizardevent) // Magic is unaffected by configs
 		earliest_start = CEILING(earliest_start * CONFIG_GET(number/events_min_time_mul), 1)
-		min_players = CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1)
+		// min_players = CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1) // BUG EDIT
 	if(!length(admin_setup))
 		return
 	var/list/admin_setup_types = admin_setup.Copy()
@@ -80,7 +80,7 @@
 		return FALSE
 	if(!allow_magic && wizardevent != SSevents.wizardmode)
 		return FALSE
-	if(players_amt < min_players)
+	if(players_amt < CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1))
 		return FALSE
 	if(holidayID && !check_holidays(holidayID))
 		return FALSE

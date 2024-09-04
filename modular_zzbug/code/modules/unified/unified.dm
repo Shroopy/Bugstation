@@ -170,8 +170,8 @@ SUBSYSTEM_DEF(unified)
 		cooldown = rand(total_cost*0.5, total_cost*1.5)
 		cooldown *= BASE_POINTS/starting_points // the higher the starting points, the lower the cooldown
 	cooldown_over = world.time + cooldown MINUTES // convert cooldown to deciseconds
-	message_admins("Unified purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [cooldown] minutes.")
-	log_admin("Storyteller purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [cooldown] minutes.")
+	message_admins("Unified purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [round(cooldown, 0.01)] minutes.")
+	log_admin("Storyteller purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [round(cooldown, 0.01)] minutes.")
 	if(picked_event.roundstart)
 		TriggerEvent(picked_event)
 	else
@@ -499,9 +499,12 @@ SUBSYSTEM_DEF(unified)
 	SSjob.ResetOccupations()
 	calculate_ready_players()
 	handle_pre_setup_roundstart_events()
-	cooldown_over = world.time + rand(2.5, 20) MINUTES // give 2.5 to 20 minutes before non-roundstart events start happening
+	var/cooldown = rand(5, 15)
+	cooldown_over = world.time + cooldown MINUTES // give 5 to 15 minutes before non-roundstart events start happening
 	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
 	points = starting_points
+	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
+	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
@@ -694,13 +697,13 @@ SUBSYSTEM_DEF(unified)
 			dat += "<h2>Point Budget:</h2>"
 			dat += "<span style='background-color:[background_cl]'>[points]/[starting_points]</span>"
 			dat += "<h2>Cooldown:</h2>"
-			dat += "<span style='background-color:[background_cl]'>[(cooldown_over - world.time) / 600] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown'>Reset Cooldown</a>" // 600 deciseconds in one minute
+			dat += "<span style='background-color:[background_cl]'>[max(0, round((cooldown_over - world.time) / 600, 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown'>Reset Cooldown</a>" // 600 deciseconds in one minute
 
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
 			dat += "<tr style='vertical-align:top'>"
 			dat += "<td width=30%><b>Name</b></td>"
-			dat += "<td width=17%><b>Severity</b></td>"
+			dat += "<td width=17%><b>Cost</b></td>"
 			dat += "<td width=12%><b>Time</b></td>"
 			dat += "<td width=41%><b>Actions</b></td>"
 			dat += "</tr>"
@@ -714,7 +717,7 @@ SUBSYSTEM_DEF(unified)
 				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[scheduled.event.name]</td>" //Name
-				dat += "<td>[scheduled.event.track]</td>" //Severity
+				dat += "<td>[scheduled.event.unified_cost]</td>" //Severity
 				var/time = (scheduled.event.roundstart && !round_started) ? "ROUNDSTART" : "[(scheduled.start_time - world.time) / (1 SECONDS)] s."
 				dat += "<td>[time]</td>" //Time
 				dat += "<td>[scheduled.get_href_actions()]</td>" //Actions
@@ -752,7 +755,7 @@ SUBSYSTEM_DEF(unified)
 	dat += "<tr style='vertical-align:top'>"
 	dat += "<td width=17%><b>Name</b></td>"
 	dat += "<td width=16%><b>Tags</b></td>"
-	dat += "<td width=8%><b>Occurences</b></td>"
+	dat += "<td width=8%><b>Cost</b></td>"
 	dat += "<td width=5%><b>M.Pop</b></td>"
 	dat += "<td width=5%><b>M.Time</b></td>"
 	dat += "<td width=7%><b>Can Occur</b></td>"
@@ -783,10 +786,7 @@ SUBSYSTEM_DEF(unified)
 		for(var/tag in event.tags)
 			dat += "[tag] "
 		dat += "</td>"
-		var/occurence_string = "[event.occurrences]"
-		if(event.shared_occurence_type)
-			occurence_string += " (shared: [event.get_occurences()])"
-		dat += "<td>[occurence_string]</td>" //Occurences
+		dat += "<td>[event.unified_cost]</td>" //Cost
 		dat += "<td>[event.min_players]</td>" //Minimum pop
 		dat += "<td>[event.earliest_start / (1 MINUTES)] m.</td>" //Minimum time
 		dat += "<td>[assoc_spawn_weight[event] ? "Yes" : "No"]</td>" //Can happen?
