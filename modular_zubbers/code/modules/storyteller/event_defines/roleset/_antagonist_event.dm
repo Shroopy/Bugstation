@@ -67,7 +67,7 @@
 	. = ..()
 	if(!.)
 		return
-	if(!roundstart && !SSgamemode.can_inject_antags())
+	if(!roundstart && !SSunified.can_inject_antags()) // BUG EDIT
 		return FALSE
 	var/list/candidates = get_candidates()
 	if(candidates.len < get_minimum_candidates())
@@ -78,7 +78,7 @@
 
 /datum/round_event_control/antagonist/proc/get_candidates()
 	var/round_started = SSticker.HasRoundStarted()
-	var/list/candidates = SSgamemode.get_candidates(antag_flag, pick_roundstart_players = !round_started, restricted_roles = restricted_roles)
+	var/list/candidates = SSunified.get_candidates(antag_flag, pick_roundstart_players = !round_started, restricted_roles = restricted_roles) // BUG EDIT
 	return candidates
 
 /datum/round_event_control/antagonist/solo
@@ -86,7 +86,7 @@
 
 /datum/round_event_control/antagonist/proc/get_antag_amount()
 
-	var/people = SSgamemode.get_correct_popcount()
+	var/people = SSunified.get_correct_popcount() // BUG EDIT
 	var/amount = base_antags + FLOOR(people / denominator, 1)
 
 	if(antag_datum && maximum_antags_global > 0)

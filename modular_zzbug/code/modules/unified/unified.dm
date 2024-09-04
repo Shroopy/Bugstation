@@ -7,14 +7,23 @@ SUBSYSTEM_DEF(unified)
 	flags = SS_BACKGROUND | SS_KEEP_TIMING
 	wait = 2 SECONDS
 
+	/// Next process for our storyteller. The wait time is STORYTELLER_WAIT_TIME
+	var/next_process = 0
+
+	/// Our total event point budget for the shift. Initialized in Initialize()
+	var/points = 0
+
+	/// The time after which we can schedule another event
+	var/cooldown_over = 0
+
 	/// Whether we allow pop scaling. This is configured by config, or the storyteller UI
 	var/allow_pop_scaling = TRUE
 
 	/// Events that we have scheduled to run in the nearby future
 	var/list/scheduled_events = list()
 
-	/// Associative list of tracks to forced event controls. For admins to force events (though they can still invoke them freely outside of the track system)
-	var/list/forced_next_events = list()
+	/// For admins to force events (though they can still invoke them freely outside of the track system)
+	var/datum/round_event_control/forced_next_event
 
 	var/list/control = list() //list of all datum/round_event_control. Used for selecting events based on weight and occurrences.
 	var/list/running = list() //list of all existing /datum/round_event
@@ -35,8 +44,8 @@ SUBSYSTEM_DEF(unified)
 	/// Whether we are viewing the roundstart events or not
 	var/roundstart_event_view = TRUE
 
-	/// Whether the storyteller has been halted
-	var/halted_storyteller = FALSE
+	/// Whether the gamemode has been halted
+	var/halted = FALSE
 
 	/// Ready players for roundstart events.
 	var/ready_players = 0
@@ -50,12 +59,26 @@ SUBSYSTEM_DEF(unified)
 
 	var/storyteller_voted = FALSE
 
+	/// Whether we account for currently filled jobs when scheduling events TODO add to config
+	var/allow_job_weighting = TRUE
+
+	// TODO add to config
+	var/antag_divisor = 8
+
+	/// % chance of having an antag created at roundstart
+	var/roundstart_event_chance = 40
+
+	/// List of all datum/round_event_control with roundstart=true.
+	var/list/roundstart_control = list()
+
 /datum/controller/subsystem/unified/Initialize(time, zlevel)
 	for(var/type in typesof(/datum/round_event_control))
 		var/datum/round_event_control/event = new type()
 		if(!event.typepath || !event.name || !event.valid_for_map())
 			continue //don't want this one! leave it for the garbage collector
 		control += event //add it to the list of all events (controls)
+		if(event.roundstart)
+			roundstart_control += event
 	getHoliday()
 
 	load_config_vars()
@@ -76,11 +99,10 @@ SUBSYSTEM_DEF(unified)
 			sch_event.alerted_admins = TRUE
 			message_admins("Scheduled Event: [sch_event.event] will run in [(sch_event.start_time - world.time) / 10] seconds. (<a href='?src=[REF(sch_event)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(sch_event)];action=refund'>REFUND</a>)")
 
-	if(!halted_storyteller && next_storyteller_process <= world.time && storyteller)
-				// We update crew information here to adjust population scalling and event thresholds for the storyteller.
+	if(!halted && cooldown_over <= world.time)
+		// We update crew information here to adjust population scaling and event thresholds
 		update_crew_infos()
-		next_storyteller_process = world.time + STORYTELLER_WAIT_TIME
-		storyteller.process(STORYTELLER_WAIT_TIME * 0.1)
+		add_event()
 
 	//cache for sanic speed (lists are references anyways)
 	var/list/currentrun = src.currentrun
@@ -95,9 +117,123 @@ SUBSYSTEM_DEF(unified)
 		if (MC_TICK_CHECK)
 			return
 
+/datum/controller/subsystem/unified/proc/add_event()
+	. = FALSE
+	var/datum/round_event_control/picked_event
+
+	var/player_pop = SSunified.get_correct_popcount()
+	calculate_weights(control)
+	var/list/valid_events = list()
+	// Determine which events are valid to pick
+	for(var/datum/round_event_control/event as anything in SSunified.control)
+		if(isnull(event))
+			continue
+		if(event.can_spawn_event(player_pop))
+			valid_events[event] = event.calculated_weight
+	///If we didn't get any events, remove the points inform admins and dont do anything
+	if(!length(valid_events))
+		message_admins("Storyteller failed to pick an event.")
+		log_admin("Storyteller failed to pick an event.")
+		return
+	picked_event = pick_weight(valid_events)
+	if(!picked_event)
+		message_admins("WARNING: Unified picked a null from event pool. Aborting event roll.")
+		log_admin("WARNING: Unified picked a null from event pool. Aborting event roll.")
+		stack_trace("WARNING: Unified picked a null from event pool.")
+		return
+
+	// Calculate event cost and buy it
+	var/total_cost = picked_event.unified_cost
+	if(allow_job_weighting)
+		var/job_cost = 1
+		if(TAG_ENGINEERING in picked_event.tags && eng_crew == 0)
+			job_cost *= 2
+		if(TAG_MEDICAL in picked_event.tags && med_crew == 0)
+			job_cost *= 2
+		if(TAG_SECURITY in picked_event.tags && sec_crew == 0)
+			job_cost *= 2
+		total_cost *= job_cost
+	points -= total_cost
+	var/cooldown // in minutes
+	if(picked_event.cooldown_override)
+		cooldown = rand(picked_event.cooldown_override/2, picked_event.cooldown_override*1.5)
+	else
+		cooldown = rand(total_cost/2, total_cost*1.5)
+	cooldown_over = world.time + cooldown MINUTES // convert cooldown to deciseconds
+	message_admins("Unified purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [cooldown] minutes.")
+	log_admin("Storyteller purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [cooldown] minutes.")
+	if(picked_event.roundstart)
+		TriggerEvent(picked_event)
+	else
+		schedule_event(picked_event, 3 MINUTES, total_cost) // We already randomize cooldown, we don't need to randomize this
+
+	. = TRUE
+
+/datum/controller/subsystem/unified/proc/add_roundstart_event()
+	. = FALSE
+	var/datum/round_event_control/picked_event
+
+	var/player_pop = SSunified.get_correct_popcount()
+	calculate_weights(control)
+	var/list/valid_events = list()
+	// Determine which events are valid to pick
+	for(var/datum/round_event_control/event as anything in SSunified.roundstart_control)
+		if(isnull(event))
+			continue
+		if(event.can_spawn_event(player_pop))
+			valid_events[event] = event.calculated_weight
+	///If we didn't get any events, remove the points inform admins and dont do anything
+	if(!length(valid_events))
+		message_admins("Storyteller failed to pick an event.")
+		log_admin("Storyteller failed to pick an event.")
+		return
+	picked_event = pick_weight(valid_events)
+	if(!picked_event)
+		message_admins("WARNING: Unified picked a null from event pool. Aborting event roll.")
+		log_admin("WARNING: Unified picked a null from event pool. Aborting event roll.")
+		stack_trace("WARNING: Unified picked a null from event pool.")
+		return
+
+	// Calculate event cost and buy it
+	var/total_cost = picked_event.unified_cost
+	if(allow_job_weighting)
+		var/job_cost = 1
+		if(TAG_ENGINEERING in picked_event.tags && eng_crew == 0)
+			job_cost *= 2
+		if(TAG_MEDICAL in picked_event.tags && med_crew == 0)
+			job_cost *= 2
+		if(TAG_SECURITY in picked_event.tags && sec_crew == 0)
+			job_cost *= 2
+		total_cost *= job_cost
+	points -= total_cost
+
+	. = TRUE
+
+/datum/controller/subsystem/unified/proc/calculate_weights()
+	for(var/datum/round_event_control/event in control)
+		var/weight_total = event.weight
+		if(allow_job_weighting)
+			var/job_weighting = 1
+			if(TAG_ENGINEERING in event.tags && eng_crew == 0)
+				job_weighting *= 0.5
+			if(TAG_MEDICAL in event.tags && med_crew == 0)
+				job_weighting *= 0.5
+			if(TAG_SECURITY in event.tags && sec_crew == 0)
+				job_weighting *= 0.5
+			if(head_crew == 0)
+				job_weighting = 0
+			weight_total *= job_weighting
+		/// Apply occurence multipliers if able
+		var/occurences = event.get_occurences()
+		if(occurences)
+			///If the event has occured already, apply a penalty multiplier based on amount of occurences
+			weight_total *= event.reoccurence_penalty_multiplier ** occurences
+		/// Write it
+		event.calculated_weight = weight_total
+
 /// Gets the number of antagonists the antagonist injection events will stop rolling after.
 /datum/controller/subsystem/unified/proc/get_antag_cap()
-	return round(max(min(get_correct_popcount() / storyteller.antag_divisor + sec_crew,sec_crew*1.5),ANTAG_CAP_FLAT))
+	return round(max(min(get_correct_popcount() / antag_divisor + sec_crew,sec_crew*1.5),ANTAG_CAP_FLAT))
 
 /// Whether events can inject more antagonists into the round
 /datum/controller/subsystem/unified/proc/can_inject_antags()
@@ -175,14 +311,12 @@ SUBSYSTEM_DEF(unified)
 
 /// Refunds and removes a scheduled event.
 /datum/controller/subsystem/unified/proc/refund_scheduled_event(datum/scheduled_event/refunded)
-	if(refunded.cost)
-		var/track_type = refunded.event.track
-		event_track_points[track_type] += refunded.cost
+	points += refunded.cost
 	remove_scheduled_event(refunded)
 
 /// Schedules an event.
 /datum/controller/subsystem/unified/proc/force_event(datum/round_event_control/event)
-	forced_next_events[event.track] = event
+	forced_next_event = event
 
 /// Removes a scheduled event.
 /datum/controller/subsystem/unified/proc/remove_scheduled_event(datum/scheduled_event/removed)
@@ -196,44 +330,13 @@ SUBSYSTEM_DEF(unified)
 		if(player.ready == PLAYER_READY_TO_PLAY)
 			ready_players++
 
-/// We roll points to be spent for roundstart events, including antagonists.
-/datum/controller/subsystem/unified/proc/roll_pre_setup_points()
-	if(storyteller.disable_distribution || halted_storyteller)
-		return
-	/// Distribute points
-	for(var/track in event_track_points)
-		// BUG EDIT START
-		var/calc_value = roundstart_base_points[track]
-		calc_value *= storyteller.starting_point_multipliers[track]
-		var/total_variance = roundstart_variance[track] * storyteller.starting_point_variance_multiplier[track]
-		calc_value += rand(-total_variance, total_variance)
-		event_track_points[track] = round(calc_value, EVENT_POINT_GAINED_PER_SECOND)
-		// BUG EDIT END
-
-	/// If the storyteller guarantees an antagonist roll, add points to make it so.
-	if(storyteller.guarantees_roundstart_roleset && event_track_points[EVENT_TRACK_ROLESET] < point_thresholds[EVENT_TRACK_ROLESET])
-		event_track_points[EVENT_TRACK_ROLESET] = point_thresholds[EVENT_TRACK_ROLESET]
-
-	/// If we have any forced events, ensure we get enough points for them
-	for(var/track in event_tracks)
-		if(forced_next_events[track] && event_track_points[track] < point_thresholds[track])
-			event_track_points[track] = point_thresholds[track]
-
-/// At this point we've rolled roundstart events and antags and we handle leftover points here.
-/datum/controller/subsystem/unified/proc/handle_post_setup_points()
-	for(var/track in event_track_points) //Just halve the points for now.
-		event_track_points[track] *= 0.5
-
 /// Because roundstart events need 2 steps of firing for purposes of antags, here is the first step handled, happening before occupation division.
 /datum/controller/subsystem/unified/proc/handle_pre_setup_roundstart_events()
-	if(storyteller.disable_distribution)
-		return
-	if(halted_storyteller)
+	if(halted)
 		message_admins("WARNING: Didn't roll roundstart events (including antagonists) due to the storyteller being halted.")
 		return
-	while(TRUE)
-		if(!storyteller.handle_tracks())
-			break
+	if(prob(roundstart_event_chance))
+		add_roundstart_event()
 
 /// Second step of handlind roundstart events, happening after people spawn.
 /datum/controller/subsystem/unified/proc/handle_post_setup_roundstart_events()
@@ -282,8 +385,9 @@ SUBSYSTEM_DEF(unified)
 				med_crew++
 			if(player_role.departments_bitflags & DEPARTMENT_BITFLAG_SECURITY)
 				sec_crew++
-	update_pop_scaling()
+	// update_pop_scaling() TODO FIX
 
+/* TODO FIX
 /datum/controller/subsystem/unified/proc/update_pop_scaling()
 	for(var/track in event_tracks)
 		var/low_pop_bound = min_pop_thresholds[track]
@@ -303,6 +407,7 @@ SUBSYSTEM_DEF(unified)
 		var/calculated_multiplier = 1 - (penalty / 100)
 
 		current_pop_scale_multipliers[track] = calculated_multiplier
+*/
 
 /datum/controller/subsystem/unified/proc/TriggerEvent(datum/round_event_control/event)
 	. = event.preRunEvent()
@@ -315,18 +420,6 @@ SUBSYSTEM_DEF(unified)
 /datum/controller/subsystem/unified/proc/resetFrequency()
 	event_frequency_multiplier = 1
 
-/* /client/proc/forceEvent()
-	set name = "Trigger Event"
-	set category = "Admin.Events"
-
-	if(!holder ||!check_rights(R_FUN))
-		return
-
-	holder.forceEvent(usr) */
-
-/* /datum/admins/forceEvent(mob/user)
-	SSgamemode.event_panel(user) */
-
 
 //////////////
 // HOLIDAYS //
@@ -334,7 +427,7 @@ SUBSYSTEM_DEF(unified)
 //Uncommenting ALLOW_HOLIDAYS in config.txt will enable holidays
 
 //It's easy to add stuff. Just add a holiday datum in code/modules/holiday/holidays.dm
-//You can then check if it's a special day in any code in the game by doing if(SSgamemode.holidays["Groundhog Day"])
+//You can then check if it's a special day in any code in the game by doing if(SSunified.holidays["Groundhog Day"])
 
 //You can also make holiday random events easily thanks to Pete/Gia's system.
 //simply make a random event normally, then assign it a holidayID string which matches the holiday's name.
@@ -387,22 +480,21 @@ SUBSYSTEM_DEF(unified)
 	// We need to do this to prevent some niche fuckery... and make dep. orders work. Lol
 	SSjob.ResetOccupations()
 	calculate_ready_players()
-	roll_pre_setup_points()
 	handle_pre_setup_roundstart_events()
+	cooldown_over = world.time + rand(2.5, 20) MINUTES // give 2.5 to 20 minutes before non-roundstart events start happening
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
 /datum/controller/subsystem/unified/proc/post_setup(report) //Gamemodes can override the intercept report. Passing TRUE as the argument will force a report.
 	if(!report)
 		report = !CONFIG_GET(flag/no_intercept_report)
-	addtimer(CALLBACK(GLOBAL_PROC, .proc/display_roundstart_logout_report), ROUNDSTART_LOGOUT_REPORT_TIME)
+	addtimer(CALLBACK(src, PROC_REF(display_roundstart_logout_report)), ROUNDSTART_LOGOUT_REPORT_TIME)
 
 	if(SSdbcore.Connect())
 		var/list/to_set = list()
 		var/arguments = list()
-		if(storyteller)
-			to_set += "game_mode = :game_mode"
-			arguments["game_mode"] = storyteller.name
+		to_set += "game_mode = :game_mode"
+		arguments["game_mode"] = "Unified"
 		if(GLOB.revdata.originmastercommit)
 			to_set += "commit_hash = :commit_hash"
 			arguments["commit_hash"] = GLOB.revdata.originmastercommit
@@ -416,7 +508,6 @@ SUBSYSTEM_DEF(unified)
 			qdel(query_round_game_mode)
 	addtimer(CALLBACK(src, PROC_REF(send_trait_report)), rand(1 MINUTES, 5 MINUTES))
 	handle_post_setup_roundstart_events()
-	handle_post_setup_points()
 	roundstart_event_view = FALSE
 	return TRUE
 
@@ -438,7 +529,7 @@ SUBSYSTEM_DEF(unified)
 //////////////////////////
 //Reports player logouts//
 //////////////////////////
-/proc/display_roundstart_logout_report()
+/datum/controller/subsystem/unified/proc/display_roundstart_logout_report()
 	var/list/msg = list("[span_boldnotice("Roundstart logout report")]\n\n")
 	for(var/i in GLOB.mob_living_list)
 		var/mob/living/L = i
@@ -525,9 +616,6 @@ SUBSYSTEM_DEF(unified)
 					event.max_occurrences = value
 				if("earliest_start")
 					event.earliest_start = value * (1 MINUTES)
-				if("track")
-					if(value in event_tracks)
-						event.track = value
 				if("cost")
 					event.cost = value
 				if("reoccurence_penalty_multiplier")
@@ -547,7 +635,7 @@ SUBSYSTEM_DEF(unified)
 	var/round_started = SSticker.HasRoundStarted()
 	var/list/dat = list()
 	var/active_pop = get_correct_popcount()
-	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted_storyteller ? "class='linkOn'" : ""]>HALT Storyteller</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main;action=set_storyteller'>Set Storyteller</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
+	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted ? "class='linkOn'" : ""]>HALT Unified</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main;action=set_storyteller'>Set Storyteller</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
 	dat += "<BR><font color='#888888'><i>Storyteller determines points gained, event chances, and is the entity responsible for rolling events.</i></font>"
 	dat += "<BR>Active Players: [active_pop]   (Head: [head_crew], Sec: [sec_crew], Eng: [eng_crew], Med: [med_crew]) - Antag Cap: [get_antag_cap()]"
 	dat += "<HR>"
@@ -570,7 +658,7 @@ SUBSYSTEM_DEF(unified)
 				dat += "<BR>[track]: <a href='?src=[REF(src)];panel=main;action=vars;var=roundstart_pts;track=[track]'>[roundstart_point_multipliers[track]]</a>"
 			dat += "<HR>"
 			*/
-
+			/* TODO FIX
 			dat += "<b>Minimum Population for Tracks:</b>"
 			dat += "<BR><font color='#888888'><i>This are the minimum population caps for events to be able to run.</i></font>"
 			for(var/track in event_tracks)
@@ -581,7 +669,7 @@ SUBSYSTEM_DEF(unified)
 			dat += "<BR><font color='#888888'><i>Those are thresholds the tracks require to reach with points to make an event.</i></font>"
 			for(var/track in event_tracks)
 				dat += "<BR>[track]: <a href='?src=[REF(src)];panel=main;action=vars;var=pts_threshold;track=[track]'>[point_thresholds[track]]</a>"
-
+			*/
 		if(UNIFIED_PANEL_MAIN)
 			var/even = TRUE
 			dat += "<h2>Event Tracks:</h2>"
@@ -594,27 +682,26 @@ SUBSYSTEM_DEF(unified)
 			dat += "<td width=10%><b>Forced</b></td>"
 			dat += "<td width=35%><b>Actions</b></td>"
 			dat += "</tr>"
-			for(var/track in event_tracks)
-				even = !even
-				var/background_cl = even ? "#17191C" : "#23273C"
-				var/lower = event_track_points[track]
-				var/upper = point_thresholds[track]
-				var/percent = round((lower/upper)*100)
-				var/next = 0
-				var/last_points = last_point_gains[track]
-				if(last_points)
-					next = round((upper - lower) / last_points / 60, 0.1) // points / (points/second) / (seconds/minute) = minutes
-				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
-				dat += "<td>[track]</td>" //Track
-				dat += "<td>[percent]% ([lower]/[upper])</td>" //Progress
-				dat += "<td>~[next] m.</td>" //Next
-				var/datum/round_event_control/forced_event = forced_next_events[track]
-				var/forced = forced_event ? "[forced_event.name] <a href='?src=[REF(src)];panel=main;action=track_action;track_action=remove_forced;track=[track]'>X</a>" : ""
-				dat += "<td>[forced]</td>" //Forced
-				dat += "<td><a href='?src=[REF(src)];panel=main;action=track_action;track_action=set_pts;track=[track]'>Set Pts.</a> <a href='?src=[REF(src)];panel=main;action=track_action;track_action=next_event;track=[track]'>Next Event</a></td>" //Actions
-				dat += "</tr>"
+			even = !even
+			/* TODO FIX
+			var/background_cl = even ? "#17191C" : "#23273C"
+			var/lower = event_track_points[track]
+			var/upper = point_thresholds[track]
+			var/percent = round((lower/upper)*100)
+			var/next = 0
+			var/last_points = last_point_gains[track]
+			if(last_points)
+				next = round((upper - lower) / last_points / 60, 0.1) // points / (points/second) / (seconds/minute) = minutes
+			dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
+			dat += "<td>[track]</td>" //Track
+			dat += "<td>[percent]% ([lower]/[upper])</td>" //Progress
+			dat += "<td>~[next] m.</td>" //Next
+			var/forced = forced_next_event ? "[forced_next_event.name] <a href='?src=[REF(src)];panel=main;action=track_action;track_action=remove_forced;track=[track]'>X</a>" : ""
+			dat += "<td>[forced]</td>" //Forced
+			dat += "<td><a href='?src=[REF(src)];panel=main;action=track_action;track_action=set_pts;track=[track]'>Set Pts.</a> <a href='?src=[REF(src)];panel=main;action=track_action;track_action=next_event;track=[track]'>Next Event</a></td>" //Actions
+			dat += "</tr>"
 			dat += "</table>"
-
+			*/
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
 			dat += "<tr style='vertical-align:top'>"
@@ -663,26 +750,8 @@ SUBSYSTEM_DEF(unified)
  /// Panel containing information and actions regarding events
 /datum/controller/subsystem/unified/proc/event_panel(mob/user)
 	var/list/dat = list()
-	if(storyteller)
-		dat += "Storyteller: [storyteller.name]"
-		dat += "<BR>Repetition penalty multiplier: [storyteller.event_repetition_multiplier]"
-		dat += "<BR>Cost variance: [storyteller.cost_variance]"
-		if(storyteller.tag_weight_multipliers)
-			dat += "<BR>Tag weight multipliers:"
-			for(var/tag in storyteller.tag_weight_multipliers)
-				dat += "[tag]:[storyteller.tag_weight_multipliers[tag]] | "
-		storyteller.calculate_weights(statistics_track_page)
-	else
-		dat += "Storyteller: None<BR>Weight and chance statistics will be inaccurate due to the present lack of a storyteller."
-	dat += "<BR><a href='?src=[REF(src)];panel=stats;action=set_roundstart'[roundstart_event_view ? "class='linkOn'" : ""]>Roundstart Events</a> Forced Roundstart events will use rolled points, and are guaranteed to trigger (even if the used points are not enough)"
+	dat += "<BR><a href='?src=[REF(src)];panel=stats;action=set_roundstart'[roundstart_event_view ? "class='linkOn'" : ""]>Roundstart Events</a>"
 	dat += "<BR>Avg. event intervals: "
-	for(var/track in event_tracks)
-		if(last_point_gains[track])
-			var/est_time = round(point_thresholds[track] / last_point_gains[track] / 60, 0.1) // points / (points/second) / (seconds/minute) = minutes
-			dat += "[track]: ~[est_time] m. | "
-	dat += "<HR>"
-	for(var/track in EVENT_PANEL_TRACKS)
-		dat += "<a href='?src=[REF(src)];panel=stats;action=set_cat;cat=[track]'[(statistics_track_page == track) ? "class='linkOn'" : ""]>[track]</a>"
 	dat += "<HR>"
 	/// Create event info and stats table
 	dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
@@ -699,13 +768,7 @@ SUBSYSTEM_DEF(unified)
 	var/even = TRUE
 	var/total_weight = 0
 	var/list/event_lookup
-	switch(statistics_track_page)
-		if(ALL_EVENTS)
-			event_lookup = control
-		if(UNCATEGORIZED_EVENTS)
-			event_lookup = uncategorized
-		else
-			event_lookup = event_pools[statistics_track_page]
+	event_lookup = control
 	var/list/assoc_spawn_weight = list()
 	var/active_pop = get_correct_popcount()
 	for(var/datum/round_event_control/event as anything in event_lookup)
@@ -754,8 +817,9 @@ SUBSYSTEM_DEF(unified)
 		if("main")
 			switch(href_list["action"])
 				if("halt_storyteller")
-					halted_storyteller = !halted_storyteller
-					message_admins("[key_name_admin(usr)] has [halted_storyteller ? "HALTED" : "un-halted"] the Storyteller.")
+					halted = !halted
+					message_admins("[key_name_admin(usr)] has [halted ? "HALTED" : "un-halted"] the Storyteller.")
+				/* TODO FIX
 				if("vars")
 					var/track = href_list["track"]
 					switch(href_list["var"])
@@ -784,6 +848,7 @@ SUBSYSTEM_DEF(unified)
 								return
 							message_admins("[key_name_admin(usr)] set point threshold of [track] track to [new_value].")
 							point_thresholds[track] = new_value
+				*/
 				if("reload_config_vars")
 					message_admins("[key_name_admin(usr)] reloaded unified config vars.")
 					load_config_vars()
@@ -793,6 +858,7 @@ SUBSYSTEM_DEF(unified)
 				if("open_stats")
 					event_panel(user)
 					return
+				/* TODO FIX
 				if("track_action")
 					var/track = href_list["track"]
 					if(!(track in event_tracks))
@@ -816,6 +882,7 @@ SUBSYSTEM_DEF(unified)
 							event_track_points[track] = point_thresholds[track]
 							if(storyteller)
 								storyteller.handle_tracks()
+				*/
 			admin_panel(user)
 		if("stats")
 			switch(href_list["action"])

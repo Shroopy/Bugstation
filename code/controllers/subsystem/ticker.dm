@@ -251,10 +251,15 @@ SUBSYSTEM_DEF(ticker)
 	//Configure mode and assign player to antagonists
 	var/can_continue = FALSE
 //	can_continue = SSdynamic.pre_setup() //Choose antagonists // BUBBER EDIT - STORYTELLER (note: maybe disable)
+	/* BUG REMOVAL START
 	//BUBBER EDIT BEGIN - STORYTELLER
 	SSgamemode.init_storyteller()
 	can_continue = SSgamemode.pre_setup()
 	//BUBBER EDIT END - STORYTELLER
+	BUG REMOVAL END */
+	// BUG ADDITION START
+	can_continue = SSunified.pre_setup()
+	// BUG ADDITION END
 
 	CHECK_TICK
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_PRE_JOBS_ASSIGNED, src)
@@ -324,7 +329,7 @@ SUBSYSTEM_DEF(ticker)
 /datum/controller/subsystem/ticker/proc/PostSetup()
 	set waitfor = FALSE
 	SSdynamic.post_setup()
-	SSgamemode.post_setup() // BUBBER EDIT - Storyteller
+	SSunified.post_setup() // BUBBER EDIT - Storyteller // BUG EDIT - Unified
 	GLOB.start_state = new /datum/station_state()
 	GLOB.start_state.count()
 

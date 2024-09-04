@@ -1,4 +1,4 @@
-///Scheduled event datum for SSgamemode to put events into.
+///Scheduled event datum for SSunified to put events into. // BUG EDIT
 /datum/scheduled_event
 	/// What event are scheduling.
 	var/datum/round_event_control/event
@@ -54,13 +54,13 @@
 		message_admins("Scheduled Event: [event] was unable to run and has been refunded.")
 		log_admin("Scheduled Event: [event] was unable to run and has been refunded.")
 
-		SSgamemode.refund_scheduled_event(src)
+		SSunified.refund_scheduled_event(src) // BUG EDIT
 		return
 
 	///Trigger the event and remove the scheduled datum
 	message_admins("Scheduled Event: [event] successfully triggered.")
-	SSgamemode.TriggerEvent(event)
-	SSgamemode.remove_scheduled_event(src)
+	SSunified.TriggerEvent(event) // BUG EDIT
+	SSunified.remove_scheduled_event(src) // BUG EDIT
 
 /datum/scheduled_event/Destroy()
 	remove_occurence()
@@ -76,11 +76,11 @@
 		if("cancel")
 			message_admins("[key_name_admin(usr)] cancelled scheduled event [event.name].")
 			log_admin_private("[key_name(usr)] cancelled scheduled event [event.name].")
-			SSgamemode.remove_scheduled_event(src)
+			SSunified.remove_scheduled_event(src) // BUG EDIT
 		if("refund")
 			message_admins("[key_name_admin(usr)] refunded scheduled event [event.name].")
 			log_admin_private("[key_name(usr)] refunded scheduled event [event.name].")
-			SSgamemode.refund_scheduled_event(src)
+			SSunified.refund_scheduled_event(src) // BUG EDIT
 		if("reschedule")
 			var/new_schedule = input(usr, "New schedule time (in seconds):", "Reschedule Event") as num|null
 			if(isnull(new_schedule) || QDELETED(src))

@@ -74,4 +74,4 @@
 		if("force_next")
 			message_admins("[key_name_admin(usr)] has forced scheduled event [src.name].")
 			log_admin_private("[key_name(usr)] has forced scheduled event [src.name].")
-			SSgamemode.force_event(src)
+			SSunified.force_event(src) // BUG EDIT
