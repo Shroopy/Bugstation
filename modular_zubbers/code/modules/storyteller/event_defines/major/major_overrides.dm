@@ -90,11 +90,3 @@ BUG EDIT END */
 /datum/round_event_control/stray_cargo/changeling_zombie
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL, TAG_COMBAT, TAG_CHAOTIC, TAG_SPOOKY)
-
-/datum/round_event_control/cme
-	track = EVENT_TRACK_MAJOR
-	tags = list(TAG_DESTRUCTIVE, TAG_COMMUNAL, TAG_CHAOTIC)
-
-/datum/round_event_control/stray_cargo/changeling_zombie
-	track = EVENT_TRACK_MAJOR
-	tags = list(TAG_COMMUNAL, TAG_COMBAT, TAG_CHAOTIC, TAG_SPOOKY)
