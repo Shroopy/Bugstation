@@ -308,22 +308,27 @@
 /datum/round_event_control/cme
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_DESTRUCTIVE, TAG_COMMUNAL, TAG_CHAOTIC)
+	weight = 10
 
 /datum/round_event_control/stray_cargo/changeling_zombie
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL, TAG_COMBAT, TAG_CHAOTIC, TAG_SPOOKY)
+	weight = 10
 
 /datum/round_event_control/cme
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_DESTRUCTIVE, TAG_COMMUNAL, TAG_CHAOTIC)
+	weight = 10
 
 /datum/round_event_control/stray_cargo/changeling_zombie
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL, TAG_COMBAT, TAG_CHAOTIC, TAG_SPOOKY)
+	weight = 10
 
 /datum/round_event_control/scrubber_overflow
 	track = EVENT_TRACK_MUNDANE
 	tags = list(TAG_COMMUNAL)
+	weight = 10
 
 // ANTAGS
 
@@ -419,3 +424,44 @@
 	typepath = /datum/round_event/antagonist/team/nukie
 
 	ruleset_lazy_templates = list(LAZY_TEMPLATE_KEY_NUKIEBASE)
+
+/datum/round_event_control/antagonist/obsessed
+	name = "Obsessed"
+	roundstart = TRUE
+
+	antag_flag = ROLE_OBSESSED
+	antag_datum = /datum/antagonist/obsessed
+	weight = 8
+	maximum_antags_global = 1
+
+	tags = list(TAG_CREW_ANTAG)
+
+/datum/round_event_control/antagonist/solo/spy
+	name = "Spies"
+	roundstart = TRUE
+
+	antag_flag = ROLE_SPY
+	antag_datum = /datum/antagonist/spy
+	weight = 8
+	maximum_antags_global = 4
+
+	tags = list(TAG_CREW_ANTAG)
+
+/datum/round_event_control/antagonist/solo/spy/midround
+	name = "Spies (Midround)"
+	roundstart = FALSE
+
+/datum/round_event_control/antagonist/solo/traitor
+	name = "Traitors"
+	roundstart = TRUE
+
+	antag_flag = ROLE_TRAITOR
+	antag_datum = /datum/antagonist/traitor
+	weight = 8
+	maximum_antags_global = 6
+
+	tags = list(TAG_CREW_ANTAG)
+
+/datum/round_event_control/antagonist/solo/traitor/midround
+	name = "Sleeper Agents (Traitors)"
+	roundstart = FALSE
