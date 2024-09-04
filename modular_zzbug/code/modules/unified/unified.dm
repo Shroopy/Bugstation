@@ -499,9 +499,10 @@ SUBSYSTEM_DEF(unified)
 	SSjob.ResetOccupations()
 	calculate_ready_players()
 	handle_pre_setup_roundstart_events()
-	var/cooldown = 10 * BASE_POINTS/starting_points
 	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
 	points = starting_points
+	var/cooldown = 10 * BASE_POINTS/starting_points
+	cooldown_over = world.time + cooldown MINUTES
 	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
 	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
 	return TRUE
