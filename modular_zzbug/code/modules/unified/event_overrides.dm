@@ -40,7 +40,7 @@
 
 /datum/round_event_control/electrical_storm
 	unified_cost = COST_MINOR
-	weight = 5 // it's annoying
+	weight = WEIGHT_UNLIKELY // it's annoying
 
 /datum/round_event_control/fake_virus
 	unified_cost = COST_MINOR
@@ -95,7 +95,7 @@
 
 /datum/round_event_control/bureaucratic_error
 	unified_cost = COST_MINOR
-	weight = 5 // It's annoying
+	weight = WEIGHT_UNLIKELY // It's annoying
 
 /datum/round_event_control/vent_clog
 	unified_cost = COST_MINOR
@@ -119,7 +119,7 @@
 
 /datum/round_event_control/anomaly/anomaly_bluespace
 	unified_cost = COST_MINOR
-	weight = 7.5 // Our stuff being teleported away is kinda annoying but not too bad
+	weight = WEIGHT_LESS_LIKELY // Our stuff being teleported away is kinda annoying but not too bad
 
 /datum/round_event_control/vent_clog/strange
 	unified_cost = COST_MINOR
@@ -165,7 +165,6 @@
 
 /datum/round_event_control/processor_overload
 	unified_cost = COST_MODERATE
-	weight = 5 // More severe version of comms blackout
 
 /datum/round_event_control/processor_overload/New()
 	tags |= list(TAG_ENGINEERING)
@@ -389,7 +388,6 @@
 	cooldown_override = 5
 
 /datum/round_event_control/antagonist/solo/bloodsucker
-	weight = 8
 	min_players = 20
 
 	base_antags = 2
@@ -400,7 +398,6 @@
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/changeling
-	weight = 8
 	min_players = 20
 	maximum_antags_global = 4
 
@@ -408,7 +405,6 @@
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/heretic
-	weight = 8
 	min_players = 30
 
 	base_antags = 1
@@ -425,7 +421,6 @@
 
 	min_players = 20
 
-
 /datum/round_event_control/antagonist/solo/malf/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
@@ -441,7 +436,7 @@
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/operative
-	// weight = 0 // shouldn't be overridden
+	// Don't override weight for operative!
 	unified_cost = COST_MAJOR
 
 /datum/round_event_control/operative/New()
@@ -449,7 +444,6 @@
 
 /datum/round_event_control/antagonist/obsessed
 	unified_cost = COST_SEMIMAJOR
-	weight = 8
 	maximum_antags_global = 1
 
 /datum/round_event_control/antagonist/obsessed/New()
@@ -460,14 +454,12 @@
 	roundstart = FALSE
 
 /datum/round_event_control/antagonist/solo/spy
-	weight = 8
 	maximum_antags_global = 4
 
 /datum/round_event_control/antagonist/solo/spy/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/traitor
-	weight = 8
 	maximum_antags_global = 6
 
 /datum/round_event_control/antagonist/solo/traitor/New()
