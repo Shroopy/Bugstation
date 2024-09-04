@@ -54,6 +54,7 @@ SUBSYSTEM_DEF(unified)
 	var/eng_crew = 0
 	var/sec_crew = 0
 	var/med_crew = 0
+	var/sci_crew = 0
 
 	var/wizardmode = FALSE
 
@@ -152,6 +153,8 @@ SUBSYSTEM_DEF(unified)
 			job_cost *= 2
 		if(TAG_SECURITY in picked_event.tags && sec_crew == 0)
 			job_cost *= 2
+		if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
+			job_cost *= 2
 		total_cost *= job_cost
 	points -= total_cost
 	var/cooldown // in minutes
@@ -204,6 +207,8 @@ SUBSYSTEM_DEF(unified)
 			job_cost *= 2
 		if(TAG_SECURITY in picked_event.tags && sec_crew == 0)
 			job_cost *= 2
+		if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
+			job_cost *= 2
 		total_cost *= job_cost
 	points -= total_cost
 
@@ -219,6 +224,8 @@ SUBSYSTEM_DEF(unified)
 			if(TAG_MEDICAL in event.tags && med_crew == 0)
 				job_weighting *= 0.5
 			if(TAG_SECURITY in event.tags && sec_crew == 0)
+				job_weighting *= 0.5
+			if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
 				job_weighting *= 0.5
 			if(head_crew == 0)
 				job_weighting = 0
@@ -365,6 +372,7 @@ SUBSYSTEM_DEF(unified)
 	eng_crew = 0
 	med_crew = 0
 	sec_crew = 0
+	sci_crew = 0
 	for(var/mob/player_mob as anything in GLOB.player_list)
 		if(!player_mob.client)
 			continue
@@ -385,6 +393,8 @@ SUBSYSTEM_DEF(unified)
 				med_crew++
 			if(player_role.departments_bitflags & DEPARTMENT_BITFLAG_SECURITY)
 				sec_crew++
+			if(player_role.departments_bitflags & DEPARTMENT_BITFLAG_SCIENCE)
+				sci_crew++
 	// update_pop_scaling() TODO FIX
 
 /* TODO FIX
@@ -482,6 +492,7 @@ SUBSYSTEM_DEF(unified)
 	calculate_ready_players()
 	handle_pre_setup_roundstart_events()
 	cooldown_over = world.time + rand(2.5, 20) MINUTES // give 2.5 to 20 minutes before non-roundstart events start happening
+	points = rand(100, 300)
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
@@ -635,8 +646,7 @@ SUBSYSTEM_DEF(unified)
 	var/round_started = SSticker.HasRoundStarted()
 	var/list/dat = list()
 	var/active_pop = get_correct_popcount()
-	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted ? "class='linkOn'" : ""]>HALT Unified</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main;action=set_storyteller'>Set Storyteller</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
-	dat += "<BR><font color='#888888'><i>Storyteller determines points gained, event chances, and is the entity responsible for rolling events.</i></font>"
+	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted ? "class='linkOn'" : ""]>HALT Unified</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
 	dat += "<BR>Active Players: [active_pop]   (Head: [head_crew], Sec: [sec_crew], Eng: [eng_crew], Med: [med_crew]) - Antag Cap: [get_antag_cap()]"
 	dat += "<HR>"
 	dat += "<a href='?src=[REF(src)];panel=main;action=tab;tab=[UNIFIED_PANEL_MAIN]' [panel_page == UNIFIED_PANEL_MAIN ? "class='linkOn'" : ""]>Main</a>"
@@ -671,37 +681,12 @@ SUBSYSTEM_DEF(unified)
 				dat += "<BR>[track]: <a href='?src=[REF(src)];panel=main;action=vars;var=pts_threshold;track=[track]'>[point_thresholds[track]]</a>"
 			*/
 		if(UNIFIED_PANEL_MAIN)
-			var/even = TRUE
-			dat += "<h2>Event Tracks:</h2>"
-			dat += "<font color='#888888'><i>Every track represents progression towards scheduling an event of it's severity</i></font>"
-			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
-			dat += "<tr style='vertical-align:top'>"
-			dat += "<td width=25%><b>Track</b></td>"
-			dat += "<td width=20%><b>Progress</b></td>"
-			dat += "<td width=10%><b>Next</b></td>"
-			dat += "<td width=10%><b>Forced</b></td>"
-			dat += "<td width=35%><b>Actions</b></td>"
-			dat += "</tr>"
-			even = !even
-			/* TODO FIX
-			var/background_cl = even ? "#17191C" : "#23273C"
-			var/lower = event_track_points[track]
-			var/upper = point_thresholds[track]
-			var/percent = round((lower/upper)*100)
-			var/next = 0
-			var/last_points = last_point_gains[track]
-			if(last_points)
-				next = round((upper - lower) / last_points / 60, 0.1) // points / (points/second) / (seconds/minute) = minutes
-			dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
-			dat += "<td>[track]</td>" //Track
-			dat += "<td>[percent]% ([lower]/[upper])</td>" //Progress
-			dat += "<td>~[next] m.</td>" //Next
-			var/forced = forced_next_event ? "[forced_next_event.name] <a href='?src=[REF(src)];panel=main;action=track_action;track_action=remove_forced;track=[track]'>X</a>" : ""
-			dat += "<td>[forced]</td>" //Forced
-			dat += "<td><a href='?src=[REF(src)];panel=main;action=track_action;track_action=set_pts;track=[track]'>Set Pts.</a> <a href='?src=[REF(src)];panel=main;action=track_action;track_action=next_event;track=[track]'>Next Event</a></td>" //Actions
-			dat += "</tr>"
-			dat += "</table>"
-			*/
+			var/background_cl = "#23273C"
+			dat += "<h2>Point Budget:</h2>"
+			dat += "<span style='background-color:[background_cl]'>[points]/[initial(points)]</span>"
+			dat += "<h2>Cooldown:</h2>"
+			dat += "<span style='background-color:[background_cl]'>[(cooldown_over - world.time) / 600] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown'>Reset Cooldown</a>" // 600 deciseconds in one minute
+
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
 			dat += "<tr style='vertical-align:top'>"
@@ -714,10 +699,10 @@ SUBSYSTEM_DEF(unified)
 			for(var/datum/scheduled_event/scheduled as anything in scheduled_events)
 				sorted_scheduled[scheduled] = scheduled.start_time
 			sortTim(sorted_scheduled, cmp=/proc/cmp_numeric_asc, associative = TRUE)
-			even = TRUE
+			var/even = TRUE
 			for(var/datum/scheduled_event/scheduled as anything in sorted_scheduled)
 				even = !even
-				var/background_cl = even ? "#17191C" : "#23273C"
+				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[scheduled.event.name]</td>" //Name
 				dat += "<td>[scheduled.event.track]</td>" //Severity
@@ -736,7 +721,7 @@ SUBSYSTEM_DEF(unified)
 			even = TRUE
 			for(var/datum/round_event/event as anything in running)
 				even = !even
-				var/background_cl = even ? "#17191C" : "#23273C"
+				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[event.control.name]</td>" //Name
 				dat += "<td>-TBA-</td>" //Actions
@@ -816,9 +801,11 @@ SUBSYSTEM_DEF(unified)
 	switch(href_list["panel"])
 		if("main")
 			switch(href_list["action"])
+				if("reset_cooldown")
+					cooldown_over = world.time
 				if("halt_storyteller")
 					halted = !halted
-					message_admins("[key_name_admin(usr)] has [halted ? "HALTED" : "un-halted"] the Storyteller.")
+					message_admins("[key_name_admin(usr)] has [halted ? "HALTED" : "un-halted"] Unified.")
 				/* TODO FIX
 				if("vars")
 					var/track = href_list["track"]
