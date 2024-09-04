@@ -484,3 +484,11 @@
 
 /datum/round_event_control/wizard/New()
 	tags = list(TAG_WIZARD)
+
+// MISC
+
+/datum/round_event_control/changeling
+	cost = COST_MAJOR
+
+/datum/round_event_control/changeling/New()
+	tags |= list(TAG_MEDICAL, TAG_SECURITY)
