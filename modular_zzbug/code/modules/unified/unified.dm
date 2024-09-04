@@ -326,6 +326,7 @@ SUBSYSTEM_DEF(unified)
 /// Refunds and removes a scheduled event.
 /datum/controller/subsystem/unified/proc/refund_scheduled_event(datum/scheduled_event/refunded)
 	points += refunded.cost
+	cooldown_over = world.time
 	remove_scheduled_event(refunded)
 
 /// Schedules an event.
@@ -691,7 +692,7 @@ SUBSYSTEM_DEF(unified)
 		if(UNIFIED_PANEL_MAIN)
 			var/background_cl = "#23273C"
 			dat += "<h2>Point Budget:</h2>"
-			dat += "<span style='background-color:[background_cl]'>[points]/[initial(points)]</span>"
+			dat += "<span style='background-color:[background_cl]'>[points]/[starting_points]</span>"
 			dat += "<h2>Cooldown:</h2>"
 			dat += "<span style='background-color:[background_cl]'>[(cooldown_over - world.time) / 600] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown'>Reset Cooldown</a>" // 600 deciseconds in one minute
 
