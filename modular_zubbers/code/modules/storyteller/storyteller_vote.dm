@@ -21,6 +21,12 @@
 
 /datum/vote/storyteller/create_vote()
 	. = ..()
+	for(var/name in choices)
+		for(var/storyteller_type in SSgamemode.storytellers)
+			var/datum/storyteller/storyboy = SSgamemode.storytellers[storyteller_type]
+			if(name == storyboy.name)
+				to_chat(world, span_notice("<b>[storyboy.name]</b>"))
+				to_chat(world, span_notice("[storyboy.desc]"))
 	if((length(choices) == 1)) // Only one choice, no need to vote. Let's just auto-rotate it to the only remaining map because it would just happen anyways.
 		var/de_facto_winner = choices[1]
 		SSgamemode.storyteller_vote_result(de_facto_winner)

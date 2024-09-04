@@ -739,9 +739,11 @@ SUBSYSTEM_DEF(gamemode)
 		if((storyboy.population_min && storyboy.population_min > client_amount) || (storyboy.population_max && storyboy.population_max < client_amount))
 			continue
 		choices += storyboy.name
+		/* BUG REMOVAL START
 		///Because the vote subsystem is dumb and does not support any descriptions, we dump them into world.
 		to_chat(world, span_notice("<b>[storyboy.name]</b>"))
 		to_chat(world, span_notice("[storyboy.desc]"))
+		BUG REMOVAL END */
 	return choices
 
 /datum/controller/subsystem/gamemode/proc/storyteller_vote_result(winner_name)
