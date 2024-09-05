@@ -456,8 +456,8 @@
 // ANTAGS
 
 /datum/round_event_control/antagonist
-	unified_cost = COST_MAJOR
-	cooldown_override = 5
+	unified_cost = COST_SEMIMAJOR
+	cooldown_override = 10
 
 /datum/round_event_control/antagonist/solo/bloodsucker
 	min_players = 20
@@ -520,7 +520,7 @@
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/obsessed
-	unified_cost = COST_SEMIMAJOR
+	unified_cost = COST_MODERATE
 	maximum_antags_global = 1
 	weight = WEIGHT_NORMAL
 
@@ -556,19 +556,19 @@
 
 /datum/round_event_control/changeling
 	max_occurrences = 0 // TODO add an antag version of this
-	unified_cost = COST_MAJOR
-	cooldown_override = 5
-
+	//unified_cost = COST_MAJOR
+	//cooldown_override = 5
+/*
 /datum/round_event_control/changeling/New()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
-
+*/
 /datum/round_event_control/nightmare
 	max_occurrences = 0 // TODO add an antag version of this
-	unified_cost = COST_MAJOR
-
+	//unified_cost = COST_MAJOR
+/*
 /datum/round_event_control/nightmare/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
-
+*/
 /datum/round_event_control/wizard_dice
 	unified_cost = COST_MODERATE
 	weight = WEIGHT_NORMAL
@@ -578,12 +578,12 @@
 /datum/round_event_control/space_ninja
 	max_occurrences = 0  // TODO add an antag version of this
 	unified_cost = COST_MAJOR
-
+/*
 /datum/round_event_control/space_ninja/New()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
-
+*/
 /datum/round_event_control/obsessed
-	max_occurrences = 0
+	max_occurrences = 0 // We already have an antag version of this event
 
 /datum/round_event_control/morph
 	max_occurrences = 0 // TODO add an antag version of this
