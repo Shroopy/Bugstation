@@ -69,7 +69,7 @@ SUBSYSTEM_DEF(unified)
 	var/antag_divisor = 8
 
 	/// % chance of having an antag created at roundstart
-	var/roundstart_event_chance = 40
+	var/roundstart_event_chance = 100 // DON'T COMMIT
 
 	/// List of all datum/round_event_control with roundstart=true.
 	var/list/roundstart_control = list()
@@ -320,7 +320,7 @@ SUBSYSTEM_DEF(unified)
 		update_crew_infos()
 		return active_players
 	else
-		calculate_ready_players()
+		update_ready_crew_infos()
 		return ready_players
 
 /// Refunds and removes a scheduled event.
@@ -404,6 +404,38 @@ SUBSYSTEM_DEF(unified)
 			if(player_role.departments_bitflags & DEPARTMENT_BITFLAG_SCIENCE)
 				sci_crew++
 	// update_pop_scaling() TODO FIX
+
+/datum/controller/subsystem/unified/proc/update_ready_crew_infos()
+	// Very similar logic to `get_active_player_count()`
+	ready_players = 0
+	head_crew = 0
+	eng_crew = 0
+	med_crew = 0
+	sec_crew = 0
+	sci_crew = 0
+	var/list/players = list()
+
+	//This fills the readied players list that the job estimation panel uses.
+	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
+		if(player.ready == PLAYER_READY_TO_PLAY)
+			players[player.key] = player
+
+		sortTim(players, GLOBAL_PROC_REF(cmp_text_asc))
+
+	for(var/ckey in players)
+		var/mob/dead/new_player/player = players[ckey]
+		var/datum/preferences/prefs = player.client?.prefs
+		var/datum/job/J = prefs?.get_highest_priority_job()
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_COMMAND)
+			head_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_ENGINEERING)
+			eng_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_MEDICAL)
+			med_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_SECURITY)
+			sec_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_SCIENCE)
+			sci_crew++
 
 /* TODO FIX
 /datum/controller/subsystem/unified/proc/update_pop_scaling()
