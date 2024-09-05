@@ -149,13 +149,13 @@ SUBSYSTEM_DEF(unified)
 	var/total_cost = picked_event.unified_cost
 	if(allow_job_weighting)
 		var/job_cost = 1
-		if(TAG_ENGINEERING in picked_event.tags && eng_crew == 0)
+		if((TAG_ENGINEERING in picked_event.tags) && eng_crew == 0)
 			job_cost *= 2
-		if(TAG_MEDICAL in picked_event.tags && med_crew == 0)
+		if((TAG_MEDICAL in picked_event.tags) && med_crew == 0)
 			job_cost *= 2
-		if(TAG_SECURITY in picked_event.tags && sec_crew == 0)
+		if((TAG_SECURITY in picked_event.tags) && sec_crew == 0)
 			job_cost *= 2
-		if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
+		if((TAG_SCIENCE in picked_event.tags) && sci_crew == 0)
 			job_cost *= 2
 		total_cost *= job_cost
 	if(total_cost > points)
@@ -208,13 +208,13 @@ SUBSYSTEM_DEF(unified)
 	var/total_cost = picked_event.unified_cost
 	if(allow_job_weighting)
 		var/job_cost = 1
-		if(TAG_ENGINEERING in picked_event.tags && eng_crew == 0)
+		if((TAG_ENGINEERING in picked_event.tags) && eng_crew == 0)
 			job_cost *= 2
-		if(TAG_MEDICAL in picked_event.tags && med_crew == 0)
+		if((TAG_MEDICAL in picked_event.tags) && med_crew == 0)
 			job_cost *= 2
-		if(TAG_SECURITY in picked_event.tags && sec_crew == 0)
+		if((TAG_SECURITY in picked_event.tags) && sec_crew == 0)
 			job_cost *= 2
-		if(TAG_SCIENCE in picked_event.tags && sci_crew == 0)
+		if((TAG_SCIENCE in picked_event.tags) && sci_crew == 0)
 			job_cost *= 2
 		total_cost *= job_cost
 	points -= total_cost
@@ -226,13 +226,13 @@ SUBSYSTEM_DEF(unified)
 		var/weight_total = event.weight
 		if(allow_job_weighting)
 			var/job_weighting = 1
-			if(TAG_ENGINEERING in event.tags && eng_crew == 0)
+			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
 				job_weighting *= 0.5
-			if(TAG_MEDICAL in event.tags && med_crew == 0)
+			if((TAG_MEDICAL in event.tags) && med_crew == 0)
 				job_weighting *= 0.5
-			if(TAG_SECURITY in event.tags && sec_crew == 0)
+			if((TAG_SECURITY in event.tags) && sec_crew == 0)
 				job_weighting *= 0.5
-			if(TAG_SCIENCE in event.tags && sci_crew == 0)
+			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
 				job_weighting *= 0.5
 			if(head_crew == 0)
 				job_weighting = 0
