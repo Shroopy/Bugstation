@@ -69,7 +69,7 @@ SUBSYSTEM_DEF(unified)
 	var/antag_divisor = 8
 
 	/// % chance of having an antag created at roundstart
-	var/roundstart_event_chance = 100 // DON'T COMMIT
+	var/roundstart_event_chance = 40
 
 	/// List of all datum/round_event_control with roundstart=true.
 	var/list/roundstart_control = list()
