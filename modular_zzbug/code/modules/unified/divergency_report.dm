@@ -1,15 +1,25 @@
 /datum/controller/subsystem/unified/proc/send_trait_report()
 	. = "<b><i>Central Command Status Summary</i></b><hr>"
+
+	. += "<b>"
+	if(starting_points < 90) // 60-90 points
+		. += "Low"
+	else if(starting_points < 150) // 90-150 points
+		. += "Moderate"
+	else // 150-180 points
+		. += "High"
+	. += " station threat detected.</b>"
+
 	SSstation.generate_station_goals(20)
 
 	var/list/station_goals = SSstation.get_station_goals()
 
 	if(!length(station_goals))
-		. = "<hr><b>No assigned goals.</b><BR>"
+		. += "<hr><b>No assigned goals.</b><BR>"
 	else
 		. += generate_station_goal_report(station_goals)
 	if(!SSstation.station_traits.len)
-		. = "<hr><b>No identified shift divergencies.</b><BR>"
+		. += "<hr><b>No identified shift divergencies.</b><BR>"
 	else
 		. += generate_station_trait_report()
 
