@@ -151,6 +151,10 @@
 
 // MODERATE EVENTS
 
+/datum/round_event_control/meteor_wave/dust_storm
+	unified_cost = COST_MODERATE
+	weight = WEIGHT_NORMAL
+
 /datum/round_event_control/brain_trauma
 	unified_cost = COST_MODERATE
 	weight = WEIGHT_NORMAL
@@ -264,6 +268,10 @@
 
 /datum/round_event_control/disease_outbreak/New()
 	tags |= list(TAG_MEDICAL)
+
+/datum/round_event_control/disease_outbreak/advanced
+	unified_cost = COST_MODERATE
+	weight = WEIGHT_UNLIKELY
 
 /datum/round_event_control/anomaly/anomaly_dimensional
 	unified_cost = COST_MODERATE
