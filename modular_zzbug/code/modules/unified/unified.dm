@@ -102,11 +102,6 @@ SUBSYSTEM_DEF(unified)
 			sch_event.alerted_admins = TRUE
 			message_admins("Scheduled Event: [sch_event.event] will run in [(sch_event.start_time - world.time) / 10] seconds. (<a href='?src=[REF(sch_event)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(sch_event)];action=refund'>REFUND</a>)")
 
-	if(!halted && cooldown_over <= world.time)
-		// We update crew information here to adjust population scaling and event thresholds
-		update_crew_infos()
-		add_event()
-
 	//cache for sanic speed (lists are references anyways)
 	var/list/currentrun = src.currentrun
 
@@ -120,12 +115,13 @@ SUBSYSTEM_DEF(unified)
 		if (MC_TICK_CHECK)
 			return
 
-/datum/controller/subsystem/unified/proc/add_event()
+/datum/controller/subsystem/unified/proc/buy_event(run_now = FALSE)
 	. = FALSE
 	var/datum/round_event_control/picked_event
 
 	var/player_pop = SSunified.get_correct_popcount()
-	calculate_weights(control)
+	calculate_weights()
+	calculate_costs()
 	var/list/valid_events = list()
 	// Determine which events are valid to pick
 	for(var/datum/round_event_control/event as anything in SSunified.control)
@@ -133,7 +129,6 @@ SUBSYSTEM_DEF(unified)
 			continue
 		if(event.can_spawn_event(player_pop))
 			valid_events[event] = event.calculated_weight
-	///If we didn't get any events, remove the points inform admins and dont do anything
 	if(!length(valid_events))
 		message_admins("Unified failed to pick an event.")
 		log_admin("Unified failed to pick an event.")
@@ -145,81 +140,31 @@ SUBSYSTEM_DEF(unified)
 		stack_trace("WARNING: Unified picked a null from event pool.")
 		return
 
-	// Calculate event cost and buy it
-	var/total_cost = calculate_event_cost(picked_event)
-	if(total_cost > points)
-		message_admins("Unified tried to buy an event over its budget.")
-		log_admin("Unified tried to buy an event over its budget.")
-		return
-	points -= total_cost
-	var/cooldown // in minutes
-	if(picked_event.cooldown_override)
-		cooldown = rand(picked_event.cooldown_override*0.5, picked_event.cooldown_override*1.5)
-	else
-		cooldown = rand(total_cost*0.5, total_cost*1.5)
-		cooldown *= BASE_POINTS/starting_points // the higher the starting points, the lower the cooldown
-	cooldown_over = world.time + cooldown MINUTES // convert cooldown to deciseconds
-	message_admins("Unified purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [round(cooldown, 0.01)] minutes.")
-	log_admin("Storyteller purchased and triggered [picked_event] event for [total_cost] cost and a cooldown of [round(cooldown, 0.01)] minutes.")
-	if(picked_event.roundstart)
+	points -= picked_event.calculated_cost // we already know that valid events cost less than our current points
+	if(picked_event.roundstart || run_now)
 		TriggerEvent(picked_event)
 	else
-		schedule_event(picked_event, 3 MINUTES, total_cost) // We already randomize cooldown, we don't need to randomize this
+		schedule_event(picked_event, rand(10 * BASE_POINTS/starting_points, 120-picked_event.calculated_cost) MINUTES, picked_event.calculated_cost)
 
 	. = TRUE
 
-/datum/controller/subsystem/unified/proc/add_roundstart_event()
-	. = FALSE
-	var/datum/round_event_control/picked_event
-
-	var/player_pop = SSunified.get_correct_popcount()
-	calculate_weights(control)
-	var/list/valid_events = list()
-	// Determine which events are valid to pick
-	for(var/datum/round_event_control/event as anything in SSunified.roundstart_control)
-		if(isnull(event))
-			continue
-		if(event.can_spawn_event(player_pop))
-			valid_events[event] = event.calculated_weight
-	///If we didn't get any events, remove the points inform admins and dont do anything
-	if(!length(valid_events))
-		message_admins("Unified failed to pick a roundstart event.")
-		log_admin("Unified failed to pick a roundstart event.")
-		return
-	picked_event = pick_weight(valid_events)
-	if(!picked_event)
-		message_admins("WARNING: Unified picked a null from event pool. Aborting event roll.")
-		log_admin("WARNING: Unified picked a null from event pool. Aborting event roll.")
-		stack_trace("WARNING: Unified picked a null from event pool.")
-		return
-
-	// Calculate event cost and buy it
-	var/total_cost = calculate_event_cost(picked_event)
-	if(total_cost > points)
-		message_admins("Unified tried to buy a roundstart event over its budget.")
-		log_admin("Unified tried to buy a roundstart event over its budget.")
-		return
-	points -= total_cost
-
-
-	. = TRUE
-
-/datum/controller/subsystem/unified/proc/calculate_event_cost(datum/round_event_control/event)
-	var/total_cost = event.unified_cost
-	if(allow_job_weighting)
-		var/job_cost = 1
-		if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
-			job_cost *= 2
-		if((TAG_MEDICAL in event.tags) && med_crew == 0)
-			job_cost *= 2
-		if((TAG_SECURITY in event.tags) && sec_crew == 0)
-			job_cost *= 2
-		if((TAG_SCIENCE in event.tags) && sci_crew == 0)
-			job_cost *= 2
-		total_cost *= job_cost
-	if(istype(event, /datum/round_event_control/antagonist))
-		total_cost /= get_antag_cap()
-	return total_cost
+/datum/controller/subsystem/unified/proc/calculate_costs()
+	for(var/datum/round_event_control/event in control)
+		var/total_cost = event.unified_cost
+		if(allow_job_weighting)
+			var/job_cost = 1
+			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
+				job_cost *= 2
+			if((TAG_MEDICAL in event.tags) && med_crew == 0)
+				job_cost *= 2
+			if((TAG_SECURITY in event.tags) && sec_crew == 0)
+				job_cost *= 2
+			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
+				job_cost *= 2
+			total_cost *= job_cost
+		if(istype(event, /datum/round_event_control/antagonist))
+			total_cost /= get_antag_cap()
+		event.calculated_cost = total_cost
 
 /datum/controller/subsystem/unified/proc/calculate_weights()
 	for(var/datum/round_event_control/event in control)
@@ -323,11 +268,16 @@ SUBSYSTEM_DEF(unified)
 		update_ready_crew_infos()
 		return ready_players
 
-/// Refunds and removes a scheduled event.
+/// Refunds and removes a scheduled event, then buys another.
 /datum/controller/subsystem/unified/proc/refund_scheduled_event(datum/scheduled_event/refunded)
 	points += refunded.cost
-	cooldown_over = world.time
 	remove_scheduled_event(refunded)
+	buy_event(TRUE)
+
+/// Refunds a failed event, then buys another.
+/datum/controller/subsystem/unified/proc/refund_failed_event(datum/round_event_control/failed)
+	points += failed.cost
+	buy_event(TRUE)
 
 /// Schedules an event.
 /datum/controller/subsystem/unified/proc/force_event(datum/round_event_control/event)
@@ -338,20 +288,12 @@ SUBSYSTEM_DEF(unified)
 	scheduled_events -= removed
 	qdel(removed)
 
-/// We need to calculate ready players for the sake of roundstart events becoming eligible.
-/datum/controller/subsystem/unified/proc/calculate_ready_players()
-	ready_players = 0
-	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
-		if(player.ready == PLAYER_READY_TO_PLAY)
-			ready_players++
-
 /// Because roundstart events need 2 steps of firing for purposes of antags, here is the first step handled, happening before occupation division.
-/datum/controller/subsystem/unified/proc/handle_pre_setup_roundstart_events()
+/datum/controller/subsystem/unified/proc/buy_round_events()
 	if(halted)
-		message_admins("WARNING: Didn't roll roundstart events (including antagonists) due to the storyteller being halted.")
+		message_admins("WARNING: Didn't roll any events (including antagonists) due to Unified being halted.")
 		return
-	if(prob(roundstart_event_chance))
-		add_roundstart_event()
+	while(buy_event());
 
 /// Second step of handlind roundstart events, happening after people spawn.
 /datum/controller/subsystem/unified/proc/handle_post_setup_roundstart_events()
@@ -529,14 +471,11 @@ SUBSYSTEM_DEF(unified)
 /datum/controller/subsystem/unified/proc/pre_setup()
 	// We need to do this to prevent some niche fuckery... and make dep. orders work. Lol
 	SSjob.ResetOccupations()
-	calculate_ready_players()
-	handle_pre_setup_roundstart_events()
 	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
 	points = starting_points
-	var/cooldown = 10 * BASE_POINTS/starting_points
-	cooldown_over = world.time + cooldown MINUTES
-	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
-	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
+	buy_round_events()
+	log_game("Unified: Point budget is [starting_points] points, [starting_points - points] points were used to buy [scheduled_events.len + running.len] events. Events will start in [round(10 * BASE_POINTS/starting_points, 0.01)] minutes.")
+	message_admins("Unified: Point budget is [starting_points] points, [starting_points - points] points were used to buy [scheduled_events.len + running.len] events. Events will start in [round(10 * BASE_POINTS/starting_points, 0.01)] minutes.")
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
