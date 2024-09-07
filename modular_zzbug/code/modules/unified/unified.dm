@@ -146,18 +146,7 @@ SUBSYSTEM_DEF(unified)
 		return
 
 	// Calculate event cost and buy it
-	var/total_cost = picked_event.unified_cost
-	if(allow_job_weighting)
-		var/job_cost = 1
-		if((TAG_ENGINEERING in picked_event.tags) && eng_crew == 0)
-			job_cost *= 2
-		if((TAG_MEDICAL in picked_event.tags) && med_crew == 0)
-			job_cost *= 2
-		if((TAG_SECURITY in picked_event.tags) && sec_crew == 0)
-			job_cost *= 2
-		if((TAG_SCIENCE in picked_event.tags) && sci_crew == 0)
-			job_cost *= 2
-		total_cost *= job_cost
+	var/total_cost = calculate_event_cost(picked_event)
 	if(total_cost > points)
 		message_admins("Unified tried to buy an event over its budget.")
 		log_admin("Unified tried to buy an event over its budget.")
@@ -205,21 +194,32 @@ SUBSYSTEM_DEF(unified)
 		return
 
 	// Calculate event cost and buy it
-	var/total_cost = picked_event.unified_cost
-	if(allow_job_weighting)
-		var/job_cost = 1
-		if((TAG_ENGINEERING in picked_event.tags) && eng_crew == 0)
-			job_cost *= 2
-		if((TAG_MEDICAL in picked_event.tags) && med_crew == 0)
-			job_cost *= 2
-		if((TAG_SECURITY in picked_event.tags) && sec_crew == 0)
-			job_cost *= 2
-		if((TAG_SCIENCE in picked_event.tags) && sci_crew == 0)
-			job_cost *= 2
-		total_cost *= job_cost
+	var/total_cost = calculate_event_cost(picked_event)
+	if(total_cost > points)
+		message_admins("Unified tried to buy a roundstart event over its budget.")
+		log_admin("Unified tried to buy a roundstart event over its budget.")
+		return
 	points -= total_cost
 
+
 	. = TRUE
+
+/datum/controller/subsystem/unified/proc/calculate_event_cost(datum/round_event_control/event)
+	var/total_cost = event.unified_cost
+	if(allow_job_weighting)
+		var/job_cost = 1
+		if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
+			job_cost *= 2
+		if((TAG_MEDICAL in event.tags) && med_crew == 0)
+			job_cost *= 2
+		if((TAG_SECURITY in event.tags) && sec_crew == 0)
+			job_cost *= 2
+		if((TAG_SCIENCE in event.tags) && sci_crew == 0)
+			job_cost *= 2
+		total_cost *= job_cost
+	if(istype(event, /datum/round_event_control/antagonist))
+		total_cost /= get_antag_cap()
+	return total_cost
 
 /datum/controller/subsystem/unified/proc/calculate_weights()
 	for(var/datum/round_event_control/event in control)
