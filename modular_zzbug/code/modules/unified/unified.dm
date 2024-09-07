@@ -247,15 +247,7 @@ SUBSYSTEM_DEF(unified)
 
 /// Gets the number of antagonists the antagonist injection events will stop rolling after.
 /datum/controller/subsystem/unified/proc/get_antag_cap()
-	var/capable_crew
-	if(sec_crew == 0)
-		if(head_crew > 0)
-			capable_crew = 1
-		else
-			capable_crew = 0
-	else
-		capable_crew = sec_crew
-	return round(max(min(get_correct_popcount() / antag_divisor + capable_crew,capable_crew*1.5),ANTAG_CAP_FLAT))
+	return round(max(min(get_correct_popcount() / antag_divisor + sec_crew,sec_crew*1.5),ANTAG_CAP_FLAT))
 
 /// Whether events can inject more antagonists into the round
 /datum/controller/subsystem/unified/proc/can_inject_antags()
