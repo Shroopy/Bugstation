@@ -122,12 +122,19 @@
 	tags |= list(TAG_SCIENCE)
 
 /datum/round_event_control/anomaly/anomaly_hallucination
-	unified_cost = COST_MINOR
+	unified_cost = COST_VERY_MINOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_grav
+	unified_cost = COST_VERY_MINOR
+	weight = WEIGHT_NORMAL
+
+/datum/round_event_control/anomaly/anomaly_grav/high
 	unified_cost = COST_MINOR
 	weight = WEIGHT_NORMAL
+
+/datum/round_event_control/anomaly/anomaly_grav/high/New()
+	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_bioscrambler
 	unified_cost = COST_MINOR
@@ -291,13 +298,6 @@
 /datum/round_event_control/anomaly/anomaly_flux/New()
 	tags |= list(TAG_ENGINEERING)
 
-/datum/round_event_control/anomaly/anomaly_grav/high
-	unified_cost = COST_MODERATE
-	weight = WEIGHT_NORMAL
-
-/datum/round_event_control/anomaly/anomaly_grav/high/New()
-	tags |= list(TAG_ENGINEERING)
-
 /datum/round_event_control/vent_clog/major
 	unified_cost = COST_MODERATE
 	weight = WEIGHT_NORMAL
@@ -322,7 +322,7 @@
 // MAJOR EVENTS
 
 /datum/round_event_control/pirates
-	unified_cost = COST_SEMIMAJOR
+	unified_cost = COST_MAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/pirates/New()
@@ -350,56 +350,56 @@
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/earthquake
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/earthquake/New()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/blob
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SUPERMAJOR
 	weight = WEIGHT_UNLIKELY
 
 /datum/round_event_control/blob/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING)
 
 /datum/round_event_control/meteor_wave
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/meteor_wave/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING)
 
 /datum/round_event_control/meteor_wave/meaty
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_UNLIKELY // meat meteors?? how queer
 
 /datum/round_event_control/meteor_wave/ices
 	max_occurrences = 0
 
 /datum/round_event_control/immovable_rod
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/immovable_rod/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING)
 
 /datum/round_event_control/stray_meteor
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/stray_meteor/New()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_vortex
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_vortex/New()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_pyro
-	unified_cost = COST_MAJOR
+	unified_cost = COST_SEMIMAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_pyro/New()
