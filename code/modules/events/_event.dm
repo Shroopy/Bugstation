@@ -74,7 +74,7 @@
 	SHOULD_CALL_PARENT(TRUE)
 	if(occurrences >= max_occurrences)
 		return FALSE
-	if(roundstart != !SSticker.HasRoundStarted()) // BUBBER EDIT: Roundstart checks added // BUG EDIT
+	if(roundstart && !SSticker.HasRoundStarted()) // BUBBER EDIT: Roundstart checks added // BUG EDIT
 		return FALSE
 	if(calculated_weight == 0) // BUBBER EDIT: Weight check added // BUG EDIT
 		return FALSE
