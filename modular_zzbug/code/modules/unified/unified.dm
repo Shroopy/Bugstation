@@ -361,7 +361,7 @@ SUBSYSTEM_DEF(unified)
 	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
 		if(player.ready == PLAYER_READY_TO_PLAY)
 			players[player.key] = player
-
+			ready_players++
 		sortTim(players, GLOBAL_PROC_REF(cmp_text_asc))
 
 	for(var/ckey in players)
