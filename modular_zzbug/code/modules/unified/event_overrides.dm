@@ -460,39 +460,40 @@
 	cooldown_override = 10
 
 /datum/round_event_control/antagonist/solo/bloodsucker
-	min_players = 20
-
-	base_antags = 2
-	maximum_antags = 3
-	maximum_antags_global = 3
+	min_players = 0
+	base_antags = 1
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/bloodsucker/New()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/changeling
-	min_players = 20
-	maximum_antags_global = 4
+	min_players = 0
+	base_antags = 1
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/changeling/New()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/heretic
-	min_players = 30
-
+	min_players = 0
 	base_antags = 1
-	maximum_antags = 2
-	maximum_antags_global = 2
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/heretic/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/malf
+	min_players = 0
 	base_antags = 1
-	maximum_antags = 1
-	maximum_antags_global = 1
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 	min_players = 20
@@ -503,25 +504,21 @@
 /datum/round_event_control/antagonist/team/nuke_ops
 	unified_cost = COST_SUPERMAJOR
 	weight = WEIGHT_UNLIKELY
-
+	min_players = 0
 	base_antags = 2
-	maximum_antags = 5
+	maximum_antags = INFINITY
 	maximum_antags_global = 5
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/team/nuke_ops/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
-/datum/round_event_control/operative
-	// Don't override weight for operative!
-	unified_cost = COST_MAJOR
-
-/datum/round_event_control/operative/New()
-	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
-
 /datum/round_event_control/antagonist/obsessed
 	unified_cost = COST_MODERATE
-	maximum_antags_global = 1
+	min_players = 0
+	base_antags = 1
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/obsessed/New()
@@ -532,14 +529,20 @@
 	roundstart = FALSE
 
 /datum/round_event_control/antagonist/solo/spy
-	maximum_antags_global = 4
+	min_players = 0
+	base_antags = 1
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/spy/New()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/traitor
-	maximum_antags_global = 6
+	min_players = 0
+	base_antags = 1
+	maximum_antags = INFINITY
+	maximum_antags_global = 0
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/traitor/New()
@@ -553,6 +556,13 @@
 	tags = list(TAG_WIZARD)
 
 // MISC
+
+/datum/round_event_control/operative
+	// Don't override weight for operative!
+	unified_cost = COST_MAJOR
+
+/datum/round_event_control/operative/New()
+	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/changeling
 	max_occurrences = 0 // TODO add an antag version of this
