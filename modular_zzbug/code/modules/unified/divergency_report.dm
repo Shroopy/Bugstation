@@ -2,11 +2,11 @@
 	. = "<b><i>Central Command Status Summary</i></b><hr>"
 
 	. += "<b>"
-	if(starting_points < 90) // 60-90 points
+	if(starting_points < BASE_POINTS * .75)
 		. += "Low"
-	else if(starting_points < 150) // 90-150 points
+	else if(starting_points < BASE_POINTS * 1.25)
 		. += "Moderate"
-	else // 150-180 points
+	else
 		. += "High"
 	. += " station threat detected.</b>"
 
