@@ -2,7 +2,7 @@
 	. = "<b><i>Central Command Status Summary</i></b><hr>"
 
 	. += "<b>"
-	if(starting_points < BASE_POINTS * .75)
+	if(starting_points < BASE_POINTS * 0.75)
 		. += "Low"
 	else if(starting_points < BASE_POINTS * 1.25)
 		. += "Moderate"
