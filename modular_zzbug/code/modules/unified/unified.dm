@@ -192,7 +192,7 @@ SUBSYSTEM_DEF(unified)
 				job_weighting *= 0.5
 			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
 				job_weighting *= 0.5
-			if(head_crew == 0)
+			if(job_weighting != 1 && head_crew == 0)
 				job_weighting = 0
 			weight_total *= job_weighting
 		/// Apply occurence multipliers if able
