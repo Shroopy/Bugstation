@@ -106,10 +106,13 @@ SUBSYSTEM_DEF(unified)
 			return
 
 /datum/controller/subsystem/unified/proc/buy_event(run_now = FALSE)
+/datum/controller/subsystem/unified/proc/buy_event(run_now = FALSE)
 	. = FALSE
 	var/datum/round_event_control/picked_event
 
 	var/player_pop = SSunified.get_correct_popcount()
+	calculate_weights()
+	calculate_costs()
 	calculate_weights()
 	calculate_costs()
 	var/list/valid_events = list()
@@ -135,9 +138,11 @@ SUBSYSTEM_DEF(unified)
 
 	points -= picked_event.calculated_cost // we already know that valid events cost less than our current points
 	if(picked_event.roundstart || run_now)
+	points -= picked_event.calculated_cost // we already know that valid events cost less than our current points
+	if(picked_event.roundstart || run_now)
 		TriggerEvent(picked_event)
 	else
-		schedule_event(picked_event, rand(STARTING_DELAY, 120-picked_event.calculated_cost) MINUTES, picked_event.calculated_cost)
+		schedule_event(picked_event, 3 MINUTES, picked_event.calculated_cost) // We already randomize cooldown, we don't need to randomize this
 
 	. = TRUE
 
@@ -178,6 +183,23 @@ SUBSYSTEM_DEF(unified)
 		if(istype(event, /datum/round_event_control/antagonist))
 			total_cost /= get_antag_cap()
 		event.calculated_cost = total_cost
+/datum/controller/subsystem/unified/proc/calculate_costs()
+	for(var/datum/round_event_control/event in control)
+		var/total_cost = event.unified_cost
+		if(allow_job_weighting)
+			var/job_cost = 1
+			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
+				job_cost *= 2
+			if((TAG_MEDICAL in event.tags) && med_crew == 0)
+				job_cost *= 2
+			if((TAG_SECURITY in event.tags) && sec_crew == 0)
+				job_cost *= 2
+			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
+				job_cost *= 2
+			total_cost *= job_cost
+		if(istype(event, /datum/round_event_control/antagonist))
+			total_cost /= get_antag_cap()
+		event.calculated_cost = total_cost
 
 /datum/controller/subsystem/unified/proc/calculate_weights()
 	for(var/datum/round_event_control/event in control)
@@ -192,6 +214,7 @@ SUBSYSTEM_DEF(unified)
 				job_weighting *= 0.5
 			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
 				job_weighting *= 0.5
+			if(job_weighting != 1 && head_crew == 0)
 			if(job_weighting != 1 && head_crew == 0)
 				job_weighting = 0
 			weight_total *= job_weighting
@@ -365,6 +388,7 @@ SUBSYSTEM_DEF(unified)
 	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
 		if(player.ready == PLAYER_READY_TO_PLAY)
 			players[player.key] = player
+			ready_players++
 			ready_players++
 		sortTim(players, GLOBAL_PROC_REF(cmp_text_asc))
 
@@ -691,6 +715,8 @@ SUBSYSTEM_DEF(unified)
 				dat += "<td>[scheduled.event.name]</td>" //Name
 				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
 				var/time = "[round((scheduled.start_time - world.time) / (1 MINUTES), 0.01)] min."
+				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
+				var/time = "[round((scheduled.start_time - world.time) / (1 MINUTES), 0.01)] min."
 				dat += "<td>[time]</td>" //Time
 				dat += "<td>[scheduled.get_href_actions()]</td>" //Actions
 				dat += "</tr>"
@@ -758,6 +784,7 @@ SUBSYSTEM_DEF(unified)
 		for(var/tag in event.tags)
 			dat += "[tag] "
 		dat += "</td>"
+		dat += "<td>[event.calculated_cost]</td>" //Cost
 		dat += "<td>[event.calculated_cost]</td>" //Cost
 		dat += "<td>[event.min_players]</td>" //Minimum pop
 		dat += "<td>[event.earliest_start / (1 MINUTES)] m.</td>" //Minimum time
