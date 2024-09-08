@@ -6,7 +6,7 @@
 	population_min = 35
 	population_max = 0 // BUG EDIT: disable it
 
-	var/crew_per_antag = 20 //Basically this means for every 10 crew, spawn 1 antag. REMEMBER: This is CREW pop, NOT server pop
+	var/crew_per_antag = 15 //Basically this means for every 10 crew, spawn 1 antag. REMEMBER: This is CREW pop, NOT server pop
 
 	tag_weight_multipliers = list(
 
