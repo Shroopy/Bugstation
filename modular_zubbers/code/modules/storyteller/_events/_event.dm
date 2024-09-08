@@ -58,20 +58,33 @@
 	if(SSticker.HasRoundStarted())
 		if(roundstart)
 			if(!can_run_post_roundstart)
-				return "<a class='linkOff'>Fire</a> <a class='linkOff'>Schedule</a>"
+				return "<a class='linkOff'>Fire</a>" // BUG EDIT
 			return "<a href='?src=[REF(src)];action=fire'>Fire</a> <a href='?src=[REF(src)];action=schedule'>Schedule</a>"
 		else
-			return "<a href='?src=[REF(src)];action=fire'>Fire</a> <a href='?src=[REF(src)];action=schedule'>Schedule</a> <a href='?src=[REF(src)];action=force_next'>Force Next</a>"
+			return "<a href='?src=[REF(src)];action=fire'>Fire</a> <a href='?src=[REF(src)];action=schedule'>Schedule</a>" // BUG EDIT
 	else
 		if(roundstart)
-			return "<a href='?src=[REF(src)];action=force_next'>Force Roundstart</a>"
+			return "<a href='?src=[REF(src)];action=fire'>Fire</a>" // BUG EDIT
 		else
-			return "<a class='linkOff'>Fire</a> <a class='linkOff'>Schedule</a> <a class='linkOff'>Force Next</a>"
+			return "<a href='?src=[REF(src)];action=schedule'>Schedule</a>" // BUG EDIT
 
 /datum/round_event_control/Topic(href, href_list)
 	. = ..()
 	switch(href_list["action"])
+		// BUG EDIT START
+		/*
 		if("force_next")
 			message_admins("[key_name_admin(usr)] has forced scheduled event [src.name].")
 			log_admin_private("[key_name(usr)] has forced scheduled event [src.name].")
-			SSunified.force_event(src) // BUG EDIT
+			SSgamemode.force_event(src)
+		*/
+		if("fire")
+			message_admins("[key_name_admin(usr)] has fired event [src.name].")
+			log_admin_private("[key_name(usr)] has fired event [src.name].")
+			run_event(admin_forced = TRUE)
+		if("schedule")
+			var/delay = input(usr, "Enter the time in seconds to run the event in.", "Schedule Event") as null|num
+			message_admins("[key_name_admin(usr)] has scheduled event [src.name] to run in [delay] seconds.")
+			log_admin_private("[key_name(usr)] has scheduled event [src.name] to run in [delay] seconds.")
+			SSunified.schedule_event(src, delay SECONDS, calculated_cost, TRUE, FALSE)
+		// BUG EDIT END

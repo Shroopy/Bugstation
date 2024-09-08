@@ -42,6 +42,8 @@
 	var/map_flags = NONE
 
 /datum/round_event_control/New()
+	SHOULD_CALL_PARENT(TRUE) // BUG EDIT
+	. = ..() // BUG EDIT
 	if(config && !wizardevent) // Magic is unaffected by configs
 		earliest_start = CEILING(earliest_start * CONFIG_GET(number/events_min_time_mul), 1)
 		// min_players = CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1) // BUG EDIT
@@ -76,7 +78,7 @@
 		return FALSE
 	if(roundstart && !SSticker.HasRoundStarted()) // BUBBER EDIT: Roundstart checks added // BUG EDIT
 		return FALSE
-	if(calculated_weight == 0) // BUBBER EDIT: Weight check added // BUG EDIT
+	if(calculated_weight == 0 && unified_cost != 0) // BUBBER EDIT: Weight check added // BUG EDIT
 		return FALSE
 	if(!allow_magic && wizardevent != SSevents.wizardmode)
 		return FALSE

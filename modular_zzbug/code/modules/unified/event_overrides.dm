@@ -36,6 +36,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/space_dust/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/electrical_storm
@@ -60,6 +61,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/mice_migration/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/wisdomcow
@@ -83,6 +85,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/grey_tide/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/gravity_generator_blackout
@@ -90,6 +93,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/gravity_generator_blackout/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/shuttle_insurance
@@ -101,6 +105,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/tram_malfunction/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/grid_check
@@ -119,6 +124,7 @@
 // /datum/round_event_control/anomaly
 
 /datum/round_event_control/anomaly/New()
+	. = ..()
 	tags |= list(TAG_SCIENCE)
 
 /datum/round_event_control/anomaly/anomaly_hallucination
@@ -134,6 +140,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_grav/high/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_bioscrambler
@@ -141,6 +148,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_bioscrambler/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/anomaly/anomaly_bluespace
@@ -167,6 +175,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/brain_trauma/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/supermatter_surge
@@ -174,17 +183,15 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/supermatter_surge/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
-
-/datum/round_event_control/sentience/all
-	unified_cost = COST_MODERATE
-	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/brand_intelligence
 	unified_cost = COST_MODERATE
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/brand_intelligence/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING, TAG_MEDICAL)
 
 /datum/round_event_control/carp_migration
@@ -192,6 +199,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/carp_migration/New()
+	. = ..()
 	tags |= list(TAG_SECURITY, TAG_MEDICAL)
 
 /datum/round_event_control/communications_blackout
@@ -207,6 +215,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/processor_overload/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/radiation_leak
@@ -214,6 +223,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/radiation_leak/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING, TAG_MEDICAL)
 
 /datum/round_event_control/sandstorm
@@ -221,6 +231,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/sandstorm/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/shuttle_catastrophe
@@ -236,6 +247,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/portal_storm_syndicate/New()
+	. = ..()
 	tags |= list(TAG_SECURITY, TAG_MEDICAL)
 
 // BUG EDIT START
@@ -245,6 +257,7 @@
 	max_occurrences = 2
 
 /datum/round_event_control/radiation_storm/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/wormholes
@@ -253,6 +266,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/wormholes/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/heart_attack
@@ -260,6 +274,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/heart_attack/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/appendicitis
@@ -267,6 +282,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/appendicitis/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/disease_outbreak
@@ -274,6 +290,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/disease_outbreak/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL)
 
 /datum/round_event_control/disease_outbreak/advanced
@@ -285,6 +302,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_dimensional/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_ectoplasm
@@ -296,6 +314,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_flux/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/vent_clog/major
@@ -303,6 +322,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/vent_clog/major/New()
+	. = ..()
 	tags |= list(TAG_SECURITY)
 
 /datum/round_event_control/vent_clog/critical
@@ -310,6 +330,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/vent_clog/critical/New()
+	. = ..()
 	tags |= list(TAG_SECURITY)
 
 /datum/round_event_control/mold
@@ -317,6 +338,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/mold/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 // MAJOR EVENTS
@@ -326,6 +348,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/pirates/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/alien_infestation
@@ -333,6 +356,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/alien_infestation/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/space_dragon
@@ -340,6 +364,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/space_dragon/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/cortical_borer
@@ -347,6 +372,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/cortical_borer/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/earthquake
@@ -354,6 +380,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/earthquake/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/blob
@@ -361,6 +388,7 @@
 	weight = WEIGHT_UNLIKELY
 
 /datum/round_event_control/blob/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING)
 
 /datum/round_event_control/meteor_wave
@@ -368,6 +396,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/meteor_wave/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING)
 
 /datum/round_event_control/meteor_wave/meaty
@@ -382,6 +411,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/immovable_rod/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING)
 
 /datum/round_event_control/stray_meteor
@@ -389,6 +419,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/stray_meteor/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_vortex
@@ -396,6 +427,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_vortex/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/anomaly/anomaly_pyro
@@ -403,6 +435,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/anomaly/anomaly_pyro/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING)
 
 /datum/round_event_control/spider_infestation
@@ -410,6 +443,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/spider_infestation/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/revenant
@@ -422,6 +456,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/abductor/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/fugitives
@@ -429,6 +464,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/fugitives/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/voidwalker
@@ -436,6 +472,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/voidwalker/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/cme
@@ -443,14 +480,15 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/cme/New()
+	. = ..()
 	tags |= list(TAG_ENGINEERING, TAG_SCIENCE)
-
 
 /datum/round_event_control/stray_cargo/changeling_zombie
 	unified_cost = COST_MAJOR
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/stray_cargo/changeling_zombie/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 // ANTAGS
@@ -467,6 +505,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/bloodsucker/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/changeling
@@ -477,6 +516,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/changeling/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/heretic
@@ -487,6 +527,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/heretic/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/malf
@@ -499,6 +540,7 @@
 	min_players = 20
 
 /datum/round_event_control/antagonist/solo/malf/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/team/nuke_ops
@@ -511,6 +553,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/team/nuke_ops/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/obsessed
@@ -522,6 +565,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/obsessed/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/obsessed/midround
@@ -536,6 +580,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/spy/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/antagonist/solo/traitor
@@ -546,6 +591,7 @@
 	weight = WEIGHT_NORMAL
 
 /datum/round_event_control/antagonist/solo/traitor/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 // WIZARD EVENTS
@@ -553,6 +599,7 @@
 // /datum/round_event_control/wizard
 
 /datum/round_event_control/wizard/New()
+	. = ..()
 	tags = list(TAG_WIZARD)
 
 // MISC
@@ -562,6 +609,7 @@
 	unified_cost = COST_MAJOR
 
 /datum/round_event_control/operative/New()
+	. = ..()
 	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 /datum/round_event_control/changeling

@@ -24,9 +24,6 @@ SUBSYSTEM_DEF(unified)
 	/// Events that we have scheduled to run in the nearby future
 	var/list/scheduled_events = list()
 
-	/// For admins to force events (though they can still invoke them freely outside of the track system)
-	var/datum/round_event_control/forced_next_event
-
 	var/list/control = list() //list of all datum/round_event_control. Used for selecting events based on weight and occurrences.
 	var/list/running = list() //list of all existing /datum/round_event
 	var/list/currentrun = list()
@@ -71,23 +68,16 @@ SUBSYSTEM_DEF(unified)
 	/// % chance of having an antag created at roundstart
 	var/roundstart_event_chance = 40
 
-	/// List of all datum/round_event_control with roundstart=true.
-	var/list/roundstart_control = list()
-
 /datum/controller/subsystem/unified/Initialize(time, zlevel)
 	for(var/type in typesof(/datum/round_event_control))
 		var/datum/round_event_control/event = new type()
 		if(!event.typepath || !event.name || !event.valid_for_map())
 			continue //don't want this one! leave it for the garbage collector
 		control += event //add it to the list of all events (controls)
-		if(event.roundstart)
-			roundstart_control += event
 	getHoliday()
 
 	load_config_vars()
 	load_event_config_vars()
-//	return ..()
-
 
 /datum/controller/subsystem/unified/fire(resumed = FALSE)
 	if(!resumed)
@@ -127,11 +117,14 @@ SUBSYSTEM_DEF(unified)
 	for(var/datum/round_event_control/event as anything in SSunified.control)
 		if(isnull(event))
 			continue
+		if(event.unified_cost == 0) // free events are handled in handle_free_events
+			continue
 		if(event.can_spawn_event(player_pop))
 			valid_events[event] = event.calculated_weight
 	if(!length(valid_events))
-		message_admins("Unified failed to pick an event.")
-		log_admin("Unified failed to pick an event.")
+		if(SSticker.HasRoundStarted())
+			message_admins("Unified failed to pick an event.")
+			log_admin("Unified failed to pick an event.")
 		return
 	picked_event = pick_weight(valid_events)
 	if(!picked_event)
@@ -144,9 +137,29 @@ SUBSYSTEM_DEF(unified)
 	if(picked_event.roundstart || run_now)
 		TriggerEvent(picked_event)
 	else
-		schedule_event(picked_event, rand(10 * BASE_POINTS/starting_points, 120-picked_event.calculated_cost) MINUTES, picked_event.calculated_cost)
+		schedule_event(picked_event, rand(STARTING_DELAY, 120-picked_event.calculated_cost) MINUTES, picked_event.calculated_cost)
 
 	. = TRUE
+
+/datum/controller/subsystem/unified/proc/handle_free_events()
+	var/player_pop = SSunified.get_correct_popcount()
+	calculate_weights()
+	var/list/valid_events = list()
+	// Determine which events are valid to pick
+	for(var/datum/round_event_control/event as anything in SSunified.control)
+		if(isnull(event))
+			continue
+		if(!event.unified_cost == 0)
+			continue
+		if(event.can_spawn_event(player_pop))
+			valid_events[event] = event.calculated_weight
+	if(!length(valid_events))
+		message_admins("Unified has no valid free events.")
+		log_admin("Unified has no valid free events.")
+		return
+	for(var/datum/round_event_control/event in valid_events)
+		if(prob(event.calculated_weight))
+			schedule_event(event, rand(STARTING_DELAY, 120) MINUTES, 0)
 
 /datum/controller/subsystem/unified/proc/calculate_costs()
 	for(var/datum/round_event_control/event in control)
@@ -276,12 +289,8 @@ SUBSYSTEM_DEF(unified)
 
 /// Refunds a failed event, then buys another.
 /datum/controller/subsystem/unified/proc/refund_failed_event(datum/round_event_control/failed)
-	points += failed.cost
+	points += failed.calculated_cost
 	buy_event(TRUE)
-
-/// Schedules an event.
-/datum/controller/subsystem/unified/proc/force_event(datum/round_event_control/event)
-	forced_next_event = event
 
 /// Removes a scheduled event.
 /datum/controller/subsystem/unified/proc/remove_scheduled_event(datum/scheduled_event/removed)
@@ -289,11 +298,12 @@ SUBSYSTEM_DEF(unified)
 	qdel(removed)
 
 /// Because roundstart events need 2 steps of firing for purposes of antags, here is the first step handled, happening before occupation division.
-/datum/controller/subsystem/unified/proc/buy_round_events()
+/datum/controller/subsystem/unified/proc/add_round_events()
 	if(halted)
 		message_admins("WARNING: Didn't roll any events (including antagonists) due to Unified being halted.")
 		return
 	while(buy_event());
+	handle_free_events()
 
 /// Second step of handlind roundstart events, happening after people spawn.
 /datum/controller/subsystem/unified/proc/handle_post_setup_roundstart_events()
@@ -303,16 +313,10 @@ SUBSYSTEM_DEF(unified)
 			continue
 		ASYNC
 			event.try_start()
-//		INVOKE_ASYNC(event, /datum/round_event.proc/try_start)
 
 /// Schedules an event to run later.
 /datum/controller/subsystem/unified/proc/schedule_event(datum/round_event_control/passed_event, passed_time, passed_cost, passed_ignore, passed_announce)
 	var/datum/scheduled_event/scheduled = new (passed_event, world.time + passed_time, passed_cost, passed_ignore, passed_announce)
-	var/round_started = SSticker.HasRoundStarted()
-	if(round_started)
-		message_admins("Event: [passed_event] has been scheduled to run in [passed_time / 10] seconds. (<a href='?src=[REF(scheduled)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(scheduled)];action=refund'>REFUND</a>)")
-	else //Only roundstart events can be scheduled before round start
-		message_admins("Event: [passed_event] has been scheduled to run on roundstart. (<a href='?src=[REF(scheduled)];action=cancel'>CANCEL</a>)")
 	scheduled_events += scheduled
 
 /datum/controller/subsystem/unified/proc/update_crew_infos()
@@ -473,9 +477,9 @@ SUBSYSTEM_DEF(unified)
 	SSjob.ResetOccupations()
 	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
 	points = starting_points
-	buy_round_events()
-	log_game("Unified: Point budget is [starting_points] points, [starting_points - points] points were used to buy [scheduled_events.len + running.len] events. Events will start in [round(10 * BASE_POINTS/starting_points, 0.01)] minutes.")
-	message_admins("Unified: Point budget is [starting_points] points, [starting_points - points] points were used to buy [scheduled_events.len + running.len] events. Events will start in [round(10 * BASE_POINTS/starting_points, 0.01)] minutes.")
+	add_round_events()
+	log_game("Unified: Point budget is [starting_points] points, [starting_points - points] points were used to buy [scheduled_events.len + running.len] events.")
+	message_admins("Unified: Point budget is [starting_points] points, [starting_points - points] points were used to buy [scheduled_events.len + running.len] events.")
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
@@ -626,7 +630,6 @@ SUBSYSTEM_DEF(unified)
 /// Panel containing information, variables and controls about the gamemode and scheduled event
 /datum/controller/subsystem/unified/proc/admin_panel(mob/user)
 	update_crew_infos()
-	var/round_started = SSticker.HasRoundStarted()
 	var/list/dat = list()
 	var/active_pop = get_correct_popcount()
 	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted ? "class='linkOn'" : ""]>HALT Unified</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
@@ -667,8 +670,6 @@ SUBSYSTEM_DEF(unified)
 			var/background_cl = "#23273C"
 			dat += "<h2>Point Budget:</h2>"
 			dat += "<span style='background-color:[background_cl]'>[points]/[starting_points]</span>"
-			dat += "<h2>Cooldown:</h2>"
-			dat += "<span style='background-color:[background_cl]'>[max(0, round((cooldown_over - world.time) / 600, 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown'>Reset Cooldown</a>" // 600 deciseconds in one minute
 
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
@@ -688,8 +689,8 @@ SUBSYSTEM_DEF(unified)
 				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[scheduled.event.name]</td>" //Name
-				dat += "<td>[scheduled.event.unified_cost]</td>" //Severity
-				var/time = (scheduled.event.roundstart && !round_started) ? "ROUNDSTART" : "[(scheduled.start_time - world.time) / (1 SECONDS)] s."
+				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
+				var/time = "[round((scheduled.start_time - world.time) / (1 MINUTES), 0.01)] min."
 				dat += "<td>[time]</td>" //Time
 				dat += "<td>[scheduled.get_href_actions()]</td>" //Actions
 				dat += "</tr>"
@@ -757,7 +758,7 @@ SUBSYSTEM_DEF(unified)
 		for(var/tag in event.tags)
 			dat += "[tag] "
 		dat += "</td>"
-		dat += "<td>[event.unified_cost]</td>" //Cost
+		dat += "<td>[event.calculated_cost]</td>" //Cost
 		dat += "<td>[event.min_players]</td>" //Minimum pop
 		dat += "<td>[event.earliest_start / (1 MINUTES)] m.</td>" //Minimum time
 		dat += "<td>[assoc_spawn_weight[event] ? "Yes" : "No"]</td>" //Can happen?

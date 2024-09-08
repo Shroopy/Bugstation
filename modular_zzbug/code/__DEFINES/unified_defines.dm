@@ -21,3 +21,5 @@
 #define WEIGHT_UNLIKELY 5
 
 #define BASE_POINTS 120
+
+#define STARTING_DELAY 10 * BASE_POINTS/starting_points

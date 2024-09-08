@@ -35,7 +35,7 @@
 /// For admins who want to reschedule the event.
 /datum/scheduled_event/proc/reschedule(new_time)
 	start_time = new_time
-	alerted_admins = FALSE
+	// alerted_admins = FALSE // BUG EDIT
 
 /datum/scheduled_event/proc/get_href_actions()
 	var/round_started = SSticker.HasRoundStarted()
