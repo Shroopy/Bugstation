@@ -20,6 +20,7 @@
 #define WEIGHT_LESS_LIKELY 7.5
 #define WEIGHT_UNLIKELY 5
 
-#define BASE_POINTS 120
+// TODO add to config
+#define BASE_POINTS 240
 
 #define STARTING_DELAY 10 * BASE_POINTS/starting_points
