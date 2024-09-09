@@ -80,6 +80,9 @@
 	unified_cost = COST_MINOR
 	weight = WEIGHT_NORMAL
 
+/datum/round_event_control/stray_cargo/syndicate
+	weight = WEIGHT_LESS_LIKELY
+
 /datum/round_event_control/grey_tide
 	unified_cost = COST_MINOR
 	weight = WEIGHT_NORMAL
