@@ -101,14 +101,10 @@ SUBSYSTEM_DEF(unified)
 			sch_event.alerted_admins = TRUE
 			message_admins("Scheduled Event: [sch_event.event] will run in [(sch_event.start_time - world.time) / 10] seconds. (<a href='?src=[REF(sch_event)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(sch_event)];action=refund'>REFUND</a>)")
 
-	var/crew_info_updated = FALSE
 	if(!halted)
 		for(var/cooldown_date in cooldowns)
 			if(cooldown_date <= world.time)
-				if(!crew_info_updated)
-					update_crew_infos()
-					crew_info_updated = TRUE
-				add_event()
+				buy_event(control)
 
 	//cache for sanic speed (lists are references anyways)
 	var/list/currentrun = src.currentrun
@@ -283,16 +279,14 @@ SUBSYSTEM_DEF(unified)
 		update_ready_crew_infos()
 		return ready_players
 
-/// Refunds and removes a scheduled event, then buys another.
+/// Refunds and removes a scheduled event
 /datum/controller/subsystem/unified/proc/refund_scheduled_event(datum/scheduled_event/refunded)
 	points += refunded.cost
 	remove_scheduled_event(refunded)
-	buy_event(TRUE)
 
-/// Refunds a failed event, then buys another.
+/// Refunds a failed event
 /datum/controller/subsystem/unified/proc/refund_failed_event(datum/round_event_control/failed)
 	points += failed.calculated_cost
-	// TODO change cooldown
 
 /// Schedules an event.
 /datum/controller/subsystem/unified/proc/force_event(datum/round_event_control/event)
@@ -304,16 +298,12 @@ SUBSYSTEM_DEF(unified)
 	qdel(removed)
 
 /// Because roundstart events need 2 steps of firing for purposes of antags, here is the first step handled, happening before occupation division.
-/datum/controller/subsystem/unified/proc/add_round_events()
+/datum/controller/subsystem/unified/proc/handle_pre_setup_roundstart_events()
 	if(halted)
 		message_admins("WARNING: Didn't roll any events (including antagonists) due to Unified being halted.")
 		return
-	var/crew_info_updated = FALSE
 	for(var/i in 1 to get_antag_cap())
 		if(prob(roundstart_event_chance))
-			if(!crew_info_updated)
-				update_crew_info()
-				crew_info_updated = TRUE
 			buy_event(roundstart_control)
 
 /// Second step of handlind roundstart events, happening after people spawn.
@@ -494,8 +484,8 @@ SUBSYSTEM_DEF(unified)
 	cooldown_dates[1] = world.time + STARTING_DELAY
 	for(var/i in 2 to cooldown_dates.len)
 		cooldown_dates[i] = cooldown_dates[i-1] + rand(0, STARTING_DELAY)
-	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
-	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round(cooldown, 0.01)] minutes.")
+	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(STARTING_DELAY, 0.01)] minutes.")
+	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round(STARTING_DELAY, 0.01)] minutes.")
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
@@ -686,6 +676,9 @@ SUBSYSTEM_DEF(unified)
 			var/background_cl = "#23273C"
 			dat += "<h2>Point Budget:</h2>"
 			dat += "<span style='background-color:[background_cl]'>[points]/[starting_points]</span>"
+			dat += "<h2>Cooldowns:</h2>"
+			for(var/i in 1 to cooldown_dates.len)
+				dat += "<span style='background-color:[background_cl]'>[max(0, round((cooldown_dates[i] - world.time) / (1 MINUTES), 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown;number=[i];'>Reset Cooldown</a>"
 
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
@@ -797,7 +790,7 @@ SUBSYSTEM_DEF(unified)
 		if("main")
 			switch(href_list["action"])
 				if("reset_cooldown")
-					cooldown_over = world.time
+					cooldown_dates[href_list["number"]] = world.time
 				if("halt_storyteller")
 					halted = !halted
 					message_admins("[key_name_admin(usr)] has [halted ? "HALTED" : "un-halted"] Unified.")
