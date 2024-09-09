@@ -798,7 +798,7 @@ SUBSYSTEM_DEF(unified)
 		if("main")
 			switch(href_list["action"])
 				if("reset_cooldown")
-					cooldown_dates[href_list["number"]] = world.time
+					cooldown_dates[text2num(href_list["number"])] = world.time
 				if("halt_storyteller")
 					halted = !halted
 					message_admins("[key_name_admin(usr)] has [halted ? "HALTED" : "un-halted"] Unified.")
