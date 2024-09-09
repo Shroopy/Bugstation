@@ -683,7 +683,7 @@ SUBSYSTEM_DEF(unified)
 		if(UNIFIED_PANEL_MAIN)
 			var/background_cl = "#23273C"
 			dat += "<h2>Point Budget:</h2>"
-			dat += "<span style='background-color:[background_cl]'>[points]/[starting_points]</span>"
+			dat += "<span style='background-color:[background_cl]'><a href='?src=[REF(src)];panel=main;action=change_points;'>[points]</a>/<a href='?src=[REF(src)];panel=main;action=change_starting_points;'>[starting_points]</a></span>"
 			dat += "<h2>Cooldowns:</h2>"
 			for(var/i in 1 to cooldown_dates.len)
 				dat += "<p><span style='background-color:[background_cl]'>[max(0, round((cooldown_dates[i] - world.time) / (1 MINUTES), 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown;number=[i];'>Reset Cooldown</a></p>"
@@ -841,6 +841,16 @@ SUBSYSTEM_DEF(unified)
 				if("open_stats")
 					event_panel(user)
 					return
+				if("change_points")
+					var/new_points = input(usr, "New point budget:", "Change Points") as num|null
+					if(isnull(new_points))
+						return
+					points = new_points
+				if("change_starting_points")
+					var/new_starting_points = input(usr, "New starting point budget:", "Change Starting Points") as num|null
+					if(isnull(new_starting_points))
+						return
+					starting_points = new_starting_points
 				/* TODO FIX
 				if("track_action")
 					var/track = href_list["track"]
