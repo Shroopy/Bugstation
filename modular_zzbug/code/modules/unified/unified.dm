@@ -24,6 +24,9 @@ SUBSYSTEM_DEF(unified)
 	/// Events that we have scheduled to run in the nearby future
 	var/list/scheduled_events = list()
 
+	/// For admins to force events (though they can still invoke them freely outside of the track system)
+	var/datum/round_event_control/forced_next_event
+
 	var/list/control = list() //list of all datum/round_event_control. Used for selecting events based on weight and occurrences.
 	var/list/running = list() //list of all existing /datum/round_event
 	var/list/currentrun = list()
