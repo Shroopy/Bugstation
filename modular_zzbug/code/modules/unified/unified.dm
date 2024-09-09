@@ -492,8 +492,8 @@ SUBSYSTEM_DEF(unified)
 	cooldown_dates[1] = world.time + STARTING_DELAY - SCHEDULE_DELAY
 	for(var/i in 2 to cooldown_dates.len)
 		cooldown_dates[i] = cooldown_dates[i-1] + rand(0, STARTING_DELAY)
-	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(STARTING_DELAY, 0.01)] minutes.")
-	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round(STARTING_DELAY, 0.01)] minutes.")
+	log_game("Unified: Point budget is [starting_points], starting cooldown is [round((STARTING_DELAY - SCHEDULE_DELAY) / (1 MINUTES), 0.01)] minutes.")
+	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round((STARTING_DELAY - SCHEDULE_DELAY) / (1 MINUTES), 0.01)] minutes.")
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
@@ -686,7 +686,7 @@ SUBSYSTEM_DEF(unified)
 			dat += "<span style='background-color:[background_cl]'>[points]/[starting_points]</span>"
 			dat += "<h2>Cooldowns:</h2>"
 			for(var/i in 1 to cooldown_dates.len)
-				dat += "<span style='background-color:[background_cl]'>[max(0, round((cooldown_dates[i] - world.time) / (1 MINUTES), 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown;number=[i];'>Reset Cooldown</a>"
+				dat += "<p><span style='background-color:[background_cl]'>[max(0, round((cooldown_dates[i] - world.time) / (1 MINUTES), 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown;number=[i];'>Reset Cooldown</a></p>"
 
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
