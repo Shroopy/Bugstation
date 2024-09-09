@@ -192,7 +192,6 @@ SUBSYSTEM_DEF(unified)
 			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
 				job_weighting *= 0.5
 			if(job_weighting != 1 && head_crew == 0)
-			if(job_weighting != 1 && head_crew == 0)
 				job_weighting = 0
 			weight_total *= job_weighting
 		/// Apply occurence multipliers if able
@@ -703,8 +702,6 @@ SUBSYSTEM_DEF(unified)
 				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[scheduled.event.name]</td>" //Name
-				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
-				var/time = "[round((scheduled.start_time - world.time) / (1 MINUTES), 0.01)] min."
 				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
 				var/time = "[round((scheduled.start_time - world.time) / (1 MINUTES), 0.01)] min."
 				dat += "<td>[time]</td>" //Time
