@@ -707,7 +707,7 @@ SUBSYSTEM_DEF(unified)
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[scheduled.event.name]</td>" //Name
 				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
-				var/time = "[round((scheduled.start_time - world.time) / (1 MINUTES), 0.01)] min."
+				var/time = "[(scheduled.start_time - world.time) / (1 SECONDS)] s."
 				dat += "<td>[time]</td>" //Time
 				dat += "<td>[scheduled.get_href_actions()]</td>" //Actions
 				dat += "</tr>"
