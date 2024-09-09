@@ -102,9 +102,9 @@ SUBSYSTEM_DEF(unified)
 			message_admins("Scheduled Event: [sch_event.event] will run in [(sch_event.start_time - world.time) / 10] seconds. (<a href='?src=[REF(sch_event)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(sch_event)];action=refund'>REFUND</a>)")
 
 	if(!halted)
-		for(var/cooldown_date in cooldowns)
-			if(cooldown_date <= world.time)
-				buy_event(control)
+		for(var/i in 1 to cooldown_dates.len)
+			if(cooldown_dates[i] <= world.time)
+				buy_event(control, i)
 
 	//cache for sanic speed (lists are references anyways)
 	var/list/currentrun = src.currentrun
@@ -119,7 +119,7 @@ SUBSYSTEM_DEF(unified)
 		if (MC_TICK_CHECK)
 			return
 
-/datum/controller/subsystem/unified/proc/buy_event(list/events, run_now = FALSE)
+/datum/controller/subsystem/unified/proc/buy_event(list/events, cooldown_num = 0, run_now = FALSE)
 	. = FALSE
 
 	var/datum/round_event_control/picked_event
@@ -156,6 +156,14 @@ SUBSYSTEM_DEF(unified)
 		TriggerEvent(picked_event)
 	else
 		schedule_event(picked_event, 3 MINUTES, picked_event.calculated_cost) // We already randomize cooldown, we don't need to randomize this
+	if(cooldown_num)
+		var/cooldown // in minutes
+		if(picked_event.cooldown_override)
+			cooldown = rand(picked_event.cooldown_override*0.5, picked_event.cooldown_override*1.5)
+		else
+			cooldown = rand(picked_event.calculated_cost*0.5, picked_event.calculated_cost*1.5)
+			cooldown *= COOLDOWN_MULT // the higher the starting points, the lower the cooldown
+		cooldown_dates[cooldown_num] = world.time + cooldown MINUTES // convert cooldown to deciseconds
 
 	. = TRUE
 
@@ -481,7 +489,7 @@ SUBSYSTEM_DEF(unified)
 	handle_pre_setup_roundstart_events()
 	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
 	points = starting_points
-	cooldown_dates[1] = world.time + STARTING_DELAY
+	cooldown_dates[1] = world.time + STARTING_DELAY - SCHEDULE_DELAY
 	for(var/i in 2 to cooldown_dates.len)
 		cooldown_dates[i] = cooldown_dates[i-1] + rand(0, STARTING_DELAY)
 	log_game("Unified: Point budget is [starting_points], starting cooldown is [round(STARTING_DELAY, 0.01)] minutes.")

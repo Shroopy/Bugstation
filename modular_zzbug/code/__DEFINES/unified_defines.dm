@@ -24,3 +24,6 @@
 #define BASE_POINTS 240
 
 #define STARTING_DELAY 10 * BASE_POINTS/starting_points
+#define SCHEDULE_DELAY 3 MINUTES
+
+#define COOLDOWN_MULT (120/BASE_POINTS) * (BASE_POINTS/starting_points)
