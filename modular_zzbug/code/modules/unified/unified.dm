@@ -16,7 +16,7 @@ SUBSYSTEM_DEF(unified)
 	var/starting_points = 0
 
 	/// The times after which we can schedule another event
-	var/list/cooldown_dates = [0, 0]
+	var/list/cooldown_dates = list(0, 0)
 
 	/// Whether we allow pop scaling. This is configured by config, or the storyteller UI
 	var/allow_pop_scaling = TRUE
@@ -67,6 +67,9 @@ SUBSYSTEM_DEF(unified)
 
 	/// % chance of having an antag created at roundstart
 	var/roundstart_event_chance = 40
+
+	/// List of all datum/round_event_control with roundstart=true.
+	var/list/roundstart_control = list()
 
 /datum/controller/subsystem/unified/Initialize(time, zlevel)
 	for(var/type in typesof(/datum/round_event_control))
