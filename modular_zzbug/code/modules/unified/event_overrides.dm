@@ -337,8 +337,8 @@
 	tags |= list(TAG_SECURITY)
 
 /datum/round_event_control/mold
-	unified_cost = COST_MODERATE
-	weight = WEIGHT_NORMAL
+	unified_cost = COST_MAJOR
+	weight = WEIGHT_UNLIKELY
 
 /datum/round_event_control/mold/New()
 	. = ..()
