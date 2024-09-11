@@ -342,7 +342,7 @@
 
 /datum/round_event_control/mold/New()
 	. = ..()
-	tags |= list(TAG_MEDICAL, TAG_SECURITY)
+	tags |= list(TAG_MEDICAL, TAG_ENGINEERING, TAG_SECURITY)
 
 // MAJOR EVENTS
 
