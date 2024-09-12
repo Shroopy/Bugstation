@@ -39,7 +39,7 @@
 	//	/datum/reagent/glitter/pink,
 		/datum/reagent/cryptobiolin,
 	//	/datum/reagent/blood,
-		/datum/reagent/medicine/c2/multiver,
+	//	/datum/reagent/medicine/c2/multiver, // BUG REMOVAL
 		/datum/reagent/water/holywater,
 		/datum/reagent/consumable/ethanol,
 		/datum/reagent/consumable/hot_coco,
@@ -49,12 +49,12 @@
 		/datum/reagent/bluespace,
 		/datum/reagent/pax,
 		/datum/reagent/consumable/laughter,
-		/datum/reagent/concentrated_barbers_aid,
-		/datum/reagent/baldium,
+	//	/datum/reagent/concentrated_barbers_aid, // BUG REMOVAL
+	//	/datum/reagent/baldium, // BUG REMOVAL
 	//	/datum/reagent/colorful_reagent,
 	//	/datum/reagent/consumable/salt,
 		/datum/reagent/consumable/ethanol/beer,
-		/datum/reagent/hair_dye,
+	//	/datum/reagent/hair_dye, // BUG REMOVAL
 		/datum/reagent/consumable/sugar,
 	//	/datum/reagent/glitter/white,
 		/datum/reagent/gravitum,
