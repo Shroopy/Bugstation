@@ -82,7 +82,7 @@
 		return FALSE
 	if(!allow_magic && wizardevent != SSevents.wizardmode)
 		return FALSE
-	if(players_amt < CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1))
+	if(players_amt < CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1)) // BUG EDIT
 		return FALSE
 	if(holidayID && !check_holidays(holidayID))
 		return FALSE
