@@ -328,7 +328,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 			continue
 
 		// we don't want to remove organs that are not the default for this species
-		if(!isnull(existing_organ))
+		if(!isnull(existing_organ) && !remove_features) // SKYRAT EDIT - Fixes certain species lacking a tongue (Looks at abductor)
 			if(!isnull(old_species) && existing_organ.type != old_species.get_mutant_organ_type_for_slot(slot))
 				continue
 			else if(!replace_current && existing_organ.type != get_mutant_organ_type_for_slot(slot))
@@ -1019,11 +1019,13 @@ GLOBAL_LIST_EMPTY(features_by_species)
 		source.emote("gasp")
 		source.domutcheck()
 
+	/* BUG REMOVAL START
 	if(time_since_irradiated > RAD_MOB_HAIRLOSS && SPT_PROB(RAD_MOB_HAIRLOSS_PROB, seconds_per_tick))
 		var/obj/item/bodypart/head/head = source.get_bodypart(BODY_ZONE_HEAD)
 		if(!(source.hairstyle == "Bald") && (head?.head_flags & HEAD_HAIR|HEAD_FACIAL_HAIR))
 			to_chat(source, span_danger("Your hair starts to fall out in clumps..."))
 			addtimer(CALLBACK(src, PROC_REF(go_bald), source), 5 SECONDS)
+	BUG REMOVAL END */
 
 /**
  * Makes the target human bald.

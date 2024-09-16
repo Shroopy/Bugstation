@@ -376,7 +376,7 @@
 	r_pocket = /obj/item/clothing/glasses/hud/health/night/cultblind
 
 /datum/outfit/consumed_heremoth
-	name = "Legion-Consumed Tribal Mothman"
+	name = "Legion-Consumed Tribal Mothperson" // BUG EDIT
 	uniform = /obj/item/clothing/under/costume/loincloth
 	suit = /obj/item/clothing/suit/hooded/cultrobes/eldritch
 	head = /obj/item/clothing/head/hooded/cult_hoodie/eldritch
