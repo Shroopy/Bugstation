@@ -8,42 +8,28 @@
 	var/welcome_text = "The storyteller has been selected. Get ready!"
 	/// This is the multiplier for repetition penalty in event weight. The lower the harsher it is
 	var/event_repetition_multiplier = 0.6
-	/// Multipliers for starting points.
+	/// Multipliers for starting points. // TODO - Rewrite into some variation
 	var/list/starting_point_multipliers = list(
 		EVENT_TRACK_MUNDANE = 1,
 		EVENT_TRACK_MODERATE = 1,
 		EVENT_TRACK_MAJOR = 1,
-		EVENT_TRACK_ROLESET = 1,
-		//EVENT_TRACK_OBJECTIVES = 1
+		EVENT_TRACK_CREWSET = 1,
+		EVENT_TRACK_GHOSTSET = 1
 		)
-	/// Multipliers for point gains.
-	var/list/point_gains_multipliers = list(
-		EVENT_TRACK_MUNDANE = 1,
-		EVENT_TRACK_MODERATE = 1,
-		EVENT_TRACK_MAJOR = 1,
-		EVENT_TRACK_ROLESET = 1,
-		//EVENT_TRACK_OBJECTIVES = 1
-		)
-	var/list/starting_point_variance_multiplier = list(
-		EVENT_TRACK_MUNDANE = 1,
-		EVENT_TRACK_MODERATE = 1,
-		EVENT_TRACK_MAJOR = 1,
-		EVENT_TRACK_ROLESET = 1,
-		//EVENT_TRACK_OBJECTIVES = 1
-	)
+	/// The datum containing track size data
+	var/datum/storyteller_data/tracks/track_data = /datum/storyteller_data/tracks
+
+	/// Percentual variance in the budget of roundstart points.
+	var/roundstart_points_variance = 30
+
 	/// Multipliers of weight to apply for each tag of an event.
-	var/list/tag_weight_multipliers
+	var/list/tag_multipliers
 
-	var/list/tag_cost_multipliers
+	/// Percentual variance in cost of the purchased events. Effectively affects frequency of events
+	var/cost_variance = 30
 
-	/// Variance in cost of the purchased events. Effectively affects frequency of events
-	var/cost_variance = 15
-
-	/// Variance in the budget of roundstart points.
-	var/roundstart_points_variance = 15
-
-	/// Whether the storyteller guaranteed a roleset roll (antag) on roundstart. (Still needs to pass pop check)
-	var/guarantees_roundstart_roleset = TRUE
+	/// Whether the storyteller guaranteed a crewset roll (crew antag) on roundstart. (Still needs to pass pop check)
+	var/guarantees_roundstart_crewset = TRUE
 
 	/// Whether the storyteller has the distributions disabled. Important for ghost storytellers
 	var/disable_distribution = FALSE
@@ -57,6 +43,9 @@
 	/// The antag divisor, the higher it is the lower the antag cap gets. Basically means "for every antag_divisor crew, spawn 1 antag".
 	var/antag_divisor = 8
 
+	/// Two tellers of the same intensity group can't run in 2 consecutive rounds
+	var/storyteller_type = STORYTELLER_TYPE_ALWAYS_AVAILABLE
+
 /datum/storyteller/process(delta_time)
 	if(disable_distribution)
 		return
@@ -66,14 +55,10 @@
 /// Add points to all tracks while respecting the multipliers.
 /datum/storyteller/proc/add_points(delta_time)
 	var/datum/controller/subsystem/gamemode/mode = SSgamemode
-	var/base_point = EVENT_POINT_GAINED_PER_SECOND * mode.event_frequency_multiplier
 	for(var/track in mode.event_track_points)
-		var/point_gain = base_point * point_gains_multipliers[track] //* mode.point_gain_multipliers[track]
-		if(mode.allow_pop_scaling)
-			point_gain *= mode.current_pop_scale_multipliers[track]
-		mode.last_point_gains[track] = point_gain
-		point_gain *= delta_time
+		var/point_gain = delta_time
 		mode.event_track_points[track] += point_gain
+		mode.last_point_gains[track] = point_gain
 
 /// Goes through every track of the gamemode and checks if it passes a threshold to buy an event, if does, buys one.
 /datum/storyteller/proc/handle_tracks()
@@ -128,13 +113,9 @@
 	var/datum/controller/subsystem/gamemode/mode = SSgamemode
 	// Perhaps use some bell curve instead of a flat variance?
 	var/total_cost = bought_event.cost * mode.point_thresholds[track]
-	if(tag_cost_multipliers)
-		for(var/tag in tag_cost_multipliers)
-			if(tag in bought_event.tags)
-				total_cost *= tag_cost_multipliers[tag]
 	if(!bought_event.roundstart)
-		total_cost *= (1 + (rand(-cost_variance, cost_variance)/100)) //Apply cost variance if not roundstart event
-	mode.event_track_points[track] -= total_cost
+		total_cost *= (1 - (rand(0, cost_variance) / 100)) //Apply cost variance if not roundstart event
+	mode.event_track_points[track] = max(0, mode.event_track_points[track] - total_cost)
 	message_admins("Storyteller purchased and triggered [bought_event] event, on [track] track, for [total_cost] cost.")
 	log_admin("Storyteller purchased and triggered [bought_event] event, on [track] track, for [total_cost] cost.")
 	if(bought_event.roundstart)
@@ -144,14 +125,13 @@
 
 /// Calculates the weights of the events from a passed track.
 /datum/storyteller/proc/calculate_weights(track)
-	var/datum/controller/subsystem/gamemode/mode = SSgamemode
-	for(var/datum/round_event_control/event as anything in mode.event_pools[track])
+	for(var/datum/round_event_control/event as anything in SSgamemode.event_pools[track])
 		var/weight_total = event.weight
 		/// Apply tag multipliers if able
-		if(tag_weight_multipliers)
-			for(var/tag in tag_weight_multipliers)
+		if(tag_multipliers)
+			for(var/tag in tag_multipliers)
 				if(tag in event.tags)
-					weight_total *= tag_weight_multipliers[tag]
+					weight_total *= tag_multipliers[tag]
 		/// Apply occurence multipliers if able
 		var/occurences = event.get_occurences()
 		if(occurences)

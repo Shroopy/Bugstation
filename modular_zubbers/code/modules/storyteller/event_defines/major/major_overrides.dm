@@ -19,11 +19,19 @@ BUG EDIT END */
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL, TAG_SPACE, TAG_DESTRUCTIVE, TAG_CHAOTIC)
 	weight = 10
+	max_occurrences = 1
 
 /datum/round_event_control/meteor_wave/meaty
 	track = EVENT_TRACK_MAJOR
 	tags = list(TAG_COMMUNAL, TAG_SPACE, TAG_DESTRUCTIVE)
-	weight = 20 // meat meteors?? how strange
+	weight = 5 // meat meteors?? how strange
+	max_occurrences = 1
+
+/datum/round_event_control/meteor_wave/threatening
+	weight = 3
+
+/datum/round_event_control/meteor_wave/catastrophic
+	weight = 0
 
 /datum/round_event_control/meteor_wave/ices
 	weight = 0
