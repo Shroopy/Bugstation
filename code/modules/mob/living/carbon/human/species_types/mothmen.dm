@@ -1,6 +1,6 @@
 /datum/species/moth
-	name = "\improper Mothman"
-	plural_form = "Mothmen"
+	name = "\improper Mothperson" // BUG EDIT
+	plural_form = "Mothpeople" // BUG EDIT
 	id = SPECIES_MOTH
 	inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID|MOB_BUG
 	mutant_bodyparts = list("moth_markings" = "None") // SKYRAT EDIT CHANGE - ORIGINAL: body_markings = list(/datum/bodypart_overlay/simple/body_marking/moth = "None")
