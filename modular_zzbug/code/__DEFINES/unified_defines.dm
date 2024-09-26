@@ -21,7 +21,7 @@
 #define WEIGHT_UNLIKELY 5
 
 // TODO add to config
-#define BASE_POINTS 240
+#define BASE_POINTS 120
 
 #define STARTING_DELAY 10 * BASE_POINTS/starting_points MINUTES
 #define SCHEDULE_DELAY 3 MINUTES
