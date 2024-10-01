@@ -170,6 +170,7 @@ SUBSYSTEM_DEF(unified)
 /datum/controller/subsystem/unified/proc/calculate_costs(list/events)
 	for(var/datum/round_event_control/event in events)
 		var/total_cost = event.unified_cost
+		/*
 		if(allow_job_weighting)
 			var/job_cost = 1
 			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
@@ -181,6 +182,7 @@ SUBSYSTEM_DEF(unified)
 			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
 				job_cost *= 2
 			total_cost *= job_cost
+		*/
 		if(istype(event, /datum/round_event_control/antagonist))
 			total_cost /= get_antag_cap()
 		event.calculated_cost = total_cost
@@ -189,18 +191,14 @@ SUBSYSTEM_DEF(unified)
 	for(var/datum/round_event_control/event in events)
 		var/weight_total = event.weight
 		if(allow_job_weighting)
-			var/job_weighting = 1
 			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
-				job_weighting *= 0.5
-			if((TAG_MEDICAL in event.tags) && med_crew == 0)
-				job_weighting *= 0.5
-			if((TAG_SECURITY in event.tags) && sec_crew == 0)
-				job_weighting *= 0.5
-			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
-				job_weighting *= 0.5
-			if(job_weighting != 1 && head_crew == 0)
-				job_weighting = 0
-			weight_total *= job_weighting
+				weight_total = 0
+			else if((TAG_MEDICAL in event.tags) && med_crew == 0)
+				weight_total = 0
+			else if((TAG_SECURITY in event.tags) && sec_crew == 0)
+				weight_total = 0
+			else if((TAG_SCIENCE in event.tags) && sci_crew == 0)
+				weight_total = 0
 		/// Apply occurence multipliers if able
 		var/occurences = event.get_occurences()
 		if(occurences)
