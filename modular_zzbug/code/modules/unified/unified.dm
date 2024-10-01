@@ -1,103 +1,31 @@
-#define INIT_ORDER_GAMEMODE 70
+#define INIT_ORDER_UNIFIED 70
 
-SUBSYSTEM_DEF(gamemode)
-	name = "Gamemode"
-	init_order = INIT_ORDER_GAMEMODE
+SUBSYSTEM_DEF(unified)
+	name = "Unified"
+	init_order = INIT_ORDER_UNIFIED
 	runlevels = RUNLEVEL_GAME
 	flags = SS_BACKGROUND | SS_KEEP_TIMING
 	wait = 2 SECONDS
 
-	/// List of our event tracks for fast access during for loops.
-	var/list/event_tracks = EVENT_TRACKS
-	/// Our storyteller. He progresses our trackboards and picks out events
-	var/datum/storyteller/storyteller
-	/// Result of the storyteller vote. Defaults to the guide.
-	var/voted_storyteller = /datum/storyteller/default
-	/// List of all the storytellers. Populated at init. Associative from type
-	var/list/storytellers = list()
 	/// Next process for our storyteller. The wait time is STORYTELLER_WAIT_TIME
-	var/next_storyteller_process = 0
-	/// Associative list of even track points.
-	var/list/event_track_points = list(
-		EVENT_TRACK_MUNDANE = 0,
-		EVENT_TRACK_MODERATE = 0,
-		EVENT_TRACK_MAJOR = 0,
-		EVENT_TRACK_CREWSET = 0,
-		EVENT_TRACK_GHOSTSET = 0
-		)
-	/// Last point amount gained of each track. Those are recorded for purposes of estimating how long until next event.
-	var/list/last_point_gains = list(
-		EVENT_TRACK_MUNDANE = 0,
-		EVENT_TRACK_MODERATE = 0,
-		EVENT_TRACK_MAJOR = 0,
-		EVENT_TRACK_CREWSET = 0,
-		EVENT_TRACK_GHOSTSET = 0
-		)
-	/// Point thresholds at which the events are supposed to be rolled, it is also the base cost for events.
-	var/list/point_thresholds = list(
-		EVENT_TRACK_MUNDANE = 100,
-		EVENT_TRACK_MODERATE = 100,
-		EVENT_TRACK_MAJOR = 100,
-		EVENT_TRACK_CREWSET = 100,
-		EVENT_TRACK_GHOSTSET = 100
-		)
+	var/next_process = 0
 
-	/// Minimum population thresholds for the tracks to fire off events.
-	var/list/min_pop_thresholds = list(
-		EVENT_TRACK_MUNDANE = MUNDANE_MIN_POP,
-		EVENT_TRACK_MODERATE = MODERATE_MIN_POP,
-		EVENT_TRACK_MAJOR = MAJOR_MIN_POP,
-		EVENT_TRACK_CREWSET = CREWSET_MIN_POP,
-		EVENT_TRACK_GHOSTSET = GHOSTSET_MIN_POP
-		)
+	/// Our total event point budget for the shift. Initialized in pre_setup()
+	var/points = 0
+	/// Our starting event point budget for the shift. Initialized in pre_setup()
+	var/starting_points = 0
 
-	/// Configurable multipliers for point gain over time.
-	var/list/point_gain_multipliers = list(
-		EVENT_TRACK_MUNDANE = 1,
-		EVENT_TRACK_MODERATE = 1,
-		EVENT_TRACK_MAJOR = 1,
-		EVENT_TRACK_CREWSET = 1,
-		EVENT_TRACK_GHOSTSET = 1
-		)
-	/// Configurable multipliers for roundstart points.
-	var/list/roundstart_point_multipliers = list(
-		EVENT_TRACK_MUNDANE = 1,
-		EVENT_TRACK_MODERATE = 1,
-		EVENT_TRACK_MAJOR = 1,
-		EVENT_TRACK_CREWSET = 1,
-		EVENT_TRACK_GHOSTSET = 1
-		)
+	/// The times after which we can schedule another event
+	var/list/cooldown_dates = list(0, 0)
+
 	/// Whether we allow pop scaling. This is configured by config, or the storyteller UI
 	var/allow_pop_scaling = TRUE
-
-	/// Associative list of pop scale thresholds.
-	var/list/pop_scale_thresholds = list(
-		EVENT_TRACK_MUNDANE = MUNDANE_POP_SCALE_THRESHOLD,
-		EVENT_TRACK_MODERATE = MODERATE_POP_SCALE_THRESHOLD,
-		EVENT_TRACK_MAJOR = MAJOR_POP_SCALE_THRESHOLD,
-		EVENT_TRACK_CREWSET = CREWSET_POP_SCALE_THRESHOLD,
-		EVENT_TRACK_GHOSTSET = GHOSTSET_POP_SCALE_THRESHOLD
-		)
-
-	/// Associative list of pop scale penalties.
-	var/list/pop_scale_penalties = list(
-		EVENT_TRACK_MUNDANE = MUNDANE_POP_SCALE_PENALTY,
-		EVENT_TRACK_MODERATE = MODERATE_POP_SCALE_PENALTY,
-		EVENT_TRACK_MAJOR = MAJOR_POP_SCALE_PENALTY,
-		EVENT_TRACK_CREWSET = CREWSET_POP_SCALE_PENALTY,
-		EVENT_TRACK_GHOSTSET = GHOSTSET_POP_SCALE_PENALTY
-		)
-
-
-
-	/// Associative list of control events by their track category. Compiled in Init
-	var/list/event_pools = list()
 
 	/// Events that we have scheduled to run in the nearby future
 	var/list/scheduled_events = list()
 
-	/// Associative list of tracks to forced event controls. For admins to force events (though they can still invoke them freely outside of the track system)
-	var/list/forced_next_events = list()
+	/// For admins to force events (though they can still invoke them freely outside of the track system)
+	var/datum/round_event_control/forced_next_event
 
 	var/list/control = list() //list of all datum/round_event_control. Used for selecting events based on weight and occurrences.
 	var/list/running = list() //list of all existing /datum/round_event
@@ -114,12 +42,12 @@ SUBSYSTEM_DEF(gamemode)
 	/// Current preview page for the statistics UI.
 	var/statistics_track_page = EVENT_TRACK_MUNDANE
 	/// Page of the UI panel.
-	var/panel_page = GAMEMODE_PANEL_MAIN
+	var/panel_page = UNIFIED_PANEL_MAIN
 	/// Whether we are viewing the roundstart events or not
 	var/roundstart_event_view = TRUE
 
-	/// Whether the storyteller has been halted
-	var/halted_storyteller = FALSE
+	/// Whether the gamemode has been halted
+	var/halted = FALSE
 
 	/// Ready players for roundstart events.
 	var/ready_players = 0
@@ -128,41 +56,39 @@ SUBSYSTEM_DEF(gamemode)
 	var/eng_crew = 0
 	var/sec_crew = 0
 	var/med_crew = 0
+	var/sci_crew = 0
 
 	var/wizardmode = FALSE
 
 	var/storyteller_voted = FALSE
 
-/datum/controller/subsystem/gamemode/Initialize(time, zlevel)
-	. = ..()
-	// Populate event pools
-	for(var/track in event_tracks)
-		event_pools[track] = list()
+	/// Whether we account for currently filled jobs when scheduling events TODO add to config
+	var/allow_job_weighting = TRUE
 
-	// Populate storytellers
-	for(var/type in subtypesof(/datum/storyteller))
-		storytellers[type] = new type()
+	// TODO add to config
+	var/antag_divisor = 8
 
+	/// % chance of having an antag created at roundstart
+	var/roundstart_event_chance = 40
+
+	/// List of all datum/round_event_control with roundstart=true.
+	var/list/roundstart_control = list()
+
+/datum/controller/subsystem/unified/Initialize(time, zlevel)
 	for(var/type in typesof(/datum/round_event_control))
 		var/datum/round_event_control/event = new type()
 		if(!event.typepath || !event.name || !event.valid_for_map())
 			continue //don't want this one! leave it for the garbage collector
-		control += event //add it to the list of all events (controls)
+		if(event.roundstart)
+			roundstart_control += event
+		else
+			control += event //add it to the list of all events (controls)
 	getHoliday()
 
 	load_config_vars()
 	load_event_config_vars()
 
-	///Seeding events into track event pools needs to happen after event config vars are loaded
-	for(var/datum/round_event_control/event as anything in control)
-		if(event.holidayID || event.wizardevent)
-			uncategorized += event
-			continue
-		event_pools[event.track] += event //Add it to the categorized event pools
-	return SS_INIT_SUCCESS
-
-
-/datum/controller/subsystem/gamemode/fire(resumed = FALSE)
+/datum/controller/subsystem/unified/fire(resumed = FALSE)
 	if(!resumed)
 		src.currentrun = running.Copy()
 
@@ -175,11 +101,10 @@ SUBSYSTEM_DEF(gamemode)
 			sch_event.alerted_admins = TRUE
 			message_admins("Scheduled Event: [sch_event.event] will run in [(sch_event.start_time - world.time) / 10] seconds. (<a href='?src=[REF(sch_event)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(sch_event)];action=refund'>REFUND</a>)")
 
-	if(!halted_storyteller && next_storyteller_process <= world.time && storyteller)
-				// We update crew information here to adjust population scalling and event thresholds for the storyteller.
-		update_crew_infos()
-		next_storyteller_process = world.time + STORYTELLER_WAIT_TIME
-		storyteller.process(STORYTELLER_WAIT_TIME * 0.1)
+	if(!halted)
+		for(var/i in 1 to cooldown_dates.len)
+			if(cooldown_dates[i] <= world.time)
+				buy_event(control, i)
 
 	//cache for sanic speed (lists are references anyways)
 	var/list/currentrun = src.currentrun
@@ -194,29 +119,106 @@ SUBSYSTEM_DEF(gamemode)
 		if (MC_TICK_CHECK)
 			return
 
-/datum/controller/subsystem/gamemode/proc/storyteller_desc(storyteller_name)
-	for(var/storyteller_type in storytellers)
-		var/datum/storyteller/storyboy = storytellers[storyteller_type]
-		if(storyboy.name != storyteller_name)
+/datum/controller/subsystem/unified/proc/buy_event(list/events, cooldown_num = 0, run_now = FALSE)
+	. = FALSE
+
+	var/datum/round_event_control/picked_event
+	var/candidate_events = events
+	var/player_pop = SSunified.get_correct_popcount()
+	calculate_weights(candidate_events)
+	calculate_costs(candidate_events)
+	var/list/valid_events = list()
+	// Determine which events are valid to pick
+
+	for(var/datum/round_event_control/event as anything in candidate_events)
+		if(isnull(event))
 			continue
-		return storyboy.desc
+		if(event.unified_cost == 0) // free events are handled in handle_free_events
+			continue
+		if(event.can_spawn_event(player_pop))
+			valid_events[event] = event.calculated_weight
+	if(!length(valid_events))
+		if(SSticker.HasRoundStarted())
+			message_admins("Unified failed to pick an event.")
+			log_admin("Unified failed to pick an event.")
+		return
+	picked_event = pick_weight(valid_events)
+	if(!picked_event)
+		message_admins("WARNING: Unified picked a null from event pool. Aborting event roll.")
+		log_admin("WARNING: Unified picked a null from event pool. Aborting event roll.")
+		stack_trace("WARNING: Unified picked a null from event pool.")
+		return
+
+	points -= picked_event.calculated_cost // we already know that valid events cost less than our current points
+	message_admins("Unified purchased and triggered [picked_event] event for [picked_event.calculated_cost] cost.")
+	log_admin("Unified purchased and triggered [picked_event] event for [picked_event.calculated_cost] cost.")
+	if(picked_event.roundstart || run_now)
+		TriggerEvent(picked_event)
+	else
+		schedule_event(picked_event, 3 MINUTES, picked_event.calculated_cost) // We already randomize cooldown, we don't need to randomize this
+	if(cooldown_num)
+		var/cooldown // in minutes
+		if(picked_event.cooldown_override)
+			cooldown = rand(picked_event.cooldown_override*0.5, picked_event.cooldown_override*1.5)
+		else
+			cooldown = rand(picked_event.calculated_cost*0.5, picked_event.calculated_cost*1.5)
+			cooldown *= COOLDOWN_MULT // the higher the starting points, the lower the cooldown
+		cooldown_dates[cooldown_num] = world.time + cooldown MINUTES // convert cooldown to deciseconds
+
+	. = TRUE
+
+/datum/controller/subsystem/unified/proc/calculate_costs(list/events)
+	for(var/datum/round_event_control/event in events)
+		var/total_cost = event.unified_cost
+		/*
+		if(allow_job_weighting)
+			var/job_cost = 1
+			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
+				job_cost *= 2
+			if((TAG_MEDICAL in event.tags) && med_crew == 0)
+				job_cost *= 2
+			if((TAG_SECURITY in event.tags) && sec_crew == 0)
+				job_cost *= 2
+			if((TAG_SCIENCE in event.tags) && sci_crew == 0)
+				job_cost *= 2
+			total_cost *= job_cost
+		*/
+		if(istype(event, /datum/round_event_control/antagonist))
+			total_cost /= get_antag_cap()
+		event.calculated_cost = total_cost
+
+/datum/controller/subsystem/unified/proc/calculate_weights(list/events)
+	for(var/datum/round_event_control/event in events)
+		var/weight_total = event.weight
+		if(allow_job_weighting)
+			if((TAG_ENGINEERING in event.tags) && eng_crew == 0)
+				weight_total = 0
+			else if((TAG_MEDICAL in event.tags) && med_crew == 0)
+				weight_total = 0
+			else if((TAG_SECURITY in event.tags) && sec_crew == 0)
+				weight_total = 0
+			else if((TAG_SCIENCE in event.tags) && sci_crew == 0)
+				weight_total = 0
+		/// Apply occurence multipliers if able
+		var/occurences = event.get_occurences()
+		if(occurences)
+			///If the event has occured already, apply a penalty multiplier based on amount of occurences
+			weight_total *= event.reoccurence_penalty_multiplier ** occurences
+		/// Write it
+		event.calculated_weight = weight_total
 
 /// Gets the number of antagonists the antagonist injection events will stop rolling after.
-/datum/controller/subsystem/gamemode/proc/get_antag_cap()
-	if(isnull(storyteller))
-		return 0
-	if(!storyteller.antag_divisor)
-		return 0
-	return round(max(min(get_correct_popcount() / storyteller.antag_divisor + sec_crew ,sec_crew * 1.5),ANTAG_CAP_FLAT))
+/datum/controller/subsystem/unified/proc/get_antag_cap()
+	return round(max(min(get_correct_popcount() / antag_divisor + sec_crew,sec_crew*1.5),ANTAG_CAP_FLAT))
 
 /// Whether events can inject more antagonists into the round
-/datum/controller/subsystem/gamemode/proc/can_inject_antags()
-	return (get_antag_cap() > length(GLOB.current_living_antags))
+/datum/controller/subsystem/unified/proc/can_inject_antags()
+	return (get_antag_cap() > length(GLOB.antagonists))
 
 /// Gets candidates for antagonist roles.
 
 /// Todo: Split into get_candidates and post_get_candidates
-/datum/controller/subsystem/gamemode/proc/get_candidates(
+/datum/controller/subsystem/unified/proc/get_candidates(
 	special_role_flag,
 	pick_observers,
 	pick_roundstart_players,
@@ -275,108 +277,64 @@ SUBSYSTEM_DEF(gamemode)
 	return candidates
 
 /// Gets the correct popcount, returning READY people if roundstart, and active people if not.
-/datum/controller/subsystem/gamemode/proc/get_correct_popcount()
+/datum/controller/subsystem/unified/proc/get_correct_popcount()
 	if(SSticker.HasRoundStarted())
 		update_crew_infos()
 		return active_players
 	else
-		calculate_ready_players()
+		update_ready_crew_infos()
 		return ready_players
 
-/// Refunds and removes a scheduled event.
-/datum/controller/subsystem/gamemode/proc/refund_scheduled_event(datum/scheduled_event/refunded)
-	if(refunded.cost)
-		var/track_type = refunded.event.track
-		event_track_points[track_type] += refunded.cost
+/// Refunds and removes a scheduled event
+/datum/controller/subsystem/unified/proc/refund_scheduled_event(datum/scheduled_event/refunded)
+	points += refunded.cost
 	remove_scheduled_event(refunded)
 
+/// Refunds a failed event
+/datum/controller/subsystem/unified/proc/refund_failed_event(datum/round_event_control/failed)
+	points += failed.calculated_cost
+
 /// Schedules an event.
-/datum/controller/subsystem/gamemode/proc/force_event(datum/round_event_control/event)
-	forced_next_events[event.track] = event
+/datum/controller/subsystem/unified/proc/force_event(datum/round_event_control/event)
+	forced_next_event = event
 
 /// Removes a scheduled event.
-/datum/controller/subsystem/gamemode/proc/remove_scheduled_event(datum/scheduled_event/removed)
+/datum/controller/subsystem/unified/proc/remove_scheduled_event(datum/scheduled_event/removed)
 	scheduled_events -= removed
 	qdel(removed)
 
-/// We need to calculate ready players for the sake of roundstart events becoming eligible.
-/datum/controller/subsystem/gamemode/proc/calculate_ready_players()
-	ready_players = 0
-	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
-		if(player.ready == PLAYER_READY_TO_PLAY)
-			ready_players++
-
-/// We roll points to be spent for roundstart events, including antagonists.
-/datum/controller/subsystem/gamemode/proc/roll_pre_setup_points()
-	if(storyteller.disable_distribution || halted_storyteller)
-		return
-	/// Distribute points
-	for(var/track in event_track_points)
-		var/base_amt
-		switch(track)
-			if(EVENT_TRACK_MUNDANE)
-				base_amt = ROUNDSTART_MUNDANE_BASE
-			if(EVENT_TRACK_MODERATE)
-				base_amt = ROUNDSTART_MODERATE_BASE
-			if(EVENT_TRACK_MAJOR)
-				base_amt = ROUNDSTART_MAJOR_BASE
-			if(EVENT_TRACK_CREWSET)
-				base_amt = ROUNDSTART_CREWSET_BASE
-			if(EVENT_TRACK_GHOSTSET)
-				base_amt = ROUNDSTART_GHOSTSET_BASE
-		var/calc_value = base_amt
-		calc_value *= roundstart_point_multipliers[track]
-		calc_value *= storyteller.starting_point_multipliers[track]
-		calc_value *= (1 + (rand(-storyteller.roundstart_points_variance, storyteller.roundstart_points_variance) / 100))
-		event_track_points[track] = max(0, round(calc_value))
-
-	/// If the storyteller guarantees an antagonist roll, add points to make it so.
-	if(storyteller.guarantees_roundstart_crewset)
-		event_track_points[EVENT_TRACK_CREWSET] = point_thresholds[EVENT_TRACK_CREWSET]
-
-	/// If we have any forced events, ensure we get enough points for them
-	for(var/track in event_tracks)
-		if(forced_next_events[track] && event_track_points[track] < point_thresholds[track])
-			event_track_points[track] = point_thresholds[track]
-
 /// Because roundstart events need 2 steps of firing for purposes of antags, here is the first step handled, happening before occupation division.
-/datum/controller/subsystem/gamemode/proc/handle_pre_setup_roundstart_events()
-	if(storyteller.disable_distribution)
+/datum/controller/subsystem/unified/proc/handle_pre_setup_roundstart_events()
+	if(halted)
+		message_admins("WARNING: Didn't roll any events (including antagonists) due to Unified being halted.")
 		return
-	if(halted_storyteller)
-		message_admins("WARNING: Didn't roll roundstart events (including antagonists) due to the storyteller being halted.")
-		return
-	while(TRUE)
-		if(!storyteller.handle_tracks())
-			break
+	for(var/i in 1 to get_antag_cap())
+		if(prob(roundstart_event_chance))
+			buy_event(roundstart_control)
 
 /// Second step of handlind roundstart events, happening after people spawn.
-/datum/controller/subsystem/gamemode/proc/handle_post_setup_roundstart_events()
+/datum/controller/subsystem/unified/proc/handle_post_setup_roundstart_events()
 	/// Start all roundstart events on post_setup immediately
 	for(var/datum/round_event/event as anything in running)
 		if(!event.control.roundstart)
 			continue
 		ASYNC
 			event.try_start()
-//		INVOKE_ASYNC(event, /datum/round_event.proc/try_start)
 
 /// Schedules an event to run later.
-/datum/controller/subsystem/gamemode/proc/schedule_event(datum/round_event_control/passed_event, passed_time, passed_cost, passed_ignore, passed_announce)
+/datum/controller/subsystem/unified/proc/schedule_event(datum/round_event_control/passed_event, passed_time, passed_cost, passed_ignore, passed_announce)
 	var/datum/scheduled_event/scheduled = new (passed_event, world.time + passed_time, passed_cost, passed_ignore, passed_announce)
-	var/round_started = SSticker.HasRoundStarted()
-	if(round_started)
-		message_admins("Event: [passed_event] has been scheduled to run in [passed_time / 10] seconds. (<a href='?src=[REF(scheduled)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(scheduled)];action=refund'>REFUND</a>)")
-	else //Only roundstart events can be scheduled before round start
-		message_admins("Event: [passed_event] has been scheduled to run on roundstart. (<a href='?src=[REF(scheduled)];action=cancel'>CANCEL</a>)")
+	message_admins("Event: [passed_event] has been scheduled to run in [passed_time / 10] seconds. (<a href='?src=[REF(scheduled)];action=cancel'>CANCEL</a>) (<a href='?src=[REF(scheduled)];action=refund'>REFUND</a>)")
 	scheduled_events += scheduled
 
-/datum/controller/subsystem/gamemode/proc/update_crew_infos()
+/datum/controller/subsystem/unified/proc/update_crew_infos()
 	// Very similar logic to `get_active_player_count()`
 	active_players = 0
 	head_crew = 0
 	eng_crew = 0
 	med_crew = 0
 	sec_crew = 0
+	sci_crew = 0
 	for(var/mob/player_mob as anything in GLOB.player_list)
 		if(!player_mob.client)
 			continue
@@ -397,8 +355,66 @@ SUBSYSTEM_DEF(gamemode)
 				med_crew++
 			if(player_role.departments_bitflags & DEPARTMENT_BITFLAG_SECURITY)
 				sec_crew++
+			if(player_role.departments_bitflags & DEPARTMENT_BITFLAG_SCIENCE)
+				sci_crew++
+	// update_pop_scaling() TODO FIX
 
-/datum/controller/subsystem/gamemode/proc/TriggerEvent(datum/round_event_control/event)
+/datum/controller/subsystem/unified/proc/update_ready_crew_infos()
+	// Very similar logic to `get_active_player_count()`
+	ready_players = 0
+	head_crew = 0
+	eng_crew = 0
+	med_crew = 0
+	sec_crew = 0
+	sci_crew = 0
+	var/list/players = list()
+
+	//This fills the readied players list that the job estimation panel uses.
+	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
+		if(player.ready == PLAYER_READY_TO_PLAY)
+			players[player.key] = player
+			ready_players++
+			ready_players++
+		sortTim(players, GLOBAL_PROC_REF(cmp_text_asc))
+
+	for(var/ckey in players)
+		var/mob/dead/new_player/player = players[ckey]
+		var/datum/preferences/prefs = player.client?.prefs
+		var/datum/job/J = prefs?.get_highest_priority_job()
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_COMMAND)
+			head_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_ENGINEERING)
+			eng_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_MEDICAL)
+			med_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_SECURITY)
+			sec_crew++
+		if(J.departments_bitflags & DEPARTMENT_BITFLAG_SCIENCE)
+			sci_crew++
+
+/* TODO FIX
+/datum/controller/subsystem/unified/proc/update_pop_scaling()
+	for(var/track in event_tracks)
+		var/low_pop_bound = min_pop_thresholds[track]
+		var/high_pop_bound = pop_scale_thresholds[track]
+		var/scale_penalty = pop_scale_penalties[track]
+
+		var/perceived_pop = min(max(low_pop_bound, active_players), high_pop_bound)
+
+		var/divisor = high_pop_bound - low_pop_bound
+		/// If the bounds are equal, we'd be dividing by zero or worse, if upper is smaller than lower, we'd be increasing the factor, just make it 1 and continue.
+		/// this is only a problem for bad configs
+		if(divisor <= 0)
+			current_pop_scale_multipliers[track] = 1
+			continue
+		var/scalar = (perceived_pop - low_pop_bound) / divisor
+		var/penalty = scale_penalty - (scale_penalty * scalar)
+		var/calculated_multiplier = 1 - (penalty / 100)
+
+		current_pop_scale_multipliers[track] = calculated_multiplier
+*/
+
+/datum/controller/subsystem/unified/proc/TriggerEvent(datum/round_event_control/event)
 	. = event.preRunEvent()
 	if(. == EVENT_CANT_RUN)//we couldn't run this event for some reason, set its max_occurrences to 0
 		event.max_occurrences = 0
@@ -406,20 +422,8 @@ SUBSYSTEM_DEF(gamemode)
 		event.run_event(random = TRUE) // fallback to dynamic
 
 ///Resets frequency multiplier.
-/datum/controller/subsystem/gamemode/proc/resetFrequency()
+/datum/controller/subsystem/unified/proc/resetFrequency()
 	event_frequency_multiplier = 1
-
-/* /client/proc/forceEvent()
-	set name = "Trigger Event"
-	set category = "Admin.Events"
-
-	if(!holder ||!check_rights(R_FUN))
-		return
-
-	holder.forceEvent(usr) */
-
-/* /datum/admins/forceEvent(mob/user)
-	SSgamemode.event_panel(user) */
 
 
 //////////////
@@ -428,7 +432,7 @@ SUBSYSTEM_DEF(gamemode)
 //Uncommenting ALLOW_HOLIDAYS in config.txt will enable holidays
 
 //It's easy to add stuff. Just add a holiday datum in code/modules/holiday/holidays.dm
-//You can then check if it's a special day in any code in the game by doing if(SSgamemode.holidays["Groundhog Day"])
+//You can then check if it's a special day in any code in the game by doing if(SSunified.holidays["Groundhog Day"])
 
 //You can also make holiday random events easily thanks to Pete/Gia's system.
 //simply make a random event normally, then assign it a holidayID string which matches the holiday's name.
@@ -443,7 +447,7 @@ SUBSYSTEM_DEF(gamemode)
 
 
 //sets up the holidays and holidays list
-/datum/controller/subsystem/gamemode/proc/getHoliday()
+/datum/controller/subsystem/unified/proc/getHoliday()
 	if(!CONFIG_GET(flag/allow_holidays))
 		return // Holiday stuff was not enabled in the config!
 	for(var/H in subtypesof(/datum/holiday))
@@ -471,32 +475,36 @@ SUBSYSTEM_DEF(gamemode)
 		set_station_name(new_station_name())
 		world.update_status()
 
-/datum/controller/subsystem/gamemode/proc/toggleWizardmode()
+/datum/controller/subsystem/unified/proc/toggleWizardmode()
 	wizardmode = !wizardmode //TODO: decide what to do with wiz events
-	message_admins("Summon Events has been [wizardmode ? "enabled, events will occur [SSgamemode.event_frequency_multiplier] times as fast" : "disabled"]!")
+	message_admins("Summon Events has been [wizardmode ? "enabled, events will occur [SSunified.event_frequency_multiplier] times as fast" : "disabled"]!")
 	log_game("Summon Events was [wizardmode ? "enabled" : "disabled"]!")
 
 ///Attempts to select players for special roles the mode might have.
-/datum/controller/subsystem/gamemode/proc/pre_setup()
+/datum/controller/subsystem/unified/proc/pre_setup()
 	// We need to do this to prevent some niche fuckery... and make dep. orders work. Lol
 	SSjob.ResetOccupations()
-	calculate_ready_players()
-	roll_pre_setup_points()
 	handle_pre_setup_roundstart_events()
+	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
+	points = starting_points
+	cooldown_dates[1] = world.time + STARTING_DELAY - SCHEDULE_DELAY
+	for(var/i in 2 to cooldown_dates.len)
+		cooldown_dates[i] = cooldown_dates[i-1] + rand(0, STARTING_DELAY)
+	log_game("Unified: Point budget is [starting_points], starting cooldown is [round((STARTING_DELAY - SCHEDULE_DELAY) / (1 MINUTES), 0.01)] minutes.")
+	message_admins("Unified: Point budget is [starting_points], starting cooldown is [round((STARTING_DELAY - SCHEDULE_DELAY) / (1 MINUTES), 0.01)] minutes.")
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
-/datum/controller/subsystem/gamemode/proc/post_setup(report) //Gamemodes can override the intercept report. Passing TRUE as the argument will force a report.
+/datum/controller/subsystem/unified/proc/post_setup(report) //Gamemodes can override the intercept report. Passing TRUE as the argument will force a report.
 	if(!report)
 		report = !CONFIG_GET(flag/no_intercept_report)
-	addtimer(CALLBACK(GLOBAL_PROC, .proc/display_roundstart_logout_report), ROUNDSTART_LOGOUT_REPORT_TIME)
+	addtimer(CALLBACK(src, PROC_REF(display_roundstart_logout_report)), ROUNDSTART_LOGOUT_REPORT_TIME)
 
 	if(SSdbcore.Connect())
 		var/list/to_set = list()
 		var/arguments = list()
-		if(storyteller)
-			to_set += "game_mode = :game_mode"
-			arguments["game_mode"] = storyteller.name
+		to_set += "game_mode = :game_mode"
+		arguments["game_mode"] = "Unified"
 		if(GLOB.revdata.originmastercommit)
 			to_set += "commit_hash = :commit_hash"
 			arguments["commit_hash"] = GLOB.revdata.originmastercommit
@@ -515,10 +523,10 @@ SUBSYSTEM_DEF(gamemode)
 
 
 ///Handles late-join antag assignments
-/datum/controller/subsystem/gamemode/proc/make_antag_chance(mob/living/carbon/human/character)
+/datum/controller/subsystem/unified/proc/make_antag_chance(mob/living/carbon/human/character)
 	return
 
-/datum/controller/subsystem/gamemode/proc/check_finished(force_ending) //to be called by SSticker
+/datum/controller/subsystem/unified/proc/check_finished(force_ending) //to be called by SSticker
 	if(!SSticker.setup_done)
 		return FALSE
 	if(SSshuttle.emergency && (SSshuttle.emergency.mode == SHUTTLE_ENDGAME))
@@ -531,7 +539,7 @@ SUBSYSTEM_DEF(gamemode)
 //////////////////////////
 //Reports player logouts//
 //////////////////////////
-/proc/display_roundstart_logout_report()
+/datum/controller/subsystem/unified/proc/display_roundstart_logout_report()
 	var/list/msg = list("[span_boldnotice("Roundstart logout report")]\n\n")
 	for(var/i in GLOB.mob_living_list)
 		var/mob/living/L = i
@@ -582,7 +590,7 @@ SUBSYSTEM_DEF(gamemode)
 		to_chat(C, msg.Join())
 
 //Set result and news report here
-/datum/controller/subsystem/gamemode/proc/set_round_result()
+/datum/controller/subsystem/unified/proc/set_round_result()
 	SSticker.mode_result = "undefined"
 	if(GLOB.station_was_nuked)
 		SSticker.news_report = STATION_DESTROYED_NUKE
@@ -592,7 +600,7 @@ SUBSYSTEM_DEF(gamemode)
 			SSticker.news_report = SHUTTLE_HIJACK
 
 /// Loads json event config values from events.txt
-/datum/controller/subsystem/gamemode/proc/load_event_config_vars()
+/datum/controller/subsystem/unified/proc/load_event_config_vars()
 	var/json_file = file("[global.config.directory]/events.json")
 	if(!fexists(json_file))
 		return
@@ -618,9 +626,6 @@ SUBSYSTEM_DEF(gamemode)
 					event.max_occurrences = value
 				if("earliest_start")
 					event.earliest_start = value * (1 MINUTES)
-				if("track")
-					if(value in event_tracks)
-						event.track = value
 				if("cost")
 					event.cost = value
 				if("reoccurence_penalty_multiplier")
@@ -631,98 +636,23 @@ SUBSYSTEM_DEF(gamemode)
 					event.shared_occurence_type = value
 
 /// Loads config values from game_options.txt
-/datum/controller/subsystem/gamemode/proc/load_config_vars()
-	point_gain_multipliers[EVENT_TRACK_MUNDANE] = CONFIG_GET(number/mundane_point_gain_multiplier)
-	point_gain_multipliers[EVENT_TRACK_MODERATE] = CONFIG_GET(number/moderate_point_gain_multiplier)
-	point_gain_multipliers[EVENT_TRACK_MAJOR] = CONFIG_GET(number/major_point_gain_multiplier)
-	point_gain_multipliers[EVENT_TRACK_CREWSET] = CONFIG_GET(number/crewset_point_gain_multiplier)
-	point_gain_multipliers[EVENT_TRACK_GHOSTSET] = CONFIG_GET(number/ghostset_point_gain_multiplier)
-
-	roundstart_point_multipliers[EVENT_TRACK_MUNDANE] = CONFIG_GET(number/mundane_roundstart_point_multiplier)
-	roundstart_point_multipliers[EVENT_TRACK_MODERATE] = CONFIG_GET(number/moderate_roundstart_point_multiplier)
-	roundstart_point_multipliers[EVENT_TRACK_MAJOR] = CONFIG_GET(number/major_roundstart_point_multiplier)
-	roundstart_point_multipliers[EVENT_TRACK_CREWSET] = CONFIG_GET(number/crewset_roundstart_point_multiplier)
-	roundstart_point_multipliers[EVENT_TRACK_GHOSTSET] = CONFIG_GET(number/ghostset_roundstart_point_multiplier)
-
-	min_pop_thresholds[EVENT_TRACK_MUNDANE] = CONFIG_GET(number/mundane_min_pop)
-	min_pop_thresholds[EVENT_TRACK_MODERATE] = CONFIG_GET(number/moderate_min_pop)
-	min_pop_thresholds[EVENT_TRACK_MAJOR] = CONFIG_GET(number/major_min_pop)
-	min_pop_thresholds[EVENT_TRACK_CREWSET] = CONFIG_GET(number/crewset_min_pop)
-	min_pop_thresholds[EVENT_TRACK_GHOSTSET] = CONFIG_GET(number/ghostset_min_pop)
-
-/datum/controller/subsystem/gamemode/proc/storyteller_vote_choices()
-	var/client_amount = GLOB.clients.len
-	var/list/choices = list()
-	for(var/storyteller_type in storytellers)
-		var/datum/storyteller/storyboy = storytellers[storyteller_type]
-		/// Prevent repeating storytellers
-		if(storyboy.storyteller_type && storyboy.storyteller_type == SSpersistence.last_storyteller_type)
-			continue
-		if(!storyboy.votable)
-			continue
-		if((storyboy.population_min && storyboy.population_min > client_amount) || (storyboy.population_max && storyboy.population_max < client_amount))
-			continue
-		choices += storyboy.name
-		/* BUG REMOVAL START
-		///Because the vote subsystem is dumb and does not support any descriptions, we dump them into world.
-		to_chat(world, span_notice("<b>[storyboy.name]</b>"))
-		to_chat(world, span_notice("[storyboy.desc]"))
-		BUG REMOVAL END */
-	return choices
-
-/datum/controller/subsystem/gamemode/proc/storyteller_vote_result(winner_name)
-	/// Find the winner
-	voted_storyteller = winner_name
-	if(storyteller)
-		return
-	for(var/storyteller_type in storytellers)
-		var/datum/storyteller/storyboy = storytellers[storyteller_type]
-		if(storyboy.name == winner_name)
-			voted_storyteller = storyteller_type
-			break
-
-/datum/controller/subsystem/gamemode/proc/init_storyteller()
-	var/datum/storyteller/storyteller_pick
-	if(!voted_storyteller)
-		storyteller_pick = pick(storytellers)
-		message_admins("We picked [storyteller_pick] for this rounds storyteller, randomly.")
-		voted_storyteller = storyteller_pick
-	if(storyteller) // If this is true, then an admin bussed one, don't overwrite it
-		return
-	set_storyteller(voted_storyteller)
-
-/datum/controller/subsystem/gamemode/proc/set_storyteller(passed_type)
-	if(!storytellers[passed_type])
-		message_admins("Attempted to set an invalid storyteller type: [passed_type].")
-		CRASH("Attempted to set an invalid storyteller type: [passed_type].")
-	storyteller = storytellers[passed_type]
-
-	var/datum/storyteller_data/tracks/track_data = storyteller.track_data
-	point_thresholds[EVENT_TRACK_MUNDANE] = track_data.threshold_mundane * CONFIG_GET(number/mundane_point_threshold)
-	point_thresholds[EVENT_TRACK_MODERATE] = track_data.threshold_moderate * CONFIG_GET(number/moderate_point_threshold)
-	point_thresholds[EVENT_TRACK_MAJOR] = track_data.threshold_major * CONFIG_GET(number/major_point_threshold)
-	point_thresholds[EVENT_TRACK_CREWSET] = track_data.threshold_crewset * CONFIG_GET(number/crewset_point_threshold)
-	point_thresholds[EVENT_TRACK_GHOSTSET] = track_data.threshold_ghostset * CONFIG_GET(number/ghostset_point_threshold)
-
-	to_chat(world, span_notice("<b>Storyteller is [storyteller.name]!</b>"))
-	to_chat(world, span_notice("[storyteller.welcome_text]"))
+/datum/controller/subsystem/unified/proc/load_config_vars()
+	allow_pop_scaling = CONFIG_GET(flag/allow_storyteller_pop_scaling)
 
 /// Panel containing information, variables and controls about the gamemode and scheduled event
-/datum/controller/subsystem/gamemode/proc/admin_panel(mob/user)
+/datum/controller/subsystem/unified/proc/admin_panel(mob/user)
 	update_crew_infos()
-	var/round_started = SSticker.HasRoundStarted()
 	var/list/dat = list()
 	var/active_pop = get_correct_popcount()
-	dat += "Storyteller: [storyteller ? "[storyteller.name]" : "None"] "
-	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted_storyteller ? "class='linkOn'" : ""]>HALT Storyteller</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main;action=set_storyteller'>Set Storyteller</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
-	dat += "<BR><font color='#888888'><i>Storyteller determines points gained, event chances, and is the entity responsible for rolling events.</i></font>"
+	dat += " <a href='?src=[REF(src)];panel=main;action=halt_storyteller' [halted ? "class='linkOn'" : ""]>HALT Unified</a> <a href='?src=[REF(src)];panel=main;action=open_stats'>Event Panel</a> <a href='?src=[REF(src)];panel=main'>Refresh</a>"
 	dat += "<BR>Active Players: [active_pop]   (Head: [head_crew], Sec: [sec_crew], Eng: [eng_crew], Med: [med_crew]) - Antag Cap: [get_antag_cap()]"
 	dat += "<HR>"
-	dat += "<a href='?src=[REF(src)];panel=main;action=tab;tab=[GAMEMODE_PANEL_MAIN]' [panel_page == GAMEMODE_PANEL_MAIN ? "class='linkOn'" : ""]>Main</a>"
-	dat += " <a href='?src=[REF(src)];panel=main;action=tab;tab=[GAMEMODE_PANEL_VARIABLES]' [panel_page == GAMEMODE_PANEL_VARIABLES ? "class='linkOn'" : ""]>Variables</a>"
+	dat += "<a href='?src=[REF(src)];panel=main;action=tab;tab=[UNIFIED_PANEL_MAIN]' [panel_page == UNIFIED_PANEL_MAIN ? "class='linkOn'" : ""]>Main</a>"
+	dat += " <a href='?src=[REF(src)];panel=main;action=tab;tab=[UNIFIED_PANEL_VARIABLES]' [panel_page == UNIFIED_PANEL_VARIABLES ? "class='linkOn'" : ""]>Variables</a>"
 	dat += "<HR>"
 	switch(panel_page)
-		if(GAMEMODE_PANEL_VARIABLES)
+		if(UNIFIED_PANEL_VARIABLES)
+			/*
 			dat += "<a href='?src=[REF(src)];panel=main;action=reload_config_vars'>Reload Config Vars</a> <font color='#888888'><i>Configs located in game_options.txt.</i></font>"
 			dat += "<BR><b>Point Gains Multipliers (only over time):</b>"
 			dat += "<BR><font color='#888888'><i>This affects points gained over time towards scheduling new events of the tracks.</i></font>"
@@ -735,7 +665,8 @@ SUBSYSTEM_DEF(gamemode)
 			for(var/track in event_tracks)
 				dat += "<BR>[track]: <a href='?src=[REF(src)];panel=main;action=vars;var=roundstart_pts;track=[track]'>[roundstart_point_multipliers[track]]</a>"
 			dat += "<HR>"
-
+			*/
+			/* TODO FIX
 			dat += "<b>Minimum Population for Tracks:</b>"
 			dat += "<BR><font color='#888888'><i>This are the minimum population caps for events to be able to run.</i></font>"
 			for(var/track in event_tracks)
@@ -746,45 +677,20 @@ SUBSYSTEM_DEF(gamemode)
 			dat += "<BR><font color='#888888'><i>Those are thresholds the tracks require to reach with points to make an event.</i></font>"
 			for(var/track in event_tracks)
 				dat += "<BR>[track]: <a href='?src=[REF(src)];panel=main;action=vars;var=pts_threshold;track=[track]'>[point_thresholds[track]]</a>"
-
-		if(GAMEMODE_PANEL_MAIN)
-			var/even = TRUE
-			dat += "<h2>Event Tracks:</h2>"
-			dat += "<font color='#888888'><i>Every track represents progression towards scheduling an event of it's severity</i></font>"
-			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
-			dat += "<tr style='vertical-align:top'>"
-			dat += "<td width=25%><b>Track</b></td>"
-			dat += "<td width=20%><b>Progress</b></td>"
-			dat += "<td width=10%><b>Next</b></td>"
-			dat += "<td width=10%><b>Forced</b></td>"
-			dat += "<td width=35%><b>Actions</b></td>"
-			dat += "</tr>"
-			for(var/track in event_tracks)
-				even = !even
-				var/background_cl = even ? "#17191C" : "#23273C"
-				var/lower = event_track_points[track]
-				var/upper = point_thresholds[track]
-				var/percent = round((lower/upper)*100)
-				var/next = 0
-				var/last_points = last_point_gains[track]
-				if(last_points)
-					next = round((upper - lower) / last_points / STORYTELLER_WAIT_TIME * 40 / 6) / 10
-				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
-				dat += "<td>[track]</td>" //Track
-				dat += "<td>[percent]% ([lower]/[upper])</td>" //Progress
-				dat += "<td>~[next] m.</td>" //Next
-				var/datum/round_event_control/forced_event = forced_next_events[track]
-				var/forced = forced_event ? "[forced_event.name] <a href='?src=[REF(src)];panel=main;action=track_action;track_action=remove_forced;track=[track]'>X</a>" : ""
-				dat += "<td>[forced]</td>" //Forced
-				dat += "<td><a href='?src=[REF(src)];panel=main;action=track_action;track_action=set_pts;track=[track]'>Set Pts.</a> <a href='?src=[REF(src)];panel=main;action=track_action;track_action=next_event;track=[track]'>Next Event</a></td>" //Actions
-				dat += "</tr>"
-			dat += "</table>"
+			*/
+		if(UNIFIED_PANEL_MAIN)
+			var/background_cl = "#23273C"
+			dat += "<h2>Point Budget:</h2>"
+			dat += "<span style='background-color:[background_cl]'><a href='?src=[REF(src)];panel=main;action=change_points;'>[points]</a>/<a href='?src=[REF(src)];panel=main;action=change_starting_points;'>[starting_points]</a></span>"
+			dat += "<h2>Cooldowns:</h2>"
+			for(var/i in 1 to cooldown_dates.len)
+				dat += "<p><span style='background-color:[background_cl]'>[max(0, round((cooldown_dates[i] - world.time) / (1 MINUTES), 0.01))] minutes</span> <a href='?src=[REF(src)];panel=main;action=reset_cooldown;number=[i];'>Reset Cooldown</a></p>"
 
 			dat += "<h2>Scheduled Events:</h2>"
 			dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
 			dat += "<tr style='vertical-align:top'>"
 			dat += "<td width=30%><b>Name</b></td>"
-			dat += "<td width=17%><b>Severity</b></td>"
+			dat += "<td width=17%><b>Cost</b></td>"
 			dat += "<td width=12%><b>Time</b></td>"
 			dat += "<td width=41%><b>Actions</b></td>"
 			dat += "</tr>"
@@ -792,14 +698,14 @@ SUBSYSTEM_DEF(gamemode)
 			for(var/datum/scheduled_event/scheduled as anything in scheduled_events)
 				sorted_scheduled[scheduled] = scheduled.start_time
 			sortTim(sorted_scheduled, cmp=/proc/cmp_numeric_asc, associative = TRUE)
-			even = TRUE
+			var/even = TRUE
 			for(var/datum/scheduled_event/scheduled as anything in sorted_scheduled)
 				even = !even
-				var/background_cl = even ? "#17191C" : "#23273C"
+				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[scheduled.event.name]</td>" //Name
-				dat += "<td>[scheduled.event.track]</td>" //Severity
-				var/time = (scheduled.event.roundstart && !round_started) ? "ROUNDSTART" : "[(scheduled.start_time - world.time) / (1 SECONDS)] s."
+				dat += "<td>[scheduled.event.calculated_cost]</td>" //Cost
+				var/time = "[(scheduled.start_time - world.time) / (1 SECONDS)] s."
 				dat += "<td>[time]</td>" //Time
 				dat += "<td>[scheduled.get_href_actions()]</td>" //Actions
 				dat += "</tr>"
@@ -814,47 +720,29 @@ SUBSYSTEM_DEF(gamemode)
 			even = TRUE
 			for(var/datum/round_event/event as anything in running)
 				even = !even
-				var/background_cl = even ? "#17191C" : "#23273C"
+				background_cl = even ? "#17191C" : "#23273C"
 				dat += "<tr style='vertical-align:top; background-color: [background_cl];'>"
 				dat += "<td>[event.control.name]</td>" //Name
 				dat += "<td>-TBA-</td>" //Actions
 				dat += "</tr>"
 			dat += "</table>"
 
-	var/datum/browser/popup = new(user, "gamemode_admin_panel", "Gamemode Panel", 670, 650)
+	var/datum/browser/popup = new(user, "unified_admin_panel", "Unified Panel", 670, 650)
 	popup.set_content(dat.Join())
 	popup.open()
 
  /// Panel containing information and actions regarding events
-/datum/controller/subsystem/gamemode/proc/event_panel(mob/user)
+/datum/controller/subsystem/unified/proc/event_panel(mob/user)
 	var/list/dat = list()
-	if(storyteller)
-		dat += "Storyteller: [storyteller.name]"
-		dat += "<BR>Repetition penalty multiplier: [storyteller.event_repetition_multiplier]"
-		dat += "<BR>Cost variance: [storyteller.cost_variance]"
-		if(storyteller.tag_multipliers)
-			dat += "<BR>Tag multipliers:"
-			for(var/tag in storyteller.tag_multipliers)
-				dat += "[tag]:[storyteller.tag_multipliers[tag]] | "
-		storyteller.calculate_weights(statistics_track_page)
-	else
-		dat += "Storyteller: None<BR>Weight and chance statistics will be inaccurate due to the present lack of a storyteller."
-	dat += "<BR><a href='?src=[REF(src)];panel=stats;action=set_roundstart'[roundstart_event_view ? "class='linkOn'" : ""]>Roundstart Events</a> Forced Roundstart events will use rolled points, and are guaranteed to trigger (even if the used points are not enough)"
+	dat += "<BR><a href='?src=[REF(src)];panel=stats;action=set_roundstart'[roundstart_event_view ? "class='linkOn'" : ""]>Roundstart Events</a>"
 	dat += "<BR>Avg. event intervals: "
-	for(var/track in event_tracks)
-		if(last_point_gains[track])
-			var/est_time = round(point_thresholds[track] / last_point_gains[track] / STORYTELLER_WAIT_TIME * 40 / 6) / 10
-			dat += "[track]: ~[est_time] m. | "
-	dat += "<HR>"
-	for(var/track in EVENT_PANEL_TRACKS)
-		dat += "<a href='?src=[REF(src)];panel=stats;action=set_cat;cat=[track]'[(statistics_track_page == track) ? "class='linkOn'" : ""]>[track]</a>"
 	dat += "<HR>"
 	/// Create event info and stats table
 	dat += "<table align='center'; width='100%'; height='100%'; style='background-color:#13171C'>"
 	dat += "<tr style='vertical-align:top'>"
 	dat += "<td width=17%><b>Name</b></td>"
 	dat += "<td width=16%><b>Tags</b></td>"
-	dat += "<td width=8%><b>Occurences</b></td>"
+	dat += "<td width=8%><b>Base Cost</b></td>"
 	dat += "<td width=5%><b>M.Pop</b></td>"
 	dat += "<td width=5%><b>M.Time</b></td>"
 	dat += "<td width=7%><b>Can Occur</b></td>"
@@ -863,17 +751,9 @@ SUBSYSTEM_DEF(gamemode)
 	dat += "</tr>"
 	var/even = TRUE
 	var/total_weight = 0
-	var/list/event_lookup
-	switch(statistics_track_page)
-		if(ALL_EVENTS)
-			event_lookup = control
-		if(UNCATEGORIZED_EVENTS)
-			event_lookup = uncategorized
-		else
-			event_lookup = event_pools[statistics_track_page]
 	var/list/assoc_spawn_weight = list()
 	var/active_pop = get_correct_popcount()
-	for(var/datum/round_event_control/event as anything in event_lookup)
+	for(var/datum/round_event_control/event as anything in (control + roundstart_control))
 		if(event.roundstart != roundstart_event_view)
 			continue
 		if(event.can_spawn_event(active_pop))
@@ -891,10 +771,7 @@ SUBSYSTEM_DEF(gamemode)
 		for(var/tag in event.tags)
 			dat += "[tag] "
 		dat += "</td>"
-		var/occurence_string = "[event.occurrences]"
-		if(event.shared_occurence_type)
-			occurence_string += " (shared: [event.get_occurences()])"
-		dat += "<td>[occurence_string]</td>" //Occurences
+		dat += "<td>[event.unified_cost]</td>" //Cost
 		dat += "<td>[event.min_players]</td>" //Minimum pop
 		dat += "<td>[event.earliest_start / (1 MINUTES)] m.</td>" //Minimum time
 		dat += "<td>[assoc_spawn_weight[event] ? "Yes" : "No"]</td>" //Can happen?
@@ -906,11 +783,11 @@ SUBSYSTEM_DEF(gamemode)
 		dat += "<td>[event.get_href_actions()]</td>" //Actions
 		dat += "</tr>"
 	dat += "</table>"
-	var/datum/browser/popup = new(user, "gamemode_event_panel", "Event Panel", 1000, 600)
+	var/datum/browser/popup = new(user, "unified_event_panel", "Event Panel", 1000, 600)
 	popup.set_content(dat.Join())
 	popup.open()
 
-/datum/controller/subsystem/gamemode/Topic(href, href_list)
+/datum/controller/subsystem/unified/Topic(href, href_list)
 	. = ..()
 	var/mob/user = usr
 	if(!check_rights(R_ADMIN))
@@ -918,26 +795,16 @@ SUBSYSTEM_DEF(gamemode)
 	switch(href_list["panel"])
 		if("main")
 			switch(href_list["action"])
-				if("set_storyteller")
-					message_admins("[key_name_admin(usr)] is picking a new Storyteller.")
-					var/list/name_list = list()
-					for(var/storyteller_type in storytellers)
-						var/datum/storyteller/storyboy = storytellers[storyteller_type]
-						name_list[storyboy.name] = storyboy.type
-					var/new_storyteller_name = input(usr, "Choose new storyteller (circumvents voted one):", "Storyteller")  as null|anything in name_list
-					if(!new_storyteller_name)
-						message_admins("[key_name_admin(usr)] has cancelled picking a Storyteller.")
-						return
-					message_admins("[key_name_admin(usr)] has chosen [new_storyteller_name] as the new Storyteller.")
-					var/new_storyteller_type = name_list[new_storyteller_name]
-					set_storyteller(new_storyteller_type)
+				if("reset_cooldown")
+					cooldown_dates[text2num(href_list["number"])] = world.time
 				if("halt_storyteller")
-					halted_storyteller = !halted_storyteller
-					message_admins("[key_name_admin(usr)] has [halted_storyteller ? "HALTED" : "un-halted"] the Storyteller.")
+					halted = !halted
+					message_admins("[key_name_admin(usr)] has [halted ? "HALTED" : "un-halted"] Unified.")
+				/* TODO FIX
 				if("vars")
 					var/track = href_list["track"]
 					switch(href_list["var"])
-						if("pts_multiplier")
+						/*if("pts_multiplier")
 							var/new_value = input(usr, "New value:", "Set new value") as num|null
 							if(isnull(new_value) || new_value < 0)
 								return
@@ -949,6 +816,7 @@ SUBSYSTEM_DEF(gamemode)
 								return
 							message_admins("[key_name_admin(usr)] set roundstart pts multiplier for [track] track to [new_value].")
 							roundstart_point_multipliers[track] = new_value
+						*/
 						if("min_pop")
 							var/new_value = input(usr, "New value:", "Set new value") as num|null
 							if(isnull(new_value) || new_value < 0)
@@ -961,8 +829,9 @@ SUBSYSTEM_DEF(gamemode)
 								return
 							message_admins("[key_name_admin(usr)] set point threshold of [track] track to [new_value].")
 							point_thresholds[track] = new_value
+				*/
 				if("reload_config_vars")
-					message_admins("[key_name_admin(usr)] reloaded gamemode config vars.")
+					message_admins("[key_name_admin(usr)] reloaded unified config vars.")
 					load_config_vars()
 				if("tab")
 					var/tab = href_list["tab"]
@@ -970,6 +839,17 @@ SUBSYSTEM_DEF(gamemode)
 				if("open_stats")
 					event_panel(user)
 					return
+				if("change_points")
+					var/new_points = input(usr, "New point budget:", "Change Points") as num|null
+					if(isnull(new_points))
+						return
+					points = new_points
+				if("change_starting_points")
+					var/new_starting_points = input(usr, "New starting point budget:", "Change Starting Points") as num|null
+					if(isnull(new_starting_points))
+						return
+					starting_points = new_starting_points
+				/* TODO FIX
 				if("track_action")
 					var/track = href_list["track"]
 					if(!(track in event_tracks))
@@ -993,6 +873,7 @@ SUBSYSTEM_DEF(gamemode)
 							event_track_points[track] = point_thresholds[track]
 							if(storyteller)
 								storyteller.handle_tracks()
+				*/
 			admin_panel(user)
 		if("stats")
 			switch(href_list["action"])

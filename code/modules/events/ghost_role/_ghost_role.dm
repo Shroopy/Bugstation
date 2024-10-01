@@ -55,11 +55,13 @@
 		if(MAP_ERROR)
 			message_admins("[role_name] cannot be spawned due to a map error.")
 			kill()
+			SSunified.refund_failed_event(control) // BUG ADDITION
 			return
 		if(NOT_ENOUGH_PLAYERS)
 			message_admins("[role_name] cannot be spawned due to lack of players signing up.")
 			deadchat_broadcast(" did not get enough candidates ([minimum_required]) to spawn.", "<b>[role_name]</b>", message_type=DEADCHAT_ANNOUNCEMENT)
 			kill()
+			SSunified.refund_failed_event(control) // BUG ADDITION
 			return
 		if(SUCCESSFUL_SPAWN)
 			message_admins("[role_name] spawned successfully.")

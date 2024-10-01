@@ -42,9 +42,11 @@
 	var/map_flags = NONE
 
 /datum/round_event_control/New()
+	SHOULD_CALL_PARENT(TRUE) // BUG EDIT
+	. = ..() // BUG EDIT
 	if(config && !wizardevent) // Magic is unaffected by configs
 		earliest_start = CEILING(earliest_start * CONFIG_GET(number/events_min_time_mul), 1)
-		min_players = CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1)
+		// min_players = CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1) // BUG EDIT
 	if(!length(admin_setup))
 		return
 	var/list/admin_setup_types = admin_setup.Copy()
@@ -74,13 +76,13 @@
 	SHOULD_CALL_PARENT(TRUE)
 	if(occurrences >= max_occurrences)
 		return FALSE
-	if(!(roundstart ^ SSticker.HasRoundStarted())) // BUBBER EDIT: Roundstart checks added
+	if(roundstart && !SSticker.HasRoundStarted()) // BUBBER EDIT: Roundstart checks added // BUG EDIT
 		return FALSE
-	if(weight == 0) // BUBBER EDIT: Weight check added
+	if(calculated_weight == 0 && unified_cost != 0) // BUBBER EDIT: Weight check added // BUG EDIT
 		return FALSE
 	if(!allow_magic && wizardevent != SSevents.wizardmode)
 		return FALSE
-	if(players_amt < min_players)
+	if(players_amt < CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1)) // BUG EDIT
 		return FALSE
 	if(holidayID && !check_holidays(holidayID))
 		return FALSE
@@ -91,6 +93,11 @@
 
 	if (dynamic_should_hijack && SSdynamic.random_event_hijacked != HIJACKED_NOTHING)
 		return FALSE
+
+	// BUG ADDITION START
+	if(calculated_cost > SSunified.points)
+		return FALSE
+	// BUG ADDITION END
 
 	return TRUE
 
