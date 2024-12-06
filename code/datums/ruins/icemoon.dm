@@ -62,6 +62,12 @@
 	description = "Moffuchi's Family Pizzeria chain has a reputation for providing affordable artisanal meals of questionable edibility. This particular pizzeria seems to have been abandoned for some time."
 	suffix = "icemoon_surface_pizza.dmm"
 
+/datum/map_template/ruin/icemoon/Lodge
+	name = "Ice-Ruin Hunters Lodge"
+	id = "lodge"
+	description = "An old hunting hunting lodge. I wonder if anyone is still home?"
+	suffix = "icemoon_surface_lodge.dmm"
+
 /datum/map_template/ruin/icemoon/frozen_phonebooth
 	name = "Ice-Ruin Frozen Phonebooth"
 	id = "frozen_phonebooth"
@@ -198,6 +204,9 @@
 	id = "icemoon_comms_agent"
 	description = "Radio signals are being detected and the source is this completely innocent pile of snow."
 	suffix = "icemoon_underground_comms_agent.dmm"
+	//begin bubber edit
+	unpickable = TRUE
+	//end bubber edit
 
 /datum/map_template/ruin/icemoon/underground/syndie_lab
 	name = "Ice-Ruin Syndicate Lab"

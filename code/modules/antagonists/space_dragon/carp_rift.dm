@@ -35,6 +35,7 @@
 		return
 	if(locate(/obj/structure/carp_rift) in owner.loc)
 		return
+	owner.remove_movespeed_modifier(/datum/movespeed_modifier/dragon_depression/no_portal) // BUBBER ADDITION
 	var/obj/structure/carp_rift/new_rift = new(get_turf(owner))
 	playsound(owner.loc, 'sound/vehicles/rocketlaunch.ogg', 100, TRUE)
 	dragon.riftTimer = -1
@@ -110,6 +111,8 @@
 		limit_to_trait = TRAIT_HEALS_FROM_CARP_RIFTS, \
 		healing_color = COLOR_BLUE, \
 	)
+
+	AddComponent(/datum/component/fishing_spot, /datum/fish_source/carp_rift)
 
 	gravity_aura = new(
 		/* host = */src,
