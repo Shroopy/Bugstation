@@ -139,8 +139,8 @@
 			context[SCREENTIP_CONTEXT_LMB] = "Lock mutation"
 			return CONTEXTUAL_SCREENTIP_SET
 
-	// Edibles and pills can be composted.
-	if(IS_EDIBLE(held_item) || istype(held_item, /obj/item/reagent_containers/pill))
+	// Edibles can be composted (most of the times).
+	if(IS_EDIBLE(held_item) && HAS_TRAIT(held_item, TRAIT_UNCOMPOSTABLE))
 		context[SCREENTIP_CONTEXT_LMB] = "Compost"
 		return CONTEXTUAL_SCREENTIP_SET
 
@@ -533,6 +533,7 @@
 	if(myseed && myseed.loc != src)
 		myseed.forceMove(src)
 	SEND_SIGNAL(src, COMSIG_HYDROTRAY_SET_SEED, new_seed)
+	age = 0
 	update_appearance()
 	if(isnull(myseed))
 		particles = null
@@ -701,7 +702,6 @@
 		else
 			new_seed = new /obj/item/seeds/starthistle(src)
 	set_seed(new_seed)
-	age = 0
 	lastcycle = world.time
 	set_plant_health(myseed.endurance, update_icon = FALSE)
 	set_weedlevel(0, update_icon = FALSE) // Reset
@@ -725,7 +725,6 @@
 	set_seed(new mutantseed(src))
 
 	hardmutate()
-	age = 0
 	set_plant_health(myseed.endurance, update_icon = FALSE)
 	lastcycle = world.time
 	set_weedlevel(0, update_icon = FALSE)
@@ -742,7 +741,6 @@
 	set_seed(new polymorph_seed(src))
 
 	hardmutate()
-	age = 0
 	set_plant_health(myseed.endurance, update_icon = FALSE)
 	lastcycle = world.time
 	set_weedlevel(0, update_icon = FALSE)
@@ -756,7 +754,6 @@
 		var/newWeed = pick(/obj/item/seeds/liberty, /obj/item/seeds/angel, /obj/item/seeds/nettle/death, /obj/item/seeds/kudzu)
 		set_seed(new newWeed(src))
 		hardmutate()
-		age = 0
 		set_plant_health(myseed.endurance, update_icon = FALSE)
 		lastcycle = world.time
 		set_weedlevel(0, update_icon = FALSE) // Reset
@@ -856,7 +853,10 @@
 		var/visi_msg = ""
 		var/transfer_amount
 
-		if(IS_EDIBLE(reagent_source) || istype(reagent_source, /obj/item/reagent_containers/pill))
+		if(IS_EDIBLE(reagent_source))
+			if(HAS_TRAIT(reagent_source, TRAIT_UNCOMPOSTABLE))
+				to_chat(user, "[reagent_source] cannot be composted in its current state")
+				return
 			visi_msg="[user] composts [reagent_source], spreading it through [target]"
 			transfer_amount = reagent_source.reagents.total_volume
 			SEND_SIGNAL(reagent_source, COMSIG_ITEM_ON_COMPOSTED, user)
@@ -994,9 +994,9 @@
 			to_chat(user, span_notice("The tray is empty."))
 			return
 		if(myseed.apply_graft(snip))
-			to_chat(user, "<span class='notice'>You carefully integrate the grafted plant limb onto [myseed.plantname], granting it [snip.stored_trait.get_name()].</span>")
+			to_chat(user, span_notice("You carefully integrate the grafted plant limb onto [myseed.plantname], granting it [snip.stored_trait.get_name()]."))
 		else
-			to_chat(user, "<span class='warning'>You integrate the grafted plant limb onto [myseed.plantname], but it does not accept the [snip.stored_trait.get_name()] trait from the [snip].</span>")
+			to_chat(user, span_notice("You integrate the grafted plant limb onto [myseed.plantname], but it does not accept the [snip.stored_trait.get_name()] trait from the [snip]."))
 		qdel(snip)
 		return
 
@@ -1095,10 +1095,14 @@
 /obj/machinery/hydroponics/click_ctrl(mob/user)
 	if(!anchored)
 		return NONE
+
+	update_use_power(ACTIVE_POWER_USE)
+
 	if(!powered())
 		to_chat(user, span_warning("[name] has no power."))
 		update_use_power(NO_POWER_USE)
 		return CLICK_ACTION_BLOCKING
+
 	set_self_sustaining(!self_sustaining)
 	to_chat(user, span_notice("You [self_sustaining ? "activate" : "deactivated"] [src]'s autogrow function[self_sustaining ? ", maintaining the tray's health while using high amounts of power" : ""]."))
 	return CLICK_ACTION_SUCCESS
