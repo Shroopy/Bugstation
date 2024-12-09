@@ -139,8 +139,9 @@ SUBSYSTEM_DEF(unified)
 			valid_events[event] = event.calculated_weight
 	if(!length(valid_events))
 		if(SSticker.HasRoundStarted())
-			message_admins("Unified failed to pick an event.")
-			log_admin("Unified failed to pick an event.")
+			message_admins("Unified failed to pick an event. Suspending.")
+			log_admin("Unified failed to pick an event. Suspending.")
+			halted = TRUE;
 		return
 	picked_event = pick_weight(valid_events)
 	if(!picked_event)
