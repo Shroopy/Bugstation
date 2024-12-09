@@ -1,4 +1,4 @@
-///Scheduled event datum for SSgamemode to put events into.
+///Scheduled event datum for SSunified to put events into. // BUG EDIT
 /datum/scheduled_event
 	/// What event are scheduling.
 	var/datum/round_event_control/event
@@ -35,7 +35,7 @@
 /// For admins who want to reschedule the event.
 /datum/scheduled_event/proc/reschedule(new_time)
 	start_time = new_time
-	alerted_admins = FALSE
+	// alerted_admins = FALSE // BUG EDIT
 
 /datum/scheduled_event/proc/get_href_actions()
 	var/round_started = SSticker.HasRoundStarted()
@@ -54,15 +54,43 @@
 		message_admins("Scheduled Event: [event] was unable to run and has been refunded.")
 		log_admin("Scheduled Event: [event] was unable to run and has been refunded.")
 
-		SSgamemode.refund_scheduled_event(src)
+		SSunified.refund_scheduled_event(src) // BUG EDIT
 		return
 
 	///Trigger the event and remove the scheduled datum
 	message_admins("Scheduled Event: [event] successfully triggered.")
-	SSgamemode.TriggerEvent(event)
-	SSgamemode.remove_scheduled_event(src)
+	SSunified.TriggerEvent(event) // BUG EDIT
+	SSunified.remove_scheduled_event(src) // BUG EDIT
 
 /datum/scheduled_event/Destroy()
 	remove_occurence()
 	event = null
 	return ..()
+
+/datum/scheduled_event/Topic(href, href_list)
+	. = ..()
+	if(QDELETED(src))
+		return
+	var/round_started = SSticker.HasRoundStarted()
+	switch(href_list["action"])
+		if("cancel")
+			message_admins("[key_name_admin(usr)] cancelled scheduled event [event.name].")
+			log_admin_private("[key_name(usr)] cancelled scheduled event [event.name].")
+			SSunified.remove_scheduled_event(src) // BUG EDIT
+		if("refund")
+			message_admins("[key_name_admin(usr)] refunded scheduled event [event.name].")
+			log_admin_private("[key_name(usr)] refunded scheduled event [event.name].")
+			SSunified.refund_scheduled_event(src) // BUG EDIT
+		if("reschedule")
+			var/new_schedule = input(usr, "New schedule time (in seconds):", "Reschedule Event") as num|null
+			if(isnull(new_schedule) || QDELETED(src))
+				return
+			start_time = world.time + new_schedule * 1 SECONDS
+			message_admins("[key_name_admin(usr)] rescheduled event [event.name] to [new_schedule] seconds.")
+			log_admin_private("[key_name(usr)] rescheduled event [event.name] to [new_schedule] seconds.")
+		if("fire")
+			if(!round_started)
+				return
+			message_admins("[key_name_admin(usr)] has fired scheduled event [event.name].")
+			log_admin_private("[key_name(usr)] has fired scheduled event [event.name].")
+			try_fire()
