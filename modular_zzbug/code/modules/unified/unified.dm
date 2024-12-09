@@ -484,7 +484,7 @@ SUBSYSTEM_DEF(unified)
 ///Attempts to select players for special roles the mode might have.
 /datum/controller/subsystem/unified/proc/pre_setup()
 	// We need to do this to prevent some niche fuckery... and make dep. orders work. Lol
-	SSjob.ResetOccupations()
+	SSjob.reset_occupations()
 	handle_pre_setup_roundstart_events()
 	starting_points = rand(BASE_POINTS*0.5, BASE_POINTS*1.5)
 	points = starting_points
