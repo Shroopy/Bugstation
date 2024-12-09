@@ -114,7 +114,8 @@
 		if(!check_rights(R_ADMIN))
 			return
 		//SSdynamic.admin_panel() // BUBBER EDIT - STORYTELLER
-		SSunified.admin_panel(usr) // BUBBER EDIT - STORYTELLER // BUG EDIT - Unified
+		//SSgamemode.ui_interact(usr) // BUBBER EDIT - STORYTELLER // BUG EDIT - Unified
+		SSunified.admin_panel(usr) // BUG EDIT - Unified
 	else if(href_list["call_shuttle"])
 		if(!check_rights(R_ADMIN))
 			return
@@ -1780,11 +1781,10 @@
 		if(!check_rights(R_ADMIN))
 			return
 
-		for(var/obj/machinery/fax/FAX as anything in SSmachines.get_machines_by_type_and_subtypes(/obj/machinery/fax))
-			if(!is_centcom_level(FAX.z))
+		for(var/obj/machinery/fax/admin/FAX as anything in SSmachines.get_machines_by_type_and_subtypes(/obj/machinery/fax/admin))
+			if(FAX.fax_id != href_list["destination"])
 				continue
-
-			FAX.receive(locate(href_list["print_fax"]), href_list["fax_name"])
+			FAX.receive(locate(href_list["print_fax"]), href_list["sender_name"])
 	// SKYRAT EDIT ADDITION START
 	else if(href_list["pass_opfor_candidate"])
 		if(!check_rights(R_ADMIN))
