@@ -27265,7 +27265,9 @@
 	dir = 1
 	},
 /obj/structure/closet/secure_closet/medical2,
-/obj/machinery/airalarm/directional/west,
+/obj/machinery/airalarm/directional/west{
+	default_mode = /datum/air_alarm_mode/contaminated
+	},
 /obj/effect/turf_decal/tile/blue{
 	dir = 1
 	},
@@ -64207,7 +64209,9 @@
 /obj/item/storage/box/beakers{
 	pixel_y = 2
 	},
-/obj/machinery/airalarm/directional/east,
+/obj/machinery/airalarm/directional/east{
+	default_mode = /datum/air_alarm_mode/contaminated
+	},
 /obj/structure/noticeboard/directional/south,
 /obj/machinery/light/directional/east,
 /obj/effect/turf_decal/tile/neutral{
@@ -65551,7 +65555,9 @@
 /area/station/maintenance/disposal/incinerator)
 "vvd" = (
 /obj/machinery/mech_bay_recharge_port,
-/obj/machinery/airalarm/directional/west,
+/obj/machinery/airalarm/directional/west{
+	selected_mode = /datum/air_alarm_mode/contaminated
+	},
 /obj/structure/cable,
 /obj/effect/turf_decal/stripes/corner{
 	dir = 1
@@ -68684,7 +68690,9 @@
 /turf/open/floor/engine/hull/reinforced,
 /area/space/nearstation)
 "woB" = (
-/obj/machinery/airalarm/directional/west,
+/obj/machinery/airalarm/directional/west{
+	default_mode = /datum/air_alarm_mode/contaminated
+	},
 /obj/structure/table,
 /obj/item/book/manual/wiki/surgery,
 /obj/item/razor,
@@ -73433,7 +73441,9 @@
 /obj/item/clothing/head/utility/welding,
 /obj/item/clothing/glasses/welding,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/airalarm/directional/west,
+/obj/machinery/airalarm/directional/west{
+	default_mode = /datum/air_alarm_mode/contaminated
+	},
 /obj/structure/extinguisher_cabinet/directional/north,
 /obj/machinery/light/directional/north,
 /obj/effect/turf_decal/tile/neutral,
