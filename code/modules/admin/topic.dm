@@ -114,7 +114,8 @@
 		if(!check_rights(R_ADMIN))
 			return
 		//SSdynamic.admin_panel() // BUBBER EDIT - STORYTELLER
-		SSgamemode.ui_interact(usr) // BUBBER EDIT - STORYTELLER
+		//SSgamemode.ui_interact(usr) // BUBBER EDIT - STORYTELLER // BUG EDIT - Unified
+		SSunified.admin_panel(usr) // BUG EDIT - Unified
 	else if(href_list["call_shuttle"])
 		if(!check_rights(R_ADMIN))
 			return

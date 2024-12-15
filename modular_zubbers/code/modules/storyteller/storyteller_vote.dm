@@ -51,10 +51,12 @@ We then just check what the last one is in SSgamemode.storyteller_vote_choices()
 
 #define STORYTELLER_LAST_FILEPATH "data/storyteller_last_round.txt"
 
+/* BUG REMOVAL START - unified
 /// Extends collect_data
 /datum/controller/subsystem/persistence/collect_data()
 	. = ..()
 	collect_storyteller_type()
+BUG REMOVAL END */
 
 /// Loads last storyteller into last_storyteller_type
 /datum/controller/subsystem/persistence/proc/load_storyteller_type()
