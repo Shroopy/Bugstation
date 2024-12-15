@@ -7,7 +7,7 @@
 	special_desc = "The disk provides instructions on how to impress an order on a brain, making it the primary objective of the patient."
 	surgeries = list(
 		/datum/surgery/advanced/brainwashing,
-		/datum/surgery/advanced/brainwashing/mechanic,
+		// /datum/surgery/advanced/brainwashing/mechanic, // BUBBER EDIT
 	)
 
 /datum/surgery/advanced/brainwashing
@@ -23,6 +23,7 @@
 		/datum/surgery_step/close,
 	)
 
+/* BUBBER REMOVAL START
 /datum/surgery/advanced/brainwashing/mechanic
 	name = "Reprogramming"
 	desc = "Malware which directly implants a directive into the robotic patient's operating system, making it their absolute priority. It can be cleared using a mindshield implant."
@@ -35,6 +36,7 @@
 		/datum/surgery_step/mechanic_wrench,
 		/datum/surgery_step/mechanic_close,
 	)
+BUBBER REMOVAL END */
 
 /datum/surgery/advanced/brainwashing/can_start(mob/user, mob/living/carbon/target)
 	if(!..())
@@ -63,8 +65,11 @@
 		TOOL_MULTITOOL = 85,
 		TOOL_HEMOSTAT = 50,
 		TOOL_WIRECUTTER = 50,
+		/* BUBBER REMOVAL START
 		/obj/item/stack/package_wrap = 35,
-		/obj/item/stack/cable_coil = 15)
+		/obj/item/stack/cable_coil = 15
+		BUBBER REMOVAL END */
+		)
 	preop_sound = 'sound/items/taperecorder/tape_flip.ogg'
 	success_sound = 'sound/items/taperecorder/taperecorder_close.ogg'
 
