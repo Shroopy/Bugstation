@@ -76,6 +76,10 @@
 	/// Whether it is possible to link/unlink this air alarm from a sensor
 	var/allow_link_change = TRUE
 
+	// BUG ADDITION
+	/// The default mode the air alarm should initialize to, used for mapping.
+	var/datum/air_alarm_mode/default_mode = /datum/air_alarm_mode/filtering
+
 GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 
 /datum/armor/machinery_airalarm
@@ -113,7 +117,7 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 
 	my_area = connected_sensor ? get_area(connected_sensor) : get_area(src)
 	alarm_manager = new(src)
-	select_mode(src, /datum/air_alarm_mode/filtering, should_apply = FALSE)
+	select_mode(src, default_mode)
 
 	AddElement(/datum/element/connect_loc, atmos_connections)
 	AddComponent(/datum/component/usb_port, list(

@@ -38,7 +38,7 @@
 	else if(inflamation_stage)
 		inflamation(seconds_per_tick)
 	/* BUG EDIT START
-	else if(SPT_PROB(APPENDICITIS_PROB, seconds_per_tick))
+	else if(SPT_PROB(APPENDICITIS_PROB, seconds_per_tick) && !HAS_TRAIT(owner, TRAIT_TEMPORARY_BODY))
 		become_inflamed()
 	BUG EDIT END */
 
