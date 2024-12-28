@@ -172,6 +172,7 @@ SUBSYSTEM_DEF(ticker)
 				send2chat(new /datum/tgs_message_content("<@&[CONFIG_GET(string/game_alert_role_id)]> Round **[GLOB.round_id]** starting on [SSmapping.current_map.map_name], [CONFIG_GET(string/servername)]! \nIf you wish to be pinged for game related stuff, go to <#[CONFIG_GET(string/role_assign_channel_id)]> and assign yourself the roles."), CONFIG_GET(string/channel_announce_new_game)) // SKYRAT EDIT - Role ping and round ID in game-alert
 			// SKYRAT EDIT END
 			current_state = GAME_STATE_PREGAME
+			/* BUGSTATION REMOVAL START
 		// BUBBERSTATION EDIT START
 			var/storyteller = CONFIG_GET(string/default_storyteller)
 			if(storyteller)
@@ -179,6 +180,7 @@ SUBSYSTEM_DEF(ticker)
 			else
 				SSvote.initiate_vote(/datum/vote/storyteller, "Storyteller Vote", forced = TRUE)
 		// BUBBERSTATION EDIT END
+			BUGSTATION REMOVAL END */
 			SStitle.change_title_screen() //SKYRAT EDIT ADDITION - Title screen
 			addtimer(CALLBACK(SStitle, TYPE_PROC_REF(/datum/controller/subsystem/title, change_title_screen)), 1 SECONDS) //SKYRAT EDIT ADDITION - Title screen
 			//Everyone who wants to be an observer is now spawned
@@ -257,10 +259,15 @@ SUBSYSTEM_DEF(ticker)
 	//Configure mode and assign player to antagonists
 	var/can_continue = FALSE
 //	can_continue = SSdynamic.pre_setup() //Choose antagonists // BUBBER EDIT - STORYTELLER (note: maybe disable)
+	/* BUG REMOVAL START
 	//BUBBER EDIT BEGIN - STORYTELLER
 	SSgamemode.init_storyteller()
 	can_continue = SSgamemode.pre_setup()
 	//BUBBER EDIT END - STORYTELLER
+	BUG REMOVAL END */
+	// BUG ADDITION START
+	can_continue = SSunified.pre_setup()
+	// BUG ADDITION END
 
 	CHECK_TICK
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_PRE_JOBS_ASSIGNED, src)
@@ -330,7 +337,7 @@ SUBSYSTEM_DEF(ticker)
 /datum/controller/subsystem/ticker/proc/PostSetup()
 	set waitfor = FALSE
 	SSdynamic.post_setup()
-	SSgamemode.post_setup() // BUBBER EDIT - Storyteller
+	SSunified.post_setup() // BUBBER EDIT - Storyteller // BUG EDIT - Unified
 	GLOB.start_state = new /datum/station_state()
 	GLOB.start_state.count()
 
